@@ -50,7 +50,7 @@ public class Rect : IEquatable<Rect> {
 
     public override string ToString() => $"Rect(X: {X}, Y: {Y}, Width: {Width}, Height: {Height})";
 
-    public static bool operator ==(Rect a, Rect b) => 
+    public static bool operator ==(Rect a, Rect b) =>
         a.X == b.X && a.Y == b.Y && a.Width == b.Width && a.Height == b.Height;
 
     public static bool operator !=(Rect a, Rect b) => !(a == b);

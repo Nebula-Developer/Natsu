@@ -1,3 +1,5 @@
+using SkiaSharp;
+
 namespace Natsu.Graphics;
 
 public class Paint {
@@ -28,7 +30,7 @@ public class Paint {
             OnChanged?.Invoke();
         }
     }
-    private bool _isStroke = true;
+    private bool _isStroke = false;
 
     public bool IsAntialias {
         get => _isAntialias;
@@ -47,4 +49,13 @@ public class Paint {
         }
     }
     private FilterQuality _filterQuality = FilterQuality.High;
+
+    public float FontSize {
+        get => _fontSize;
+        set {
+            _fontSize = value;
+            OnChanged?.Invoke();
+        }
+    }
+    private float _fontSize = 12;
 }
