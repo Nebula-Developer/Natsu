@@ -49,4 +49,7 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
             throw new ArgumentException("Non-SkiaOffscreenSurface provided to SkiaCanvas");
         }
     }
+
+    public void ResetMatrix() => Canvas.ResetMatrix();
+    public void SetMatrix(Matrix matrix) => Canvas.SetMatrix(matrix);
 }

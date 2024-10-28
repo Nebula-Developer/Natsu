@@ -5,15 +5,8 @@ using SkiaSharp;
 
 namespace Natsu.Platforms.Skia;
 
-public class SkiaApplication : IApplication {
-    public IRenderer Renderer { get; }
-    public IResourceManager ResourceManager { get; }
-
-    public void Dispose() {
-
-    }
-
-    public void Run() {
+public class SkiaApplication : Application {
+    protected override void OnRender() {
         // draw rect then save to img.png
         Renderer.Canvas.DrawRect(new Rect(0, 0, 100, 100), new Paint { Color = Colors.Red });
         Renderer.Present();

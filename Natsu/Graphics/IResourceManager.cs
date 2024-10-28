@@ -1,6 +1,6 @@
 namespace Natsu.Graphics;
 
-public interface IResourceManager {
+public interface IResourceManager : IDisposable {
     public IImage LoadImage(string path);
     public IImage LoadImage(byte[] data);
     public IFont LoadFont(string path);
