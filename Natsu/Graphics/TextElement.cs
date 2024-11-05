@@ -15,6 +15,11 @@ public class TextElement : PaintableElement {
     public TextElement(string text, IFont font) {
         Font = font;
         Text = text;
+        OnPaintChanged();
+    }
+
+    public override void OnPaintChanged() {
+        base.OnPaintChanged();
         Paint.OnChanged += () => Size = Font.MeasureText(Text, Paint.TextSize);
     }
 

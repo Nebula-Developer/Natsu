@@ -65,8 +65,8 @@ public class SkiaApplication : Application {
             Parent = Root,
             Size = new(200),
             Index = 5,
-            AnchorPosition = new(1),
-            OffsetPosition = new(1),
+            AnchorPosition = new(0.5f),
+            OffsetPosition = new(0.5f),
             Name = "Test Image",
             HandlePositionalInput = true
         };
@@ -91,8 +91,13 @@ public class SkiaApplication : Application {
 
         bouncyText = new($"Hello 1234567890-!@#!@#", ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf")) {
             Parent = Root,
-            Position = new(0, 50),
-            HandlePositionalInput = true
+            // Position = new(0, 50),
+            AnchorPosition = new(1),
+            OffsetPosition = new(1),
+            HandlePositionalInput = true,
+            Paint = new() {
+                Color = new Color(255, 255, 255, 50)
+            }
         };
     } // FPS: 260
 
@@ -113,7 +118,9 @@ public class SkiaApplication : Application {
         // });
         fpsText.Text = $"FPS: {fps}";
 
-        bouncyText.Paint.TextSize = MathF.Sin(time) * 10 + 30;
+        // bouncyText.Paint.TextSize = MathF.Ceiling((MathF.Sin(time) * 10 + 30) * 100) / 100;
+        // 2 to 5
+        bouncyText.Scale = new(5 + MathF.Sin(time) * 2f);
 
         float offset = 5f + MathF.Sin(time) * 1.5f;
         Cache.Scale = new(offset);

@@ -93,7 +93,7 @@ public class AppWindow() : GameWindow(new GameWindowSettings() {
         }
         Console.WriteLine();
 
-        targetScale = targetScale == new Vector2(1) ? new(0.5f) : new(1);
+        targetScale = targetScale == new Vector2(1) ? new(2f) : new(1);
 
         // UpdateFrequency = UpdateFrequency == 200 ? 60 : 200;
         // Console.WriteLine($"Update Frequency: {UpdateFrequency}");

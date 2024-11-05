@@ -58,4 +58,13 @@ public class Paint {
         }
     }
     private float _fontSize = 12;
+
+    public bool DisableTextYCorrection {
+        get => _disableTextYCorrection;
+        set {
+            _disableTextYCorrection = value;
+            OnChanged?.Invoke();
+        }
+    }
+    private bool _disableTextYCorrection = false;
 }
