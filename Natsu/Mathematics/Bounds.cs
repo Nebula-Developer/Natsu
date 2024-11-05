@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using System.Security.Cryptography;
 
 using SkiaSharp;
 
@@ -9,13 +10,25 @@ namespace Natsu.Mathematics {
         public Vector2 TopRight { get; }
         public Vector2 BottomRight { get; }
         public Vector2 BottomLeft { get; }
+        public SKPath Path { get; }
 
         public Bounds(Vector2 topLeft, Vector2 topRight, Vector2 bottomRight, Vector2 bottomLeft) {
             TopLeft = topLeft;
             TopRight = topRight;
             BottomRight = bottomRight;
             BottomLeft = bottomLeft;
+
+            Path = new SKPath();
+            Path.MoveTo(TopLeft.X, TopLeft.Y);
+            Path.LineTo(TopRight.X, TopRight.Y);
+            Path.LineTo(BottomRight.X, BottomRight.Y);
+            Path.LineTo(BottomLeft.X, BottomLeft.Y);
+            Path.Close();
         }
+
+        public bool Contains(Vector2 point) => Path.Contains(point.X, point.Y);
+        public bool Contains(Bounds bounds) => Contains(bounds.TopLeft) && Contains(bounds.TopRight) && Contains(bounds.BottomRight) && Contains(bounds.BottomLeft);
+        public bool Intersects(Bounds bounds) => Path.Op(bounds.Path, SKPathOp.Intersect, default);
 
         public float Width => Vector2.Distance(TopLeft, TopRight);
         public float Height => Vector2.Distance(TopLeft, BottomLeft);

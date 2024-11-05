@@ -17,6 +17,7 @@ public partial class Element {
             return DirtyMatrix.Value ?? SKMatrix.CreateIdentity();
         }
     }
+    public virtual Matrix ChildAccessMatrix => Matrix;
 
     public Vector2 WorldPosition {
         get {
@@ -30,19 +31,22 @@ public partial class Element {
     public Vector2 ToLocalSpace(Vector2 screenSpace) => Matrix.Invert().MapPoint(screenSpace);
     public Vector2 ToScreenSpace(Vector2 localSpace) => Matrix.MapPoint(localSpace);
 
-    protected virtual Vector2 ComputeAnchorPosition => AnchorPosition * Parent!.Size;
+    protected virtual Vector2 ComputeAnchorPosition => AnchorPosition * Parent?.Size ?? Vector2.Zero;
 
     public void UpdateMatrix() {
-        Matrix matrix = Parent?.Matrix.Copy() ?? new Matrix();
+        UpdateRelativeSize();
+
+        Matrix matrix = Parent?.ChildAccessMatrix.Copy() ?? new Matrix();
         Vector2 offset = OffsetPosition * Size;
 
         Vector2 translate = -offset + Position;
 
-        if (Parent != null)
-            translate += ComputeAnchorPosition;
+        translate += ComputeAnchorPosition;
 
+        // Vector2 offsetMap = matrix.MapPoint(offset);
         matrix.PreTranslate(translate.X, translate.Y);
         matrix.PreRotate(Rotation, offset.X, offset.Y);
+        // Console.WriteLine(offsetMap);
         matrix.PreScale(Scale.X, Scale.Y, offset.X, offset.Y);
 
         _worldPosition = matrix.MapPoint(Vector2.Zero);
@@ -55,7 +59,7 @@ public partial class Element {
             new(0, Size.Y)
         ));
 
-        InvalidateChildren(Invalidation.Geometry);
+        // InvalidateChildren(Invalidation.Geometry);
     }
 
     public Bounds Bounds {
@@ -103,25 +107,54 @@ public partial class Element {
     }
     private Axes _relativeSizeAxes = Axes.None;
 
+    public event Action<Vector2>? OnSizeChange;
+
     public Vector2 Size {
-        get {
-            if (RelativeSizeAxes == Axes.None)
-                return _size;
-            if (Parent == null)
-                throw new InvalidOperationException("Cannot get size of element with relative size axes but no parent.");
-            return new(RelativeSizeAxes.HasFlag(Axes.X) ? Parent.Size.X : _size.X,
-                RelativeSizeAxes.HasFlag(Axes.Y) ? Parent.Size.Y : _size.Y);
-        }
+        get => _size;
         set {
             if (RelativeSizeAxes == Axes.Both)
                 throw new InvalidOperationException("Cannot set size on element with both relative size axes.");
-            if (_size == value)
+            
+            Vector2 newValue;
+            if (RelativeSizeAxes != Axes.None) {
+                if (Parent == null)
+                    throw new InvalidOperationException("Cannot set size on element with relative size axes and no parent.");
+                
+                newValue = new(
+                    RelativeSizeAxes.HasFlag(Axes.X) ? Parent.Size.X : value.X,
+                    RelativeSizeAxes.HasFlag(Axes.Y) ? Parent.Size.Y : value.Y
+                );
+            } else newValue = value;
+
+            if (_size == newValue)
                 return;
-            _size = value;
+            
+            _size = newValue;
+            OnSizeChange?.Invoke(newValue);
             Invalidate(Invalidation.Geometry);
         }
     }
     private Vector2 _size;
+
+    public void UpdateRelativeSize() {
+        if (RelativeSizeAxes == Axes.None)
+            return;
+
+        if (Parent == null)
+            throw new InvalidOperationException("Cannot set size on element with relative size axes and no parent.");
+
+        Vector2 nSize = new(
+            RelativeSizeAxes.HasFlag(Axes.X) ? Parent.Size.X : Size.X,
+            RelativeSizeAxes.HasFlag(Axes.Y) ? Parent.Size.Y : Size.Y
+        );
+
+        if (_size == nSize)
+            return;
+
+        _size = nSize;
+        OnSizeChange?.Invoke(nSize);
+        Invalidate(Invalidation.Geometry);
+    }
 
     public Vector2 OffsetPosition {
         get => _offsetPosition;

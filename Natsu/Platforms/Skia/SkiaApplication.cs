@@ -13,60 +13,64 @@ public class SkiaApplication : Application {
             Renderer = new SkiaRenderer(surface);
     }
 
+    public CachedElement Cache;
+    public float BaseScale = 1f;
+
     public SkiaApplication(SKSurface baseSurface) {
         LoadRenderer(baseSurface);
         ResourceManager = new SkiaResourceManager();
-
-        RectElement a = new() {
-            RelativeSizeAxes = Axes.Both,
-            Name = "A"
-        };
-        RectElement b = new() {
-            OffsetPosition = new(0.5f),
-            AnchorPosition = new(0.5f),
-            Parent = a,
-            RelativeSizeAxes = Axes.Both,
-            Name = "B"
-        };
-
-
-        b.Paint.Color = new Color(255, 255, 255, 50);
-        b.Paint.IsStroke = false;
-
-        a.Paint.Color = Colors.Yellow;
-
-        Add(a);
         
-        c = new() {
-            Parent = b,
-            Size = new(25),
-            // Rotation = 20,
-            AnchorPosition = new(1),
-            OffsetPosition = new(1),
-            Name = "C"
+        Cache = new() {
+            Size = new(1000),
+            Parent = Root,
+            AnchorPosition = new(0.5f),
+            OffsetPosition = new(0.5f),
+            Scale = new(BaseScale)
         };
 
-        c.Paint.Color = Colors.Red;
-        c.Paint.IsStroke = true;
-        c.Paint.StrokeWidth = 6;
+        Root.OnSizeChange += (v) => {
+            // set the cache scale to whatever the max size of root is so that it always covers
+            float scale = Math.Max(v.X, v.Y) / 1000f;
+            BaseScale = scale * 1.5f;
+        };
 
-        Resize(800, 600);
-        Root.Scale = new(1f);
-        Root.OffsetPosition = new(0.5f);
-        Root.AnchorPosition = new(0.5f);
-    }
-    RectElement c;
+        for (int i = 0; i < 10000; i++) {
+            float r = (float)(i % 100) / 100f;
+            float g = (float)(i / 100) / 100f;
+            float b = (float)(i % 100 + i / 100) / 200f;
 
-    protected override void OnResize(int width, int height) {
-        base.OnResize(width, height);
-        Console.WriteLine(c.Parent!.Size);
+            Cache.Add(new RectElement() {
+                Size = new(10, 10),
+                Paint = new() {
+                    Color = new(r, g, b, 1f)
+                },
+                Position = new(i % 100 * 10, i / 100 * 10)
+            });
+        }
+
+        Root.Scale = new(0.25f);
+        Root.OffsetPosition = new(1f);
+        Root.AnchorPosition = new(1f);
     }
 
     protected override void OnRender() {
         base.OnRender();
-        float time = (float)this.time.Elapsed.TotalSeconds;
-        Root.Rotation = time * 100;
+        float fps = 1f / (float)Time.Elapsed.TotalSeconds;
+        Cache.Rotation += 50f * (float)Time.Elapsed.TotalSeconds;
+        time += (float)Time.Elapsed.TotalSeconds;
+        Time.Restart();
+
+
+        Renderer.Canvas.DrawText($"FPS: {fps}", new Vector2(10, 30), ResourceManager.LoadFontName("Arial"), new Paint() {
+            Color = Colors.White,
+            FontSize = 20
+        });
+
+        float offset = 30f + MathF.Sin(time) * 30f;
+        Cache.Scale = new(BaseScale + offset);
     }
 
-    Stopwatch time = Stopwatch.StartNew();
+    public float time;
+
+    public readonly Stopwatch Time = Stopwatch.StartNew();
 }

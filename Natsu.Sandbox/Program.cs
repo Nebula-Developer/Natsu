@@ -13,7 +13,9 @@ using SkiaSharp;
 
 namespace Natsu.Sandbox;
 
-public class AppWindow() : GameWindow(GameWindowSettings.Default, NativeWindowSettings.Default) {
+public class AppWindow() : GameWindow(new GameWindowSettings() {
+    UpdateFrequency = 244
+}, NativeWindowSettings.Default) {
 
     #nullable disable
     public SkiaApplication App;
@@ -43,18 +45,31 @@ public class AppWindow() : GameWindow(GameWindowSettings.Default, NativeWindowSe
         _interface = GRGlInterface.Create();
         _context = GRContext.CreateGl(_interface);
         CreateSurface(Size.X, Size.Y);
+        App.Load();
+        App.Resize(Size.X, Size.Y);
+        test = SKSurface.Create(new SKImageInfo(100, 100));
+        test.Canvas.Clear(SKColors.Red);
     }
+
+    SKSurface test;
 
     protected override void OnRenderFrame(FrameEventArgs args) {
         base.OnRenderFrame(args);
         App.Render();
+        // SKCanvas canvas = _surface.Canvas;
+        // canvas.Clear(Colors.White);
+        // canvas.DrawSurface(test, new(0, 0));
+        // canvas.Flush();
         SwapBuffers();
     }
 
     protected override void OnFramebufferResize(FramebufferResizeEventArgs e) {
         base.OnFramebufferResize(e);
-        CreateSurface(e.Width, e.Height);
-        App.Resize(e.Width, e.Height);
+        float clampWidth = Math.Max(e.Width, 1);
+        float clampHeight = Math.Max(e.Height, 1);
+        
+        CreateSurface((int)clampWidth, (int)clampHeight);
+        App.Resize((int)clampWidth, (int)clampHeight);
     }
 }
 

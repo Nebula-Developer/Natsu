@@ -42,9 +42,16 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
     public void DrawOval(Rect rect, Paint paint) => Canvas.DrawOval(rect, UsePaint(paint));
     public void DrawRoundRect(Rect rect, Vector2 radius, Paint paint) => Canvas.DrawRoundRect(rect, radius.X, radius.Y, UsePaint(paint));
     public void DrawPath(VectorPath path, Paint paint) => Canvas.DrawPath(path.SkiaPath, UsePaint(paint));
+    
     public void DrawOffscreenSurface(IOffscreenSurface surface, Vector2 position) {
         if (surface is SkiaOffscreenSurface skiaSurface) {
-            Canvas.DrawSurface(skiaSurface.Surface, position);
+            if (skiaSurface.UseSnapshot) {
+                if (skiaSurface.Image == null)
+                    throw new ArgumentException("SkiaOffscreenSurface not flushed before rendering");
+                Canvas.DrawImage(skiaSurface.Image, position);
+            } else {
+                Canvas.DrawSurface(skiaSurface.Surface, position);
+            }
         } else {
             throw new ArgumentException("Non-SkiaOffscreenSurface provided to SkiaCanvas");
         }

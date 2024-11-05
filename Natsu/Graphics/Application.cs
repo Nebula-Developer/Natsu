@@ -1,6 +1,7 @@
 #nullable disable
 
 using System.Diagnostics;
+using Natsu.Mathematics;
 
 namespace Natsu.Graphics;
 
@@ -39,7 +40,7 @@ public class Application : IDisposable {
     protected virtual void OnRender() { }
     protected virtual void OnResize(int width, int height) { }
 
-    public Application() => Root.App = this;
+    public Application() => Root = new(this);
 
     public void Dispose() {
         OnUnload();
@@ -66,13 +67,18 @@ public class Application : IDisposable {
         Renderer.Present();
     }
 
+    public Vector2 Size {
+        get => Root.Size;
+        set => Resize((int)value.X, (int)value.Y);
+    }
+
     public void Resize(int width, int height) {
         Renderer.Resize(width, height);
         OnResize(width, height);
-        Root.Size = new(width, height);
+        Root.Size = new(width / Root.Scale.X, height / Root.Scale.Y);
     }
 
-    public Element Root { get; } = new();   
+    public RootElement Root { get; }
     public void Add(params Element[] elements) => Root.Add(elements);
     public void Remove(params Element[] elements) => Root.Remove(elements);
 }

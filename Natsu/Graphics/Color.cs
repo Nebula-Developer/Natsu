@@ -18,6 +18,8 @@ public class Color {
     }
 
     public Color(byte r, byte g, byte b) : this(r, g, b, 255) { }
+    public Color(float r, float g, float b) : this(r, g, b, 1) { }
+    public Color(float r, float g, float b, float a) : this((byte)(r * 255), (byte)(g * 255), (byte)(b * 255), (byte)(a * 255)) { }
 
     public Color() => (R, G, B, A) = (0, 0, 0, 255);
 

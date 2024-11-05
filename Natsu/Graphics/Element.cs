@@ -1,21 +1,33 @@
+using System.Data;
+
 using SkiaSharp;
 
 namespace Natsu.Graphics;
 
 public partial class Element : IDisposable {
-    public string Name {
+    public virtual string Name {
         get => _name ?? GetType().Name;
         set => _name = value;
     }
     private string? _name;
 
     public Application App {
-        get => _app ?? throw new InvalidOperationException("Element is not attached to an application");
+        get {
+            if (_app != null)
+                return _app;
+
+            if (Parent != null) {
+                App = Parent.App;
+                return _app!;
+            }
+            
+            throw new InvalidOperationException("Element is not attached to an application");
+        }
         set {
+            ForChildren(child => child.App = value);
             if (_app == value)
                 return;
             _app = value;
-            ForChildren(child => child.App = value);
         }
     }
     private Application? _app;
@@ -32,6 +44,9 @@ public partial class Element : IDisposable {
             _parent = value;
             if (Parent?.HasChild(this) == false)
                 Parent.Add(this);
+                
+            if (Parent != null && Parent._app != null)
+                App = Parent.App;
         }
     }
     private Element? _parent;
@@ -93,22 +108,36 @@ public partial class Element : IDisposable {
 
     public virtual void OnDispose() { }
     public virtual void OnUpdate() { }
+    public virtual void OnUpdateChildren() => ForChildren(child => child.Update());
     public virtual void OnRender(ICanvas canvas) { }
+    public virtual void OnRenderChildren(ICanvas canvas) => ForChildren(child => child.Render(canvas));
 
     public void Render(ICanvas canvas) {
         canvas.SetMatrix(Matrix);
         OnRender(canvas);
-        ForChildren(child => child.Render(canvas));
+        OnRenderChildren(canvas);
     }
 
     public void Update() {
         OnUpdate();
-        ForChildren(child => child.Update());
+        OnUpdateChildren();
     }
+
+    public bool DisposeChildren { get; set; } = true;
 
     public void Dispose() {
         OnDispose();
         Parent?.Remove(this);
+        if (DisposeChildren)
+            Clear(true);
+    }
+
+    public void Clear(bool dispose = false) {
+        lock (_children) {
+            if (dispose)
+                ForChildren(child => child.Dispose());
+            _children.Clear();
+        }
     }
 
     public void ForChildren(Action<Element> action) {
