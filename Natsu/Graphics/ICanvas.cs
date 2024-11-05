@@ -1,7 +1,5 @@
 using Natsu.Mathematics;
 
-using SkiaSharp;
-
 namespace Natsu.Graphics;
 
 public interface ICanvas {
@@ -19,35 +17,4 @@ public interface ICanvas {
 
     public void ResetMatrix();
     public void SetMatrix(Matrix matrix);
-}
-
-public class Matrix {
-    public SKMatrix SkiaMatrix { get; set; } = new SKMatrix();
-
-    public void Reset() => SkiaMatrix = SKMatrix.CreateIdentity();
-    public void Translate(float x, float y) => SkiaMatrix = SkiaMatrix.PostConcat(SKMatrix.CreateTranslation(x, y));
-    
-    public void Rotate(float degrees) => SkiaMatrix = SkiaMatrix.PostConcat(SKMatrix.CreateRotationDegrees(degrees));
-    public void Rotate(float degrees, float px, float py) => SkiaMatrix = SkiaMatrix.PostConcat(SKMatrix.CreateRotationDegrees(degrees, px, py));
-
-    public void Scale(float sx, float sy) => SkiaMatrix = SkiaMatrix.PostConcat(SKMatrix.CreateScale(sx, sy));
-    public void Scale(float sx, float sy, float px, float py) => SkiaMatrix = SkiaMatrix.PostConcat(SKMatrix.CreateScale(sx, sy, px, py));
-
-    public void Skew(float kx, float ky) => SkiaMatrix = SkiaMatrix.PostConcat(SKMatrix.CreateSkew(kx, ky));
-
-    public void PreTranslate(float x, float y) => SkiaMatrix = SKMatrix.CreateTranslation(x, y).PostConcat(SkiaMatrix);
-
-    public void PreRotate(float degrees) => SkiaMatrix = SKMatrix.CreateRotationDegrees(degrees).PostConcat(SkiaMatrix);
-    public void PreRotate(float degrees, float px, float py) => SKMatrix.CreateRotationDegrees(degrees, px, py).PostConcat(SkiaMatrix);
-
-    public void PreScale(float sx, float sy) => SKMatrix.CreateScale(sx, sy).PostConcat(SkiaMatrix);
-    public void PreScale(float sx, float sy, float px, float py) => SKMatrix.CreateScale(sx, sy, px, py).PostConcat(SkiaMatrix);
-
-    public void PreSkew(float kx, float ky) => SKMatrix.CreateSkew(kx, ky).PostConcat(SkiaMatrix);
-    
-    public void Concat(Matrix matrix) => SkiaMatrix = SkiaMatrix.PostConcat(matrix.SkiaMatrix);
-
-
-    public static implicit operator SKMatrix(Matrix matrix) => matrix.SkiaMatrix;
-    public static implicit operator Matrix(SKMatrix matrix) => new Matrix { SkiaMatrix = matrix };
 }

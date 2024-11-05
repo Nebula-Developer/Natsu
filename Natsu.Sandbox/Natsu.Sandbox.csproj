@@ -12,4 +12,8 @@
     <ProjectReference Include="../Natsu/Natsu.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="opentk" Version="4.8.2" />
+  </ItemGroup>
+
 </Project>

@@ -18,4 +18,8 @@ public class SkiaRenderer : IRenderer {
     public void Present() => Surface.Canvas.Flush();
 
     public IOffscreenSurface CreateOffscreenSurface(int width, int height) => new SkiaOffscreenSurface(width, height);
+
+    public void Resize(int width, int height) {
+        
+    }
 }

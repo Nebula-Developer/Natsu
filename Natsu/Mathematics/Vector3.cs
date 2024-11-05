@@ -2,7 +2,7 @@
 
 namespace Natsu.Mathematics;
 
-public class Vector3 : IEquatable<Vector3> {
+public struct Vector3 : IEquatable<Vector3> {
     public float X { get; }
     public float Y { get; }
     public float Z { get; }
@@ -21,12 +21,13 @@ public class Vector3 : IEquatable<Vector3> {
     public static Vector3 operator -(Vector3 a, Vector3 b) => new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
     public static Vector3 operator *(Vector3 a, float b) => new Vector3(a.X * b, a.Y * b, a.Z * b);
     public static Vector3 operator *(float a, Vector3 b) => new Vector3(b.X * a, b.Y * a, b.Z * a);
+    public static Vector3 operator *(Vector3 a, Vector3 b) => new Vector3(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
     public static Vector3 operator /(Vector3 a, float b) => new Vector3(a.X / b, a.Y / b, a.Z / b);
 
     public static bool operator ==(Vector3 a, Vector3 b) => a.X == b.X && a.Y == b.Y && a.Z == b.Z;
     public static bool operator !=(Vector3 a, Vector3 b) => !(a == b);
 
-    public bool Equals(Vector3 other) => other != null && this == other;
+    public bool Equals(Vector3 other) => this == other;
     public override bool Equals(object obj) => obj is Vector3 other && this == other;
 
     public override int GetHashCode() => HashCode.Combine(X, Y, Z);

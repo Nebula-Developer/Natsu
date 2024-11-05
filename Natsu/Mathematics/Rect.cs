@@ -59,4 +59,6 @@ public class Rect : IEquatable<Rect> {
     public static implicit operator Rect((float, float, float, float) t) => new Rect(t.Item1, t.Item2, t.Item3, t.Item4);
     public static implicit operator SKRect(Rect r) => new SKRect(r.X, r.Y, r.X + r.Width, r.Y + r.Height);
     public static implicit operator Rect(SKRect r) => new Rect(r.Left, r.Top, r.Width, r.Height);
+
+    public static Rect Empty { get; } = new Rect(0, 0, 0, 0);
 }

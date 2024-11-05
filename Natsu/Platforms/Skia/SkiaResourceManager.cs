@@ -10,4 +10,5 @@ public class SkiaResourceManager : IResourceManager {
     public IFont LoadFontName(string name) => new SkiaFont(SKTypeface.FromFamilyName(name));
     public IFont LoadFont(string path) => new SkiaFont(SKTypeface.FromFile(path));
     public IFont LoadFont(byte[] data) => new SkiaFont(SKTypeface.FromData(SKData.CreateCopy(data)));
+    public void Dispose() { }
 }

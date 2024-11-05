@@ -2,7 +2,7 @@
 
 namespace Natsu.Mathematics;
 
-public class Vector4 : IEquatable<Vector4> {
+public struct Vector4 : IEquatable<Vector4> {
     public float X { get; }
     public float Y { get; }
     public float Z { get; }
@@ -23,12 +23,13 @@ public class Vector4 : IEquatable<Vector4> {
     public static Vector4 operator -(Vector4 a, Vector4 b) => new Vector4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
     public static Vector4 operator *(Vector4 a, float b) => new Vector4(a.X * b, a.Y * b, a.Z * b, a.W * b);
     public static Vector4 operator *(float a, Vector4 b) => new Vector4(b.X * a, b.Y * a, b.Z * a, b.W * a);
+    public static Vector4 operator *(Vector4 a, Vector4 b) => new Vector4(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W);
     public static Vector4 operator /(Vector4 a, float b) => new Vector4(a.X / b, a.Y / b, a.Z / b, a.W / b);
 
     public static bool operator ==(Vector4 a, Vector4 b) => a.X == b.X && a.Y == b.Y && a.Z == b.Z && a.W == b.W;
     public static bool operator !=(Vector4 a, Vector4 b) => !(a == b);
 
-    public bool Equals(Vector4 other) => other != null && this == other;
+    public bool Equals(Vector4 other) => this == other;
     public override bool Equals(object obj) => obj is Vector4 other && this == other;
 
     public override int GetHashCode() => HashCode.Combine(X, Y, Z, W);

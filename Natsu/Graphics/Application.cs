@@ -39,6 +39,8 @@ public class Application : IDisposable {
     protected virtual void OnRender() { }
     protected virtual void OnResize(int width, int height) { }
 
+    public Application() => Root.App = this;
+
     public void Dispose() {
         OnUnload();
         ResourceManager.Dispose();
@@ -52,11 +54,25 @@ public class Application : IDisposable {
 
     public void Update() {
         FrameClock.Update();
+        Root.Update();
         OnUpdate();
     }
 
     public void Render() {
+        Renderer.Canvas.Clear(Colors.Black);
+        Root.Render(Renderer.Canvas);
+        Renderer.Canvas.ResetMatrix();
         OnRender();
         Renderer.Present();
     }
+
+    public void Resize(int width, int height) {
+        Renderer.Resize(width, height);
+        OnResize(width, height);
+        Root.Size = new(width, height);
+    }
+
+    public Element Root { get; } = new();   
+    public void Add(params Element[] elements) => Root.Add(elements);
+    public void Remove(params Element[] elements) => Root.Remove(elements);
 }

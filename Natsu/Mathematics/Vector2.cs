@@ -4,7 +4,7 @@ using SkiaSharp;
 
 namespace Natsu.Mathematics;
 
-public class Vector2 : IEquatable<Vector2> {
+public struct Vector2 : IEquatable<Vector2> {
     public float X { get; }
     public float Y { get; }
 
@@ -21,12 +21,15 @@ public class Vector2 : IEquatable<Vector2> {
     public static Vector2 operator -(Vector2 a, Vector2 b) => new Vector2(a.X - b.X, a.Y - b.Y);
     public static Vector2 operator *(Vector2 a, float b) => new Vector2(a.X * b, a.Y * b);
     public static Vector2 operator *(float a, Vector2 b) => new Vector2(b.X * a, b.Y * a);
+    public static Vector2 operator *(Vector2 a, Vector2 b) => new Vector2(a.X * b.X, a.Y * b.Y);
     public static Vector2 operator /(Vector2 a, float b) => new Vector2(a.X / b, a.Y / b);
 
     public static bool operator ==(Vector2 a, Vector2 b) => a.X == b.X && a.Y == b.Y;
     public static bool operator !=(Vector2 a, Vector2 b) => !(a == b);
 
-    public bool Equals(Vector2 other) => other != null && this == other;
+    public static Vector2 operator -(Vector2 a) => new Vector2(-a.X, -a.Y);
+
+    public bool Equals(Vector2 other) => this == other;
     public override bool Equals(object obj) => obj is Vector2 other && this == other;
 
     public override int GetHashCode() => HashCode.Combine(X, Y);
@@ -51,4 +54,6 @@ public class Vector2 : IEquatable<Vector2> {
     public static implicit operator SKPoint(Vector2 v) => new SKPoint(v.X, v.Y);
     public static implicit operator Vector2(SKPoint p) => new Vector2(p.X, p.Y);
     public static implicit operator Vector2(float f) => new Vector2(f, f);
+
+    public static Vector2 Zero => new Vector2(0, 0);
 }
