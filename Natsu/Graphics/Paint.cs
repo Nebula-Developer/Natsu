@@ -50,7 +50,7 @@ public class Paint {
     }
     private FilterQuality _filterQuality = FilterQuality.High;
 
-    public float FontSize {
+    public float TextSize {
         get => _fontSize;
         set {
             _fontSize = value;

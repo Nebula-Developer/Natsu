@@ -32,7 +32,7 @@ public class SkiaApplication : Application {
 
         Root.OnSizeChange += (v) => {
             // set the cache scale to whatever the max size of root is so that it always covers
-            float scale = Math.Max(v.X, v.Y) / 1000f;
+            float scale = Math.Max(v.X, v.Y) / 100f;
             BaseScale = scale * 1.5f;
         };
 
@@ -45,18 +45,18 @@ public class SkiaApplication : Application {
                 Size = new(10, 10),
                 Paint = new() {
                     Color = new(r, g, b, 0.7f)
+                    // Color = Colors.Red
                 },
-                Position = new(i % 100 * 10, i / 100 * 10)
+                // AnchorPosition = new(0.5f),
+                // OffsetPosition = new(0.5f),
+                Position = new(i % 100 * 10, i / 100 * 10),
+                Name = $"Rect {i}",
+                HandlePositionalInput = true
             });
         }
 
-        Root.Scale = new(0.25f);
         Root.OffsetPosition = new(1f);
         Root.AnchorPosition = new(1f);
-
-        foreach (string s in Assembly.GetCallingAssembly().GetManifestResourceNames()) {
-            Console.WriteLine(s);
-        }
 
         IImage image = ResourceLoader.LoadResourceImage("Resources/testimage.png");
 
@@ -67,7 +67,8 @@ public class SkiaApplication : Application {
             Index = 5,
             AnchorPosition = new(1),
             OffsetPosition = new(1),
-            Scale = new(10)
+            Name = "Test Image",
+            HandlePositionalInput = true
         };
         RectElement testImage2 = new() {
             Parent = testImage,
@@ -76,14 +77,27 @@ public class SkiaApplication : Application {
                 Color = Colors.Cyan
             },
             Index = 5,
-            AnchorPosition = new(1f),
-            OffsetPosition = new(1f),
-            Rotation = 30
+            AnchorPosition = new(0.5f),
+            OffsetPosition = new(0.5f),
+            Rotation = 30,
+            Name = "Test Image Sub",
+            HandlePositionalInput = true
         };
         testElm = testImage;
+
+        fpsText = new("FPS: 0", ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf")) {
+            Parent = Root,
+        };
+
+        bouncyText = new($"Hello 1234567890-!@#!@#", ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf")) {
+            Parent = Root,
+            Position = new(0, 50),
+            HandlePositionalInput = true
+        };
     } // FPS: 260
 
     Element testElm;
+    TextElement fpsText, bouncyText;
 
     protected override void OnRender() {
         base.OnRender();
@@ -93,21 +107,50 @@ public class SkiaApplication : Application {
         // testElm.Rotation += 50f * (float)Time.Elapsed.TotalSeconds;
         Time.Restart();
 
-        Renderer.Canvas.DrawText($"FPS: {fps}", new Vector2(10, 10), ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf"), new Paint() {
-            Color = Colors.White,
-            FontSize = 20
-        });
+        // Renderer.Canvas.DrawText($"FPS: {fps}", new Vector2(10, 10), ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf"), new Paint() {
+        //     Color = Colors.White,
+        //     FontSize = 20
+        // });
+        fpsText.Text = $"FPS: {fps}";
 
-        Renderer.Canvas.DrawText($"Hello 1234567890-!@#!@#: {fps}", new Vector2(10, 30), ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf"), new Paint() {
-            Color = Colors.White,
-            FontSize = MathF.Sin(time) * 10 + 30
-        });
+        bouncyText.Paint.TextSize = MathF.Sin(time) * 10 + 30;
 
-        float offset = 30f + MathF.Sin(time) * 30f;
-        Cache.Scale = new(BaseScale + offset);
+        float offset = 5f + MathF.Sin(time) * 1.5f;
+        Cache.Scale = new(offset);
     }
 
     public float time;
 
     public readonly Stopwatch Time = Stopwatch.StartNew();
+
+    // from the front to the back (reverse render order)
+    
+
+    public List<Element> GetElementsAt(Vector2 position, Element root, ref List<Element> elements) {
+        var xy = new List<Element>();
+        foreach (Element x in InputTree) {
+            if (x.HandlePositionalInput && x.PointInside(position)) {
+                elements.Add(x);
+                break;
+            }
+        }
+
+        return elements;
+        // if (elements == null) elements = new();
+        // if (root == null) return elements;
+
+        // if (root.Children.Count > 0) {
+        //     foreach (Element child in root.Children) {
+        //         if (elements.Contains(child))
+        //             continue;
+
+        //         if (child.HandlePositionalInput && child.PointInside(position))
+        //             elements.Add(child);
+                
+        //         GetElementsAt(position, child, ref elements);
+        //     }
+        // }
+
+        // return elements;
+    }
 }

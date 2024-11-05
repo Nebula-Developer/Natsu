@@ -1,5 +1,7 @@
 using System.Data;
 
+using Natsu.Mathematics;
+
 using SkiaSharp;
 
 namespace Natsu.Graphics;
@@ -28,6 +30,7 @@ public partial class Element : IDisposable {
             if (_app == value)
                 return;
             _app = value;
+            App.ConstructInputTree();
         }
     }
     private Application? _app;
@@ -45,8 +48,10 @@ public partial class Element : IDisposable {
             if (Parent?.HasChild(this) == false)
                 Parent.Add(this);
                 
-            if (Parent != null && Parent._app != null)
+            if (Parent != null && Parent._app != null && Parent._app != App)
                 App = Parent.App;
+            else if (App != null)
+                App.ConstructInputTree();
         }
     }
     private Element? _parent;
@@ -115,6 +120,9 @@ public partial class Element : IDisposable {
     public void Render(ICanvas canvas) {
         canvas.SetMatrix(Matrix);
         OnRender(canvas);
+        // Any bound rendering can happen here
+        // eg:
+        // canvas.DrawRect(new(0, 0, MathF.Round(Size.X), MathF.Round(Size.Y)), new Paint() { Color = Colors.Red, IsStroke = true, StrokeWidth = 1 });
         OnRenderChildren(canvas);
     }
 
@@ -146,4 +154,7 @@ public partial class Element : IDisposable {
                 action(child);
         }
     }
+
+    public virtual bool PointInside(Vector2 point) => Bounds.Contains(point);
+    public bool HandlePositionalInput { get; set; } = false;
 }

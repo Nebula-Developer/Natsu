@@ -81,4 +81,23 @@ public class Application : IDisposable {
     public RootElement Root { get; }
     public void Add(params Element[] elements) => Root.Add(elements);
     public void Remove(params Element[] elements) => Root.Remove(elements);
+
+    protected List<Element> ConstructInverseTree(Element cur) {
+        if (cur == null) return new();
+        
+        List<Element> elements = new();
+        if (cur.Children.Count > 0) {
+            lock (cur.Children)
+                for (int i = cur.Children.Count - 1; i >= 0; i--) {
+                    if (cur.Children[i] is CachedElement) continue;
+                    elements.AddRange(ConstructInverseTree(cur.Children[i]));
+                }
+        }
+
+        elements.Add(cur);
+        return elements;
+    }
+
+    protected List<Element> InputTree = new();
+    public void ConstructInputTree() => InputTree = ConstructInverseTree(Root);
 }

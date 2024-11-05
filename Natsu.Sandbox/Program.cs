@@ -1,14 +1,15 @@
 ﻿
 using System;
 using System.Diagnostics;
-using System.Numerics;
 
 using Natsu.Graphics;
+using Natsu.Mathematics;
 using Natsu.Platforms.Skia;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+
 using SkiaSharp;
 
 namespace Natsu.Sandbox;
@@ -17,13 +18,13 @@ public class AppWindow() : GameWindow(new GameWindowSettings() {
     UpdateFrequency = 244
 }, NativeWindowSettings.Default) {
 
-    #nullable disable
+#nullable disable
     public SkiaApplication App;
     private GRContext _context;
     private GRGlInterface _interface;
     private GRBackendRenderTarget _target;
     private SKSurface _surface;
-    #nullable restore
+#nullable restore
 
     public void CreateSurface(int width, int height) {
         lock (this) {
@@ -36,8 +37,14 @@ public class AppWindow() : GameWindow(new GameWindowSettings() {
             } else {
                 App.LoadRenderer(_surface);
             }
+
+            TryGetCurrentMonitorScale(out float dpiX, out float dpiY);
+            // App.Root.Scale = new(dpiX, dpiY);
+            scale = new(dpiX, dpiY);
         }
     }
+
+    Vector2 scale = new(1);
 
     protected override void OnLoad() {
         base.OnLoad();
@@ -63,13 +70,47 @@ public class AppWindow() : GameWindow(new GameWindowSettings() {
         SwapBuffers();
     }
 
-    protected override void OnFramebufferResize(FramebufferResizeEventArgs e) {
-        base.OnFramebufferResize(e);
+    protected override void OnResize(ResizeEventArgs e) {
         float clampWidth = Math.Max(e.Width, 1);
         float clampHeight = Math.Max(e.Height, 1);
-        
+
         CreateSurface((int)clampWidth, (int)clampHeight);
         App.Resize((int)clampWidth, (int)clampHeight);
+    }
+
+    protected override void OnFocusedChanged(FocusedChangedEventArgs e) {
+        base.OnFocusedChanged(e);
+    }
+
+    protected override void OnMouseDown(MouseButtonEventArgs e) {
+        List<Element> elms = new();
+        Stopwatch sw = Stopwatch.StartNew();
+        App.GetElementsAt(new(MousePosition.X, MousePosition.Y), App.Root, ref elms);
+        Console.WriteLine($"Took {sw.ElapsedMilliseconds}ms to get elements at position {MousePosition.X}, {MousePosition.Y}");
+        foreach (Element elm in elms) {
+            elm.Size = new(elm.Size.X + 1, elm.Size.Y + 1);
+            Console.WriteLine(elm.Name);
+        }
+        Console.WriteLine();
+
+        targetScale = targetScale == new Vector2(1) ? new(0.5f) : new(1);
+
+        // UpdateFrequency = UpdateFrequency == 200 ? 60 : 200;
+        // Console.WriteLine($"Update Frequency: {UpdateFrequency}");
+    }
+
+    Vector2 targetScale = new(1);
+    public Vector2 Lerp(Vector2 a, Vector2 b, float t) => a + (b - a) * t;
+    protected override void OnUpdateFrame(FrameEventArgs args) {
+        base.OnUpdateFrame(args);
+        Vector2 newSize = Lerp(App.Root.Scale, targetScale, (float)args.Time * 10f);
+        if (Math.Abs(newSize.X - targetScale.X) > 0.001f) {
+            App.Root.Scale = newSize;
+            App.Root.Size = new(Size.X / App.Root.Scale.X, Size.Y / App.Root.Scale.Y);
+        } else if (App.Root.Scale != targetScale) {
+            App.Root.Scale = targetScale;
+            App.Root.Size = new(Size.X / App.Root.Scale.X, Size.Y / App.Root.Scale.Y);
+        }
     }
 }
 
