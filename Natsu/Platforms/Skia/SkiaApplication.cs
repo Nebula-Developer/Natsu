@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 using Natsu.Graphics;
 using Natsu.Mathematics;
@@ -18,7 +20,7 @@ public class SkiaApplication : Application {
 
     public SkiaApplication(SKSurface baseSurface) {
         LoadRenderer(baseSurface);
-        ResourceManager = new SkiaResourceManager();
+        ResourceLoader = new ResourceLoader(new SkiaResourceLoader());
         
         Cache = new() {
             Size = new(1000),
@@ -42,7 +44,7 @@ public class SkiaApplication : Application {
             Cache.Add(new RectElement() {
                 Size = new(10, 10),
                 Paint = new() {
-                    Color = new(r, g, b, 1f)
+                    Color = new(r, g, b, 0.7f)
                 },
                 Position = new(i % 100 * 10, i / 100 * 10)
             });
@@ -51,19 +53,54 @@ public class SkiaApplication : Application {
         Root.Scale = new(0.25f);
         Root.OffsetPosition = new(1f);
         Root.AnchorPosition = new(1f);
-    }
+
+        foreach (string s in Assembly.GetCallingAssembly().GetManifestResourceNames()) {
+            Console.WriteLine(s);
+        }
+
+        IImage image = ResourceLoader.LoadResourceImage("Resources/testimage.png");
+
+
+        ImageElement testImage = new(image) {
+            Parent = Root,
+            Size = new(200),
+            Index = 5,
+            AnchorPosition = new(1),
+            OffsetPosition = new(1),
+            Scale = new(10)
+        };
+        RectElement testImage2 = new() {
+            Parent = testImage,
+            Size = new(50),
+            Paint = new() {
+                Color = Colors.Cyan
+            },
+            Index = 5,
+            AnchorPosition = new(1f),
+            OffsetPosition = new(1f),
+            Rotation = 30
+        };
+        testElm = testImage;
+    } // FPS: 260
+
+    Element testElm;
 
     protected override void OnRender() {
         base.OnRender();
         float fps = 1f / (float)Time.Elapsed.TotalSeconds;
         Cache.Rotation += 50f * (float)Time.Elapsed.TotalSeconds;
         time += (float)Time.Elapsed.TotalSeconds;
+        // testElm.Rotation += 50f * (float)Time.Elapsed.TotalSeconds;
         Time.Restart();
 
-
-        Renderer.Canvas.DrawText($"FPS: {fps}", new Vector2(10, 30), ResourceManager.LoadFontName("Arial"), new Paint() {
+        Renderer.Canvas.DrawText($"FPS: {fps}", new Vector2(10, 10), ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf"), new Paint() {
             Color = Colors.White,
             FontSize = 20
+        });
+
+        Renderer.Canvas.DrawText($"Hello 1234567890-!@#!@#: {fps}", new Vector2(10, 30), ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf"), new Paint() {
+            Color = Colors.White,
+            FontSize = MathF.Sin(time) * 10 + 30
         });
 
         float offset = 30f + MathF.Sin(time) * 30f;

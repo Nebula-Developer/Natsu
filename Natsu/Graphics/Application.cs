@@ -26,7 +26,7 @@ public class FrameClock {
 }
 
 public class Application : IDisposable {
-    public IResourceManager ResourceManager;
+    public ResourceLoader ResourceLoader;
     public IRenderer Renderer;
     
     public ICanvas Canvas => Renderer.Canvas;
@@ -44,7 +44,7 @@ public class Application : IDisposable {
 
     public void Dispose() {
         OnUnload();
-        ResourceManager.Dispose();
+        ResourceLoader.Dispose();
         Renderer.Dispose();
     }
 

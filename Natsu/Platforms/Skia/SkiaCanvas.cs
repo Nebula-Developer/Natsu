@@ -36,7 +36,7 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
     public void DrawRect(Rect rect, Paint paint) => Canvas.DrawRect(rect, UsePaint(paint));
     public void DrawCircle(Vector2 center, float radius, Paint paint) => Canvas.DrawCircle(center, radius, UsePaint(paint));
     public void DrawLine(Vector2 start, Vector2 end, Paint paint) => Canvas.DrawLine(start, end, UsePaint(paint));
-    public void DrawText(string text, Vector2 position, IFont font, Paint paint) => Canvas.DrawText(text, position.X, position.Y + paint.FontSize, UsePaint(paint));
+    public void DrawText(string text, Vector2 position, IFont font, Paint paint) => Canvas.DrawText(text, position.X, position.Y + paint.FontSize, UsePaint(paint, font));
     public void DrawImage(IImage image, Vector2 position, Paint paint) => Canvas.DrawImage(TryImage(image), position, UsePaint(paint));
     public void DrawImage(IImage image, Rect rect, Paint paint) => Canvas.DrawImage(TryImage(image), rect, UsePaint(paint));
     public void DrawOval(Rect rect, Paint paint) => Canvas.DrawOval(rect, UsePaint(paint));

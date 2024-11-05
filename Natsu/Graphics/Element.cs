@@ -33,7 +33,7 @@ public partial class Element : IDisposable {
     private Application? _app;
 
     public IRenderer Renderer => App.Renderer;
-    public IResourceManager ResourceManager => App.ResourceManager;
+    public ResourceLoader ResourceLoader => App.ResourceLoader;
 
 
     public Element? Parent {

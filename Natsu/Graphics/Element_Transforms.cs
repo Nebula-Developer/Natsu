@@ -59,7 +59,7 @@ public partial class Element {
             new(0, Size.Y)
         ));
 
-        // InvalidateChildren(Invalidation.Geometry);
+        InvalidateChildren(Invalidation.Geometry);
     }
 
     public Bounds Bounds {
