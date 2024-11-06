@@ -9,5 +9,5 @@ public class RectElement : Element {
         FilterQuality = FilterQuality.High
     };
 
-    public override void OnRender(ICanvas canvas) => canvas.DrawRect(new(0, 0, Size.X, Size.Y), Paint);
+    public override void OnRender(ICanvas canvas) => canvas.DrawRect(new(0, 0, DrawSize.X, DrawSize.Y), Paint);
 }

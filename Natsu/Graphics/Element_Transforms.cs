@@ -31,7 +31,7 @@ public partial class Element {
     public Vector2 ToLocalSpace(Vector2 screenSpace) => Matrix.Invert().MapPoint(screenSpace);
     public Vector2 ToScreenSpace(Vector2 localSpace) => Matrix.MapPoint(localSpace);
 
-    protected virtual Vector2 ComputeAnchorPosition => AnchorPosition * Parent?.Size ?? Vector2.Zero;
+    protected virtual Vector2 ComputeAnchorPosition => AnchorPosition * Parent?.DrawSize ?? Vector2.Zero;
 
     public void UpdateMatrix() {
         UpdateRelativeSize();
@@ -41,7 +41,7 @@ public partial class Element {
 
         Vector2 translate = -offset + Position;
 
-        translate += ComputeAnchorPosition;
+        translate += ComputeAnchorPosition + Margin;
 
         // Vector2 offsetMap = matrix.MapPoint(offset);
         matrix.PreTranslate(translate.X, translate.Y);
@@ -52,11 +52,13 @@ public partial class Element {
         _worldPosition = matrix.MapPoint(Vector2.Zero);
         DirtyMatrix.Validate(matrix);
 
+        var ds = DrawSize;
+
         Bounds = Matrix.MapBounds(new(
             new(0, 0),
-            new(Size.X, 0),
-            new(Size.X, Size.Y),
-            new(0, Size.Y)
+            new(ds.X, 0),
+            new(ds.X, ds.Y),
+            new(0, ds.Y)
         ));
 
         InvalidateChildren(Invalidation.Geometry);
@@ -71,6 +73,8 @@ public partial class Element {
         private set => _bounds = value;
     }
     private Bounds _bounds = Bounds.Empty;
+
+    public Rect RectBounds => new(0, 0, Size.X, Size.Y);
 
     public void InvalidateChildren(Invalidation invalidation, bool propagate = false) =>
         ForChildren(child => child.Invalidate(invalidation, propagate));
@@ -109,6 +113,19 @@ public partial class Element {
 
     public event Action<Vector2>? OnSizeChange;
 
+    public Vector2 Margin {
+        get => _margin;
+        set {
+            if (_margin == value)
+                return;
+            _margin = value;
+            Invalidate(Invalidation.Geometry);
+        }
+    }
+    private Vector2 _margin;
+
+    public Vector2 DrawSize => Size - (Margin * 2);
+
     public Vector2 Size {
         get => _size;
         set {
@@ -137,11 +154,8 @@ public partial class Element {
     private Vector2 _size;
 
     public void UpdateRelativeSize() {
-        if (RelativeSizeAxes == Axes.None)
+        if (RelativeSizeAxes == Axes.None || Parent == null)
             return;
-
-        if (Parent == null)
-            throw new InvalidOperationException("Cannot set size on element with relative size axes and no parent.");
 
         Vector2 nSize = new(
             RelativeSizeAxes.HasFlag(Axes.X) ? Parent.Size.X : Size.X,

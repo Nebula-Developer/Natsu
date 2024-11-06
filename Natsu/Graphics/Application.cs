@@ -94,7 +94,7 @@ public class Application : IDisposable {
                 }
         }
 
-        elements.Add(cur);
+        if (cur.HandlePositionalInput) elements.Add(cur);
         return elements;
     }
 

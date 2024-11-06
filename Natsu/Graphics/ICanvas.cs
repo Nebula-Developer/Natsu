@@ -15,6 +15,13 @@ public interface ICanvas {
     public void DrawPath(VectorPath path, Paint paint);
     public void DrawOffscreenSurface(IOffscreenSurface surface, Vector2 position);
 
+    public int Save();
+    public void Restore(int saveCount);
+
+    public void ClipRect(Rect rect, bool difference = false, bool antialias = false);
+    public void ClipRoundRect(Rect rect, Vector2 radius, bool difference = false, bool antialias = false);
+    public void ClipPath(VectorPath path, bool difference = false, bool antialias = false);
+
     public void ResetMatrix();
     public void SetMatrix(Matrix matrix);
 }

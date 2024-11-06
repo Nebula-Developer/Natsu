@@ -59,4 +59,11 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
 
     public void ResetMatrix() => Canvas.ResetMatrix();
     public void SetMatrix(Matrix matrix) => Canvas.SetMatrix(matrix);
+
+    public int Save() => Canvas.Save();
+    public void Restore(int saveCount) => Canvas.RestoreToCount(saveCount);
+
+    public void ClipRect(Rect rect, bool difference = false, bool antialias = false) => Canvas.ClipRect(rect, difference ? SKClipOperation.Difference : SKClipOperation.Intersect, antialias);
+    public void ClipRoundRect(Rect rect, Vector2 radius, bool difference = false, bool antialias = false) => Canvas.ClipRoundRect(new SKRoundRect(rect, radius.X, radius.Y), difference ? SKClipOperation.Difference : SKClipOperation.Intersect, antialias);
+    public void ClipPath(VectorPath path, bool difference = false, bool antialias = false) => Canvas.ClipPath(path.SkiaPath, difference ? SKClipOperation.Difference : SKClipOperation.Intersect, antialias);
 }

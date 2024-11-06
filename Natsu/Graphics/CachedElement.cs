@@ -14,14 +14,14 @@ public class CachedElement : Element {
     }
 
     public void Rerender() {
+        Valid = true;
+        IOffscreenSurface nSurface = App.Renderer.CreateOffscreenSurface((int)DrawSize.X, (int)DrawSize.Y);
+        nSurface.Canvas.Clear(Colors.Transparent);
+        ForChildren(e => e.Render(nSurface.Canvas));
+        nSurface.Flush();
         lock (Surface ?? new object()) {
-            IOffscreenSurface nSurface = App.Renderer.CreateOffscreenSurface((int)Size.X, (int)Size.Y);
-            nSurface.Canvas.Clear(Colors.Transparent);
-            ForChildren(e => e.Render(nSurface.Canvas));
-            nSurface.Flush();
             Surface?.Dispose();
             Surface = nSurface;
-            Valid = true;
         }
     }
 

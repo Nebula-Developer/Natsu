@@ -9,6 +9,7 @@ using Natsu.Platforms.Skia;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using SkiaSharp;
 
@@ -46,6 +47,7 @@ public class AppWindow() : GameWindow(new GameWindowSettings() {
 
     Vector2 scale = new(1);
 
+
     protected override void OnLoad() {
         base.OnLoad();
 
@@ -56,12 +58,38 @@ public class AppWindow() : GameWindow(new GameWindowSettings() {
         App.Resize(Size.X, Size.Y);
         test = SKSurface.Create(new SKImageInfo(100, 100));
         test.Canvas.Clear(SKColors.Red);
+        App.Root.AnchorPosition = new(0.5f);
+        App.Root.OffsetPosition = new(0.5f);
+        x = new RectElement() {
+            Paint = new() {
+                Color = new(255, 0, 0, 255)
+            },
+            RawChildren = {
+                new RectElement() {
+                    RelativeSizeAxes = Axes.Both,
+                    // Margin = 2.5f,
+                    Paint = new() {
+                        Color = new(0, 255, 0, 255)
+                    }
+                }
+            },
+            Index = 99999,
+            Size = new(10, 10),
+            Position = new Vector2(2f, 2f),
+            OffsetPosition = new(0.5f)
+        };
+
+        App.Add(x);
+        CursorState = CursorState.Hidden;
     }
 
     SKSurface test;
+    Element x;
 
     protected override void OnRenderFrame(FrameEventArgs args) {
         base.OnRenderFrame(args);
+        x.Position = new(MousePosition.X, MousePosition.Y);
+        
         App.Render();
         // SKCanvas canvas = _surface.Canvas;
         // canvas.Clear(Colors.White);
@@ -82,18 +110,42 @@ public class AppWindow() : GameWindow(new GameWindowSettings() {
         base.OnFocusedChanged(e);
     }
 
+    Vector2 startPos = 0, startSize = 0;
+    bool dragging = false;
+
+    protected override void OnMouseMove(MouseMoveEventArgs e) {
+        base.OnMouseMove(e);
+        if (dragging) {
+            App.Root.Size = new(startSize.X + (e.X - startPos.X), startSize.Y + (e.Y - startPos.Y));
+            // center
+            App.Root.Position = new(Size.X / 2 - App.Root.Size.X / 2, Size.Y / 2 - App.Root.Size.Y / 2);
+        }
+    }
+    protected override void OnMouseUp(MouseButtonEventArgs e) {
+        base.OnMouseUp(e);
+        dragging = false;
+    }
     protected override void OnMouseDown(MouseButtonEventArgs e) {
         List<Element> elms = new();
         Stopwatch sw = Stopwatch.StartNew();
         App.GetElementsAt(new(MousePosition.X, MousePosition.Y), App.Root, ref elms);
         Console.WriteLine($"Took {sw.ElapsedMilliseconds}ms to get elements at position {MousePosition.X}, {MousePosition.Y}");
         foreach (Element elm in elms) {
-            elm.Size = new(elm.Size.X + 1, elm.Size.Y + 1);
+            if (e.Button == MouseButton.Left)
+                elm.Margin = new(elm.Margin.X + 10, elm.Margin.Y + 10);
+            else if (e.Button == MouseButton.Right)
+                elm.Margin = new(elm.Margin.X - 10, elm.Margin.Y - 10);
             Console.WriteLine(elm.Name);
         }
         Console.WriteLine();
 
-        targetScale = targetScale == new Vector2(1) ? new(2f) : new(1);
+        // if (elms.Count > 0 && elms[0].Name == "Root") {
+            dragging = true;
+            startPos = new(MousePosition.X, MousePosition.Y);
+            startSize = App.Root.Size;
+        // }
+
+        // targetScale = targetScale == new Vector2(1) ? new(2f) : new(1);
 
         // UpdateFrequency = UpdateFrequency == 200 ? 60 : 200;
         // Console.WriteLine($"Update Frequency: {UpdateFrequency}");

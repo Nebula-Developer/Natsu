@@ -37,21 +37,24 @@ public class SkiaApplication : Application {
         };
 
         for (int i = 0; i < 10000; i++) {
-            float r = (float)(i % 100) / 100f;
-            float g = (float)(i / 100) / 100f;
-            float b = (float)(i % 100 + i / 100) / 200f;
+            
+            float r = (float)(Math.Sin(i) * 0.2f + 0.2f);
+            float g = (float)(Math.Cos(i) * 0.2f + 0.2f);
+            float b = (float)(Math.Sin(i) * 0.2f + 0.2f);
+            
+            float a = ((i % 25f) + (i / 25f)) / 200f;
 
             Cache.Add(new RectElement() {
                 Size = new(10, 10),
                 Paint = new() {
-                    Color = new(r, g, b, 0.7f)
+                    // alpha makes cirlce patterns (cos and sin)
+                    Color = new(r, g, b, 0.9f),
                     // Color = Colors.Red
                 },
                 // AnchorPosition = new(0.5f),
                 // OffsetPosition = new(0.5f),
                 Position = new(i % 100 * 10, i / 100 * 10),
-                Name = $"Rect {i}",
-                HandlePositionalInput = true
+                Name = $"Rect {i}"
             });
         }
 
@@ -68,8 +71,21 @@ public class SkiaApplication : Application {
             AnchorPosition = new(0.5f),
             OffsetPosition = new(0.5f),
             Name = "Test Image",
-            HandlePositionalInput = true
+            HandlePositionalInput = true,
+            Clip = true
         };
+        testImage.Paint.FilterQuality = FilterQuality.High;
+        testImage.Paint.IsAntialias = true;
+        ImageElement bg = new(image) {
+            Parent = Root,
+            RelativeSizeAxes = Axes.Both,
+            Index = -99999,
+            AnchorPosition = new(0.5f),
+            OffsetPosition = new(0.5f),
+            Name = "BG Image",
+            HandlePositionalInput = false
+        };
+
         RectElement testImage2 = new() {
             Parent = testImage,
             Size = new(50),
@@ -101,29 +117,28 @@ public class SkiaApplication : Application {
         };
     } // FPS: 260
 
-    Element testElm;
-    TextElement fpsText, bouncyText;
+    readonly Element testElm;
+    private readonly TextElement fpsText;
+    private readonly TextElement bouncyText;
 
     protected override void OnRender() {
         base.OnRender();
         float fps = 1f / (float)Time.Elapsed.TotalSeconds;
         Cache.Rotation += 50f * (float)Time.Elapsed.TotalSeconds;
         time += (float)Time.Elapsed.TotalSeconds;
-        // testElm.Rotation += 50f * (float)Time.Elapsed.TotalSeconds;
+        
+        Cache.ForChildren((c) => {
+            c.Rotation += 50f * (float)Time.Elapsed.TotalSeconds;
+        });
+
         Time.Restart();
 
-        // Renderer.Canvas.DrawText($"FPS: {fps}", new Vector2(10, 10), ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf"), new Paint() {
-        //     Color = Colors.White,
-        //     FontSize = 20
-        // });
         fpsText.Text = $"FPS: {fps}";
-
-        // bouncyText.Paint.TextSize = MathF.Ceiling((MathF.Sin(time) * 10 + 30) * 100) / 100;
-        // 2 to 5
         bouncyText.Scale = new(5 + MathF.Sin(time) * 2f);
 
         float offset = 5f + MathF.Sin(time) * 1.5f;
         Cache.Scale = new(offset);
+
     }
 
     public float time;

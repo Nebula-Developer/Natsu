@@ -52,6 +52,8 @@ public partial class Element : IDisposable {
                 App = Parent.App;
             else if (App != null)
                 App.ConstructInputTree();
+
+            UpdateMatrix();
         }
     }
     private Element? _parent;
@@ -69,6 +71,16 @@ public partial class Element : IDisposable {
 
     private readonly List<Element> _children = new List<Element>();
     public IReadOnlyList<Element> Children => _children;
+    public List<Element> RawChildren {
+        get => _children;
+        set {
+            lock (_children) {
+                Clear();
+                Add(value.ToArray());
+            }
+        }
+    }
+        
 
     public void Remove(params Element[] elements) {
         lock (_children) {
@@ -117,13 +129,31 @@ public partial class Element : IDisposable {
     public virtual void OnRender(ICanvas canvas) { }
     public virtual void OnRenderChildren(ICanvas canvas) => ForChildren(child => child.Render(canvas));
 
+    public bool Clip { get; set; } = true;
+    public float ClipRadius { get; set; } = 0;
+    public bool ClipDifference { get; set; } = false;
+    public bool ClipAntiAlias { get; set; } = true;
+
+    public virtual void ClipCanvas(ICanvas canvas) {
+        if (ClipRadius == 0) {
+            canvas.ClipRect(new(0, 0, MathF.Round(DrawSize.X), MathF.Round(DrawSize.Y)), ClipDifference, ClipAntiAlias);
+            return;
+        }
+
+        canvas.ClipRoundRect(new(0, 0, MathF.Round(DrawSize.X), MathF.Round(DrawSize.Y)), ClipRadius, ClipDifference, ClipAntiAlias);
+    }
+
     public void Render(ICanvas canvas) {
         canvas.SetMatrix(Matrix);
+        int save = canvas.Save();
+        if (Clip)
+            ClipCanvas(canvas);
         OnRender(canvas);
         // Any bound rendering can happen here
         // eg:
         // canvas.DrawRect(new(0, 0, MathF.Round(Size.X), MathF.Round(Size.Y)), new Paint() { Color = Colors.Red, IsStroke = true, StrokeWidth = 1 });
         OnRenderChildren(canvas);
+        canvas.Restore(save);
     }
 
     public void Update() {
