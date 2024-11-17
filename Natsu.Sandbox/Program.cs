@@ -1,52 +1,39 @@
-﻿
-using System;
-using System.Diagnostics;
+﻿using System.Xml;
 
 using Natsu.Graphics;
+using Natsu.Graphics.Elements;
 using Natsu.Mathematics;
 using Natsu.Platforms.Skia;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using SkiaSharp;
 
+using MouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
+
 namespace Natsu.Sandbox;
 
-public class AppWindow() : GameWindow(new GameWindowSettings() {
-    UpdateFrequency = 244
-}, NativeWindowSettings.Default) {
-
-#nullable disable
-    public SkiaApplication App;
-    private GRContext _context;
-    private GRGlInterface _interface;
-    private GRBackendRenderTarget _target;
-    private SKSurface _surface;
-#nullable restore
+public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency = 244 }, NativeWindowSettings.Default) {
+    public List<OffscreenSurfaceElement> LayerSurfaces = new();
 
     public void CreateSurface(int width, int height) {
         lock (this) {
             _surface?.Dispose();
-            _target = new GRBackendRenderTarget(width, height, 0, 8, new(0, (uint)SizedInternalFormat.Rgba8));
+            _target = new GRBackendRenderTarget(width, height, 0, 8, new GRGlFramebufferInfo(0, (uint)SizedInternalFormat.Rgba8));
             _surface = SKSurface.Create(_context, _target, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
 
             if (App == null) {
-                App = new(_surface);
+                App = new MyApp(_surface);
             } else {
                 App.LoadRenderer(_surface);
             }
 
             TryGetCurrentMonitorScale(out float dpiX, out float dpiY);
-            // App.Root.Scale = new(dpiX, dpiY);
-            scale = new(dpiX, dpiY);
+            App.Root.Scale = new Vector2(dpiX, dpiY);
         }
     }
-
-    Vector2 scale = new(1);
-
 
     protected override void OnLoad() {
         base.OnLoad();
@@ -54,47 +41,110 @@ public class AppWindow() : GameWindow(new GameWindowSettings() {
         _interface = GRGlInterface.Create();
         _context = GRContext.CreateGl(_interface);
         CreateSurface(Size.X, Size.Y);
+
         App.Load();
         App.Resize(Size.X, Size.Y);
-        test = SKSurface.Create(new SKImageInfo(100, 100));
-        test.Canvas.Clear(SKColors.Red);
-        App.Root.AnchorPosition = new(0.5f);
-        App.Root.OffsetPosition = new(0.5f);
-        x = new RectElement() {
-            Paint = new() {
-                Color = new(255, 0, 0, 255)
-            },
-            RawChildren = {
-                new RectElement() {
-                    RelativeSizeAxes = Axes.Both,
-                    // Margin = 2.5f,
-                    Paint = new() {
-                        Color = new(0, 255, 0, 255)
-                    }
-                }
-            },
-            Index = 99999,
-            Size = new(10, 10),
-            Position = new Vector2(2f, 2f),
-            OffsetPosition = new(0.5f)
-        };
-
-        App.Add(x);
-        CursorState = CursorState.Hidden;
     }
 
-    SKSurface test;
-    Element x;
+    public void LoadMaps() {
+        XmlDocument doc = new();
+        doc.Load("untitled.tmx");
+        XmlNodeList tilesets = doc.GetElementsByTagName("tileset");
+
+        XmlNode map = doc.GetElementsByTagName("map")[0]!;
+        int width = int.Parse(map.Attributes!["width"]!.Value);
+        int height = int.Parse(map.Attributes!["height"]!.Value);
+        int tileWidth = int.Parse(map.Attributes!["tilewidth"]!.Value);
+        int tileHeight = int.Parse(map.Attributes!["tileheight"]!.Value);
+
+        Dictionary<int, IOffscreenSurface> tiles = new();
+
+        // test.Clear(SKColors.White);
+        foreach (XmlNode tileset in tilesets) {
+            Console.WriteLine(tileset.Attributes!["firstgid"]!.Value);
+            string source = tileset.Attributes["source"]!.Value;
+
+            XmlDocument tilesetDoc = new();
+            tilesetDoc.Load(source);
+
+            XmlNode tileconf = tilesetDoc.GetElementsByTagName("tileset")[0]!;
+            XmlNode image = tileconf["image"]!;
+            string imagesource = image.Attributes!["source"]!.Value;
+            int firstGid = int.Parse(tileset.Attributes!["firstgid"]!.Value);
+
+            int confTileWidth = int.Parse(tileconf.Attributes!["tilewidth"]!.Value);
+            int confTileHeight = int.Parse(tileconf.Attributes!["tileheight"]!.Value);
+            Console.WriteLine($"Tile Width: {confTileWidth}, Tile Height: {confTileHeight}");
+
+            SKBitmap bitmap = SKBitmap.Decode(imagesource);
+            bitmap.SetImmutable();
+
+            int c = 0;
+
+            for (int y = 0; y < bitmap.Height; y += confTileHeight) {
+                Console.WriteLine($"Added tiles: {tiles.Count}");
+                for (int x = 0; x < bitmap.Width; x += confTileWidth) {
+                    SKBitmap tile = new();
+
+                    if (!bitmap.ExtractSubset(tile, new SKRectI(x, y, x + confTileWidth, y + confTileHeight))) {
+                        Console.WriteLine("Failed to extract subset");
+                        continue;
+                    }
+
+                    SkiaOffscreenSurface surface = new(confTileWidth, confTileHeight);
+                    SkiaImage img = new(SKImage.FromBitmap(tile));
+
+                    surface.Canvas.DrawImage(img, new Vector2(0, 0), new Paint());
+                    surface.Flush();
+
+                    tiles.Add(c + firstGid, surface);
+                    c++;
+                }
+            }
+        }
+
+        XmlNodeList layers = doc.GetElementsByTagName("layer");
+        foreach (XmlNode layer in layers) {
+            XmlNode data = layer["data"]!;
+            string encoding = data.Attributes!["encoding"]!.Value;
+            string content = data.InnerText;
+            int w = int.Parse(layer.Attributes!["width"]!.Value);
+            int h = int.Parse(layer.Attributes!["height"]!.Value);
+
+            if (encoding == "csv") {
+                IOffscreenSurface layerSurface = new SkiaOffscreenSurface(w * tileWidth, h * tileHeight);
+                string[] tilesData = content.Split(',');
+                for (int i = 0; i < tilesData.Length; i++) {
+                    int tileId = int.Parse(tilesData[i]);
+                    if (tileId == 0) {
+                        continue;
+                    }
+
+                    Console.WriteLine($"Drawing tile {tileId}, count: {tiles.Count}");
+                    int x = i % w;
+                    int y = i / w;
+
+                    layerSurface.Canvas.DrawOffscreenSurface(tiles[tileId], new Vector2(x * tileWidth, y * tileHeight));
+                }
+
+                layerSurface.Flush();
+
+                OffscreenSurfaceElement elm = new(layerSurface) {
+                    Index = 99999,
+                    Scale = new Vector2(1),
+                    RelativeSizeAxes = Axes.Both,
+                    RenderSurface = false,
+                    ImageScaling = true
+                };
+                LayerSurfaces.Add(elm);
+                App.Root.Add(elm);
+            }
+        }
+    }
 
     protected override void OnRenderFrame(FrameEventArgs args) {
         base.OnRenderFrame(args);
-        x.Position = new(MousePosition.X, MousePosition.Y);
-        
         App.Render();
-        // SKCanvas canvas = _surface.Canvas;
-        // canvas.Clear(Colors.White);
-        // canvas.DrawSurface(test, new(0, 0));
-        // canvas.Flush();
         SwapBuffers();
     }
 
@@ -106,66 +156,63 @@ public class AppWindow() : GameWindow(new GameWindowSettings() {
         App.Resize((int)clampWidth, (int)clampHeight);
     }
 
-    protected override void OnFocusedChanged(FocusedChangedEventArgs e) {
-        base.OnFocusedChanged(e);
+    public Input.MouseButton ConvertButton(MouseButton button) => button switch {
+        MouseButton.Left => Input.MouseButton.Left,
+        MouseButton.Right => Input.MouseButton.Right,
+        MouseButton.Middle => Input.MouseButton.Middle,
+        MouseButton.Button4 => Input.MouseButton.X1,
+        MouseButton.Button5 => Input.MouseButton.X2,
+        _ => Input.MouseButton.Unknown
+    };
+
+    protected override void OnMouseDown(MouseButtonEventArgs e) => App.MouseDown(ConvertButton(e.Button), new Vector2(MouseState.X, MouseState.Y));
+    protected override void OnMouseUp(MouseButtonEventArgs e) => App.MouseUp(ConvertButton(e.Button), new Vector2(MouseState.X, MouseState.Y));
+    protected override void OnMouseMove(MouseMoveEventArgs e) => App.MouseMove(new Vector2(MouseState.X, MouseState.Y));
+    protected override void OnMouseWheel(MouseWheelEventArgs e) => App.MouseWheel(new(e.Offset.X, e.Offset.Y));
+
+    protected override void OnKeyDown(KeyboardKeyEventArgs e) {
+        if (e.IsRepeat) return;
+        App.KeyDown((Input.Key)e.Key);
+    }
+    protected override void OnKeyUp(KeyboardKeyEventArgs e) => App.KeyUp((Input.Key)e.Key);
+
+
+#nullable disable
+    public MyApp App;
+    private GRContext _context;
+    private GRGlInterface _interface;
+    private GRBackendRenderTarget _target;
+    private SKSurface _surface;
+
+#nullable restore
+}
+
+public class TestCanvas : SkiaCanvas {
+    protected TestCanvas(SKCanvas canvas, SKSurface surface) : base(canvas) {
+        Surface = surface;
     }
 
-    Vector2 startPos = 0, startSize = 0;
-    bool dragging = false;
+    public SKSurface Surface { get; }
 
-    protected override void OnMouseMove(MouseMoveEventArgs e) {
-        base.OnMouseMove(e);
-        if (dragging) {
-            App.Root.Size = new(startSize.X + (e.X - startPos.X), startSize.Y + (e.Y - startPos.Y));
-            // center
-            App.Root.Position = new(Size.X / 2 - App.Root.Size.X / 2, Size.Y / 2 - App.Root.Size.Y / 2);
-        }
-    }
-    protected override void OnMouseUp(MouseButtonEventArgs e) {
-        base.OnMouseUp(e);
-        dragging = false;
-    }
-    protected override void OnMouseDown(MouseButtonEventArgs e) {
-        List<Element> elms = new();
-        Stopwatch sw = Stopwatch.StartNew();
-        App.GetElementsAt(new(MousePosition.X, MousePosition.Y), App.Root, ref elms);
-        Console.WriteLine($"Took {sw.ElapsedMilliseconds}ms to get elements at position {MousePosition.X}, {MousePosition.Y}");
-        foreach (Element elm in elms) {
-            if (e.Button == MouseButton.Left)
-                elm.Margin = new(elm.Margin.X + 10, elm.Margin.Y + 10);
-            else if (e.Button == MouseButton.Right)
-                elm.Margin = new(elm.Margin.X - 10, elm.Margin.Y - 10);
-            Console.WriteLine(elm.Name);
-        }
-        Console.WriteLine();
-
-        // if (elms.Count > 0 && elms[0].Name == "Root") {
-            dragging = true;
-            startPos = new(MousePosition.X, MousePosition.Y);
-            startSize = App.Root.Size;
-        // }
-
-        // targetScale = targetScale == new Vector2(1) ? new(2f) : new(1);
-
-        // UpdateFrequency = UpdateFrequency == 200 ? 60 : 200;
-        // Console.WriteLine($"Update Frequency: {UpdateFrequency}");
+    public static TestCanvas FromSize(int w, int h) {
+        SKSurface surface = SKSurface.Create(new SKImageInfo(w, h));
+        return new TestCanvas(surface.Canvas, surface);
     }
 
-    Vector2 targetScale = new(1);
-    public Vector2 Lerp(Vector2 a, Vector2 b, float t) => a + (b - a) * t;
-    protected override void OnUpdateFrame(FrameEventArgs args) {
-        base.OnUpdateFrame(args);
-        Vector2 newSize = Lerp(App.Root.Scale, targetScale, (float)args.Time * 10f);
-        if (Math.Abs(newSize.X - targetScale.X) > 0.001f) {
-            App.Root.Scale = newSize;
-            App.Root.Size = new(Size.X / App.Root.Scale.X, Size.Y / App.Root.Scale.Y);
-        } else if (App.Root.Scale != targetScale) {
-            App.Root.Scale = targetScale;
-            App.Root.Size = new(Size.X / App.Root.Scale.X, Size.Y / App.Root.Scale.Y);
-        }
+    public void ToImage(string path) {
+        Surface.Flush();
+        using SKImage image = Surface.Snapshot();
+        using SKData data = image.Encode();
+        using FileStream fs = new(path, FileMode.Create);
+        data.SaveTo(fs);
     }
 }
 
-public static unsafe class Program {
-    public static void Main(string[] args) => new AppWindow().Run();
+public static class Program {
+    public static void Main(string[] args) {
+        HashSet<int> set = new();
+        set.Add(1);
+        set.Add(1);
+        new AppWindow().Run();
+    }
 }

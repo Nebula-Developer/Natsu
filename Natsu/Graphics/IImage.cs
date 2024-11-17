@@ -1,5 +1,5 @@
 namespace Natsu.Graphics;
 
-public interface IImage {
+public interface IImage : IDisposable {
     //
 }

@@ -1,7 +1,7 @@
 using System.Reflection;
-using System.Text;
 
 using Natsu.Graphics;
+using Natsu.System;
 using Natsu.Utils;
 
 using SkiaSharp;
@@ -15,18 +15,22 @@ public class SkiaResourceLoader : IPlatformResourceLoader {
     public Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
 
     public IImage LoadImage(byte[] data, string name) {
-        if (Images[name] is IImage cache)
+        if (Images[name] is { } cache) {
             return cache;
-        var image = SKImage.FromEncodedData(new SKMemoryStream(data));
+        }
+
+        SKImage? image = SKImage.FromEncodedData(new SKMemoryStream(data));
         SkiaImage skiaImage = new(image);
         Images[name] = skiaImage;
         return skiaImage;
     }
 
     public IFont LoadFont(byte[] data, string name) {
-        if (Fonts[name] is IFont cache)
+        if (Fonts[name] is IFont cache) {
             return cache;
-        var typeface = SKTypeface.FromData(SKData.CreateCopy(data));
+        }
+
+        SKTypeface? typeface = SKTypeface.FromData(SKData.CreateCopy(data));
         SkiaFont skiaFont = new(typeface);
         Fonts[name] = skiaFont;
         return skiaFont;

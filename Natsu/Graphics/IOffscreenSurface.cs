@@ -5,4 +5,6 @@ public interface IOffscreenSurface : IDisposable {
     public int Width { get; }
     public int Height { get; }
     public void Flush();
+
+    public IImage Snapshot();
 }

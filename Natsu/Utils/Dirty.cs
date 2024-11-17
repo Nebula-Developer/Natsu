@@ -5,7 +5,8 @@ public class Dirty {
 
     public void Invalidate() => IsDirty = true;
 
-    public T Validate<T>(T t) { // For chaining
+    public T Validate<T>(T t) {
+        // For chaining
         IsDirty = false;
         return t;
     }

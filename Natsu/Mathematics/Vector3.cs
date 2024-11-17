@@ -17,17 +17,24 @@ public struct Vector3 : IEquatable<Vector3> {
 
     public Vector3() : this(0, 0, 0) { }
 
-    public static Vector3 operator +(Vector3 a, Vector3 b) => new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
-    public static Vector3 operator -(Vector3 a, Vector3 b) => new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
-    public static Vector3 operator *(Vector3 a, float b) => new Vector3(a.X * b, a.Y * b, a.Z * b);
-    public static Vector3 operator *(float a, Vector3 b) => new Vector3(b.X * a, b.Y * a, b.Z * a);
-    public static Vector3 operator *(Vector3 a, Vector3 b) => new Vector3(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
-    public static Vector3 operator /(Vector3 a, float b) => new Vector3(a.X / b, a.Y / b, a.Z / b);
+    public static Vector3 operator +(Vector3 a, Vector3 b) => new(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+
+    public static Vector3 operator -(Vector3 a, Vector3 b) => new(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+
+    public static Vector3 operator *(Vector3 a, float b) => new(a.X * b, a.Y * b, a.Z * b);
+
+    public static Vector3 operator *(float a, Vector3 b) => new(b.X * a, b.Y * a, b.Z * a);
+
+    public static Vector3 operator *(Vector3 a, Vector3 b) => new(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
+
+    public static Vector3 operator /(Vector3 a, float b) => new(a.X / b, a.Y / b, a.Z / b);
 
     public static bool operator ==(Vector3 a, Vector3 b) => a.X == b.X && a.Y == b.Y && a.Z == b.Z;
+
     public static bool operator !=(Vector3 a, Vector3 b) => !(a == b);
 
     public bool Equals(Vector3 other) => this == other;
+
     public override bool Equals(object obj) => obj is Vector3 other && this == other;
 
     public override int GetHashCode() => HashCode.Combine(X, Y, Z);
@@ -48,6 +55,8 @@ public struct Vector3 : IEquatable<Vector3> {
     public static float Dot(Vector3 a, Vector3 b) => a.X * b.X + a.Y * b.Y + a.Z * b.Z;
 
     public static implicit operator (float, float, float)(Vector3 v) => (v.X, v.Y, v.Z);
-    public static implicit operator Vector3((float, float, float) t) => new Vector3(t.Item1, t.Item2, t.Item3);
-    public static implicit operator Vector3(float f) => new Vector3(f, f, f);
+
+    public static implicit operator Vector3((float, float, float) t) => new(t.Item1, t.Item2, t.Item3);
+
+    public static implicit operator Vector3(float f) => new(f, f, f);
 }

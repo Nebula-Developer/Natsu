@@ -1,4 +1,3 @@
-
 using Natsu.Graphics;
 using Natsu.Mathematics;
 
@@ -8,12 +7,13 @@ namespace Natsu.Platforms.Skia;
 
 public record SkiaFont(SKTypeface Typeface) : IFont {
     public Vector2 MeasureText(string text, float size) {
-        var paint = new SKPaint {
+        SKPaint paint = new() {
             Typeface = Typeface,
-            TextSize = size
+            TextSize = size,
+            IsAntialias = true
         };
-        var bounds = new SKRect();
-        paint.MeasureText(text, ref bounds);
-        return new Vector2(bounds.Width, bounds.Height + 5);
+        
+        float w = paint.MeasureText(text);
+        return new Vector2(w, size);
     }
-};
+}

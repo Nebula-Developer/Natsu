@@ -1,9 +1,12 @@
-using SkiaSharp;
-
 namespace Natsu.Graphics;
 
 public class Paint {
-    public event Action? OnChanged;
+    private Color _color = Colors.White;
+    private FilterQuality _filterQuality = FilterQuality.None;
+    private float _fontSize = 12;
+    private bool _isAntialias;
+    private bool _isStroke;
+    private float _strokeWidth = 1;
 
     public Color Color {
         get => _color;
@@ -12,7 +15,6 @@ public class Paint {
             OnChanged?.Invoke();
         }
     }
-    private Color _color = Colors.White;
 
     public float StrokeWidth {
         get => _strokeWidth;
@@ -21,7 +23,6 @@ public class Paint {
             OnChanged?.Invoke();
         }
     }
-    private float _strokeWidth = 1;
 
     public bool IsStroke {
         get => _isStroke;
@@ -30,7 +31,6 @@ public class Paint {
             OnChanged?.Invoke();
         }
     }
-    private bool _isStroke = false;
 
     public bool IsAntialias {
         get => _isAntialias;
@@ -39,7 +39,6 @@ public class Paint {
             OnChanged?.Invoke();
         }
     }
-    private bool _isAntialias = true;
 
     public FilterQuality FilterQuality {
         get => _filterQuality;
@@ -48,7 +47,6 @@ public class Paint {
             OnChanged?.Invoke();
         }
     }
-    private FilterQuality _filterQuality = FilterQuality.High;
 
     public float TextSize {
         get => _fontSize;
@@ -57,14 +55,6 @@ public class Paint {
             OnChanged?.Invoke();
         }
     }
-    private float _fontSize = 12;
 
-    public bool DisableTextYCorrection {
-        get => _disableTextYCorrection;
-        set {
-            _disableTextYCorrection = value;
-            OnChanged?.Invoke();
-        }
-    }
-    private bool _disableTextYCorrection = false;
+    public event Action? OnChanged;
 }

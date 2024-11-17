@@ -19,17 +19,24 @@ public struct Vector4 : IEquatable<Vector4> {
 
     public Vector4() : this(0, 0, 0, 0) { }
 
-    public static Vector4 operator +(Vector4 a, Vector4 b) => new Vector4(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
-    public static Vector4 operator -(Vector4 a, Vector4 b) => new Vector4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
-    public static Vector4 operator *(Vector4 a, float b) => new Vector4(a.X * b, a.Y * b, a.Z * b, a.W * b);
-    public static Vector4 operator *(float a, Vector4 b) => new Vector4(b.X * a, b.Y * a, b.Z * a, b.W * a);
-    public static Vector4 operator *(Vector4 a, Vector4 b) => new Vector4(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W);
-    public static Vector4 operator /(Vector4 a, float b) => new Vector4(a.X / b, a.Y / b, a.Z / b, a.W / b);
+    public static Vector4 operator +(Vector4 a, Vector4 b) => new(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
+
+    public static Vector4 operator -(Vector4 a, Vector4 b) => new(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
+
+    public static Vector4 operator *(Vector4 a, float b) => new(a.X * b, a.Y * b, a.Z * b, a.W * b);
+
+    public static Vector4 operator *(float a, Vector4 b) => new(b.X * a, b.Y * a, b.Z * a, b.W * a);
+
+    public static Vector4 operator *(Vector4 a, Vector4 b) => new(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W);
+
+    public static Vector4 operator /(Vector4 a, float b) => new(a.X / b, a.Y / b, a.Z / b, a.W / b);
 
     public static bool operator ==(Vector4 a, Vector4 b) => a.X == b.X && a.Y == b.Y && a.Z == b.Z && a.W == b.W;
+
     public static bool operator !=(Vector4 a, Vector4 b) => !(a == b);
 
     public bool Equals(Vector4 other) => this == other;
+
     public override bool Equals(object obj) => obj is Vector4 other && this == other;
 
     public override int GetHashCode() => HashCode.Combine(X, Y, Z, W);
@@ -50,6 +57,8 @@ public struct Vector4 : IEquatable<Vector4> {
     public static float Dot(Vector4 a, Vector4 b) => a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
 
     public static implicit operator (float, float, float, float)(Vector4 v) => (v.X, v.Y, v.Z, v.W);
-    public static implicit operator Vector4((float, float, float, float) t) => new Vector4(t.Item1, t.Item2, t.Item3, t.Item4);
-    public static implicit operator Vector4(float f) => new Vector4(f, f, f, f);
+
+    public static implicit operator Vector4((float, float, float, float) t) => new(t.Item1, t.Item2, t.Item3, t.Item4);
+
+    public static implicit operator Vector4(float f) => new(f, f, f, f);
 }
