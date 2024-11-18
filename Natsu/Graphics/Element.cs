@@ -19,6 +19,7 @@ public partial class Element : IDisposable {
         set => _name = value;
     }
 
+    #nullable disable
     public Application App {
         get {
             if (_app != null)
@@ -29,19 +30,31 @@ public partial class Element : IDisposable {
                 return _app!;
             }
 
-            throw new InvalidOperationException("Element is not attached to an application");
+            return null;
         }
-        set {
-            ForChildren(child => child.App = value);
-            if (_app == value)
-                return;
-
-            _app?.RemoveInputCandidate(this);
-
-            _app = value;
-            App.ConstructInputLists();
-        }
+        set => setApp(value);
     }
+
+    private bool setApp(Application app, bool constructInputLists = false) {
+        if (_app == app)
+            return false;
+
+        _app?.RemoveInputCandidate(this);
+
+        Application old = _app;
+        _app = app;
+
+        ForChildren(child => child.setApp(app, false));
+
+        if (constructInputLists)
+            app.ConstructInputLists();
+
+        AppChanged?.Invoke(old);
+        OnAppChange(old);
+
+        return true;
+    }
+    #nullable restore
 
     public IRenderer Renderer => App.Renderer;
     public ResourceLoader ResourceLoader => App.ResourceLoader;
@@ -100,7 +113,7 @@ public partial class Element : IDisposable {
         OnRender(canvas);
         // Any bound rendering can happen here
         // eg:
-        // canvas.DrawRect(new(0, 0, MathF.Round(Size.X), MathF.Round(Size.Y)), new Paint() { Color = Colors.Magenta, IsStroke = true, StrokeWidth = 2 });
+        // canvas.DrawRect(new(0, 0, MathF.Round(DrawSize.X), MathF.Round(DrawSize.Y)), new Paint() { Color = Colors.Magenta, IsStroke = true, StrokeWidth = 2 });
         OnRenderChildren(canvas);
         Rendered?.Invoke();
 
@@ -110,7 +123,9 @@ public partial class Element : IDisposable {
     public void Update() {
         if (!Active)
             return;
-
+        
+        UpdateTransformSequences();
+        
         OnUpdate();
         Updated?.Invoke();
         OnUpdateChildren();
@@ -125,9 +140,13 @@ public partial class Element : IDisposable {
     public virtual void OnRender(ICanvas canvas) { }
     public virtual void OnRenderChildren(ICanvas canvas) => ForChildren(child => child.Render(canvas));
 
+    public virtual void OnAppChange(Application? old) { }
+
     public event Action? Loaded;
     public event Action? Disposed;
 
     public event Action? Updated;
     public event Action? Rendered;
+
+    public event Action<Application>? AppChanged;
 }

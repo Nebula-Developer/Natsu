@@ -11,280 +11,309 @@ using SkiaSharp;
 namespace Natsu.Sandbox;
 
 public class ButtonRect : InputElement {
+    public RectElement Background, Border, Flash;
 
-    public Color BaseColor = Colors.Red;
-
-    public bool Blocking;
-    public Color HoverColor = Colors.Green;
-    public RectElement Rect;
-    public TextElement Text;
-
-    public string Value = "Yeah!";
-
-    public ButtonRect(IFont font) {
+    public ButtonRect() {
         RawChildren = [
-            Rect = new RectElement {
+            Background = new RectElement {
+                Parent = this,
                 RelativeSizeAxes = Axes.Both,
                 Paint = new Paint {
-                    Color = BaseColor
+                    Color = new Color(130, 140, 150, 255),
+                    IsAntialias = true,
+                    FilterQuality = FilterQuality.Medium
                 },
+                RoundedCorners = new(10),
                 RawChildren = [
-                    Text = new TextElement("Yeah!", font) {
-                        AnchorPosition = new Vector2(0.5f),
-                        OffsetPosition = new Vector2(0.5f),
+                    Flash = new RectElement {
+                        Parent = this,
+                        RelativeSizeAxes = Axes.Both,
                         Paint = new Paint {
-                            Color = Colors.White,
-                            TextSize = 20,
-                            IsAntialias = true
-                        }
+                            Color = new Color(255, 255, 255, 0),
+                            IsAntialias = true,
+                            FilterQuality = FilterQuality.Medium
+                        },
+                        RoundedCorners = new(10),
+                    },
+                    Border = new RectElement {
+                        Parent = this,
+                        RelativeSizeAxes = Axes.Both,
+                        Paint = new Paint {
+                            Color = new Color(150, 180, 200, 255),
+                            IsAntialias = true,
+                            FilterQuality = FilterQuality.Medium,
+                            StrokeWidth = 3,
+                            IsStroke = true
+                        },
+                        RoundedCorners = new(10 - 2.5f),
+                        Margin = new(2.5f)
                     }
-                ]
-            }
+                ],
+                AnchorPosition = new(0.5f),
+                OffsetPosition = new(0.5f)
+            },
         ];
     }
 
-    public override bool OnMouseEnter(Vector2 position) {
-        Rect.Paint.Color = HoverColor;
-        Console.WriteLine("Mouse Enter " + Name);
-        return Blocking;
-    }
-
-    public override void OnMouseLeave(Vector2 position) {
-        Rect.Paint.Color = BaseColor;
-        Console.WriteLine("Mouse Leave " + Name);
-    }
-
     public override bool OnMouseDown(MouseButton button, Vector2 position) {
-        Scale = new Vector2(0.9f);
-        Console.WriteLine("Mouse Down " + Name);
-        return Blocking;
+        if (button != MouseButton.Left) return false;
+        Background.StopTransformSequences(nameof(Background.Scale));
+        Background.ScaleTo(new Vector2(0.9f), 2f, Ease.ExponentialOut);
+        return true;
     }
 
     public override void OnMouseUp(MouseButton button, Vector2 position) {
-        Scale = new Vector2(1f);
-        Console.WriteLine("Mouse Up " + Name);
+        if (button != MouseButton.Left) return;
+        Background.StopTransformSequences(nameof(Background.Scale));
+        Background.ScaleTo(new Vector2(1), 0.6f, Ease.ElasticOut);
     }
 
-    public override void OnFocus() => Text.Paint.Color = Colors.Black;
-    public override void OnBlur() => Text.Paint.Color = Colors.White;
-
-    public string KeyString(Key key) => key switch {
-        Key.A => "a",
-        Key.B => "b",
-        Key.C => "c",
-        Key.D => "d",
-        Key.E => "e",
-        Key.F => "f",
-        Key.G => "g",
-        Key.H => "h",
-        Key.I => "i",
-        Key.J => "j",
-        Key.K => "k",
-        Key.L => "l",
-        Key.M => "m",
-        Key.N => "n",
-        Key.O => "o",
-        Key.P => "p",
-        Key.Q => "q",
-        Key.R => "r",
-        Key.S => "s",
-        Key.T => "t",
-        Key.U => "u",
-        Key.V => "v",
-        Key.W => "w",
-        Key.X => "x",
-        Key.Y => "y",
-        Key.Z => "z",
-        Key.D0 => "0",
-        Key.D1 => "1",
-        Key.D2 => "2",
-        Key.D3 => "3",
-        Key.D4 => "4",
-        Key.D5 => "5",
-        Key.D6 => "6",
-        Key.D7 => "7",
-        Key.D8 => "8",
-        Key.D9 => "9",
-        Key.Space => " ",
-        Key.Enter => "\n",
-        _ => ""
-    };
-
-    public override bool OnKeyDown(Key key) {
-        if (key == Key.Backspace) {
-            if (Value.Length > 0)
-                Value = Value.Substring(0, Value.Length - 1);
-        } else
-            Value += KeyString(key);
-
-        Text.Text = Value;
-        return Blocking;
+    public override void OnMousePress(MouseButton button, Vector2 position) {
+        if (button != MouseButton.Left) return;
+        Flash.StopTransformSequences();
+        Flash.ColorTo(Colors.White).Then().ColorTo(Colors.WhiteTransparent, 0.5f);
     }
 
-    public override bool OnKeyUp(Key key) {
-        Value = Value.Substring(0, Value.Length - 1);
-        Text.Text = Value;
-        return Blocking;
+    public override bool OnMouseEnter(Vector2 position) => true;
+    public override void OnMouseLeave(Vector2 position) { }
+
+    public override void OnRenderChildren(ICanvas canvas) {
+        base.OnRenderChildren(canvas);
+
+        if (IsFocused) {
+            canvas.DrawLine(new Vector2(0, 0), new Vector2(DrawSize.X, DrawSize.Y), new Paint { Color = Colors.Red, StrokeWidth = 2 });
+            canvas.DrawLine(new Vector2(0, DrawSize.Y), new Vector2(DrawSize.X, 0), new Paint { Color = Colors.Red, StrokeWidth = 2 });
+        }
+    }
+}
+
+public class Slider : Element {
+    public RectElement Background, Bar, Thumb;
+    public InputElement ThumbInput;
+
+    public Slider() {
+        RawChildren = [
+            Background = new RectElement {
+                Parent = this,
+                RelativeSizeAxes = Axes.Both,
+                Paint = new Paint {
+                    Color = new Color(130, 140, 150, 255),
+                    IsAntialias = true,
+                    FilterQuality = FilterQuality.Medium
+                },
+                RoundedCorners = new(10),
+                RawChildren = [
+                    Bar = new RectElement {
+                        Parent = this,
+                        RelativeSizeAxes = Axes.Both,
+                        Paint = new Paint {
+                            Color = new Color(170, 190, 200, 255),
+                            IsAntialias = true,
+                            FilterQuality = FilterQuality.Medium
+                        },
+                        RoundedCorners = new(7.5f),
+                        Margin = new(5)
+                    },
+                    Thumb = new RectElement {
+                        Parent = this,
+                        Size = new(20, 25),
+                        Paint = new Paint {
+                            Color = new Color(200, 210, 220, 255),
+                            IsAntialias = true,
+                            FilterQuality = FilterQuality.Medium
+                        },
+                        RoundedCorners = new(3),
+                        AnchorPosition = new(0, 0.5f),
+                        OffsetPosition = new(0.5f, 0.5f),
+                        Position = new(20, 0)
+                    }
+                ],
+                AnchorPosition = new(0.5f),
+                OffsetPosition = new(0.5f)
+            },
+            ThumbInput = new InputElement {
+                Parent = this,
+                RelativeSizeAxes = Axes.Both,
+                GrabFallback = true
+            }
+        ];
+
+        bool pressed = false;
+        float value = 0;
+
+        void updatePos(Vector2 position) {
+            float coord = ThumbInput.ToLocalSpace(position).X;
+            coord = Math.Clamp(coord, 20, DrawSize.X - Thumb.DrawSize.X);
+            Thumb.StopTransformSequences(nameof(Thumb.Position));
+            Thumb.MoveTo(new Vector2(coord, 0), 0.2f, Ease.ExponentialOut);
+
+            value = (coord - 20) / (DrawSize.X - Thumb.DrawSize.X - 20);
+            updateRoot();
+        }
+
+        void updateRoot(bool force = false) {
+            if (force) {
+                App.Root.StopTransformSequences(nameof(App.Root.Scale));
+                App.Root.Scale = new Vector2(1 + value);
+                return;
+            }
+
+            App.Root.StopTransformSequences(nameof(App.Root.Scale));
+            App.Root.ScaleTo(new Vector2(1 + value), 0.5f, Ease.ExponentialOut);
+        }
+
+        AppChanged += (old) => {
+            App.Resized += (w, h) => {
+                updateRoot(true);
+            };
+        };
+
+        ThumbInput.MouseDownEvent += (button, position) => {
+            if (button != MouseButton.Left) return;
+            pressed = true;
+            updatePos(position);
+
+            Thumb.StopTransformSequences(nameof(Thumb.Scale), nameof(Thumb.Paint.Color));
+            Thumb.ScaleTo(new Vector2(0.9f), 0.2f, Ease.ExponentialOut);
+            Thumb.ColorTo(Colors.White, 0.2f, Ease.ExponentialOut);
+
+            Background.StopTransformSequences();
+            Background.ScaleTo(new Vector2(1.05f), 0.2f, Ease.ExponentialOut);
+            Background.ColorTo(Colors.White, 0.2f, Ease.ExponentialOut);
+            Bar.StopTransformSequences();
+            Bar.MarginTo(new Vector2(3), 0.2f, Ease.ExponentialOut);
+        };
+
+        ThumbInput.MouseUpEvent += (button, position) => {
+            if (button != MouseButton.Left) return;
+            pressed = false;
+
+            Thumb.StopTransformSequences(nameof(Thumb.Scale), nameof(Thumb.Paint.Color));
+            Thumb.ScaleTo(new Vector2(1), 0.2f, Ease.ExponentialOut);
+            Thumb.ColorTo(new Color(200, 210, 220, 255), 0.2f, Ease.ExponentialOut);
+
+            Background.StopTransformSequences();
+            Background.ScaleTo(new Vector2(1), 0.2f, Ease.ExponentialOut);
+            Background.ColorTo(new Color(130, 140, 150, 255), 0.2f, Ease.ExponentialOut);
+            Bar.StopTransformSequences();
+            Bar.MarginTo(new Vector2(5), 0.2f, Ease.ExponentialOut);
+        };
+
+        ThumbInput.MouseMoveEvent += (position) => {
+            if (!pressed) return;
+            updatePos(position);
+        };
     }
 }
 
 public class MyApp : Application {
-    private readonly TextElement bouncyText;
     private readonly TextElement fpsText;
-
-    private readonly Element testElm;
-
-    public readonly Stopwatch Time = Stopwatch.StartNew();
-    public float BaseScale = 1f;
-
-    public CachedElement Cache;
-
-    public float time;
 
     public MyApp(SKSurface baseSurface) {
         LoadRenderer(baseSurface);
         ResourceLoader = new ResourceLoader(new SkiaResourceLoader());
 
-        // Cache = new CachedElement {
-        //     Size = new Vector2(1000),
-        //     Parent = Root,
-        //     AnchorPosition = new Vector2(0.5f),
-        //     OffsetPosition = new Vector2(0.5f),
-        //     Scale = new Vector2(BaseScale)
-        // };
+        IFont font = ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf");
 
-        // Root.OnSizeChange += v => {
-        //     // set the cache scale to whatever the max size of root is so that it always covers
-        //     float scale = Math.Max(v.X, v.Y) / 100f;
-        //     Cache.Scale = new Vector2(scale * 1.5f);
-        // };
-
-        // for (int i = 0; i < 10000; i++) {
-        //     float r = (float)(Math.Sin(i) * 0.2f + 0.2f);
-        //     float g = (float)(Math.Cos(i) * 0.2f + 0.2f);
-        //     float b = (float)(Math.Sin(i) * 0.2f + 0.2f);
-
-        //     float a = (i % 25f + i / 25f) / 200f;
-
-        //     Cache.Add(new RectElement {
-        //         Size = new Vector2(10, 10),
-        //         Paint = new Paint {
-        //             // alpha makes cirlce patterns (cos and sin)
-        //             Color = new Color(r, g, b, 0.9f)
-        //             // Color = Colors.Red
-        //         },
-        //         // AnchorPosition = new(0.5f),
-        //         // OffsetPosition = new(0.5f),
-        //         Position = new Vector2(i % 100 * 10, i / 100 * 10),
-        //         Name = $"Rect {i}"
-        //     });
-        // }
-
-        // Root.OffsetPosition = new Vector2(1f);
-        // Root.AnchorPosition = new Vector2(1f);
-
-        // IImage image = ResourceLoader.LoadResourceImage("Resources/testimage.png");
-
-        // ImageElement testImage = new(image) {
-        //     Parent = Root,
-        //     Size = new Vector2(200),
-        //     Index = 5,
-        //     AnchorPosition = new Vector2(0.5f),
-        //     OffsetPosition = new Vector2(0.5f),
-        //     Name = "Test Image",
-        //     Clip = true
-        // };
-        // testImage.Paint.FilterQuality = FilterQuality.High;
-        // testImage.Paint.IsAntialias = true;
-        // ImageElement bg = new(image) {
-        //     Parent = Root,
-        //     RelativeSizeAxes = Axes.Both,
-        //     Index = -99999,
-        //     AnchorPosition = new Vector2(0.5f),
-        //     OffsetPosition = new Vector2(0.5f),
-        //     Name = "BG Image",
-        // };
-
-        // RectElement testImage2 = new() {
-        //     Parent = testImage,
-        //     Size = new Vector2(50),
-        //     Paint = new Paint { Color = Colors.Cyan },
-        //     Index = 5,
-        //     AnchorPosition = new Vector2(0.5f),
-        //     OffsetPosition = new Vector2(0.5f),
-        //     Rotation = 30,
-        //     Name = "Test Image Sub",
-        // };
-        // testElm = testImage;
-
-        fpsText = new TextElement("FPS: 0", ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf")) {
+        fpsText = new TextElement("FPS: 0", font) {
             Parent = Root,
             Paint = new Paint {
                 TextSize = 30,
                 IsAntialias = true,
                 FilterQuality = FilterQuality.Medium
             }
-            // RawChildren = [
-            //     new RectElement() {
-            //         RelativeSizeAxes = Axes.Both,
-            //         Paint = new() {
-            //             Color = Colors.Red,
-            //             StrokeWidth = 3,
-            //             IsStroke = true
-            //         }
-            //     }
-            // ]
         };
 
-        // Add(new TextElement("Testing 123", ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf")) {
-        //     AnchorPosition = new Vector2(0.5f),
-        //     OffsetPosition = new Vector2(0.5f),
-        //     Parent = Root,
-        //     RawChildren = [
-        //         new RectElement {
-        //             RelativeSizeAxes = Axes.Both,
-        //             Paint = new Paint {
-        //                 Color = Colors.Red,
-        //                 StrokeWidth = 3,
-        //                 IsStroke = true
-        //             }
-        //         }
-        //     ],
-        //     Index = 9999999,
-        //     Paint = new Paint { Color = Colors.Cyan, TextSize = 60 }
-        // });
-
-        // bouncyText = new TextElement("Hello 1234567890-!@#!@#", ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf")) {
-        //     Parent = Root,
-        //     // Position = new(0, 50),
-        //     AnchorPosition = new Vector2(1),
-        //     OffsetPosition = new Vector2(1),
-        //     Paint = new Paint { Color = new Color(255, 255, 255, 50) }
-        // };
-
-        IFont font = ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf");
-
-        ButtonRect rect = new(font) {
+        ButtonRect rect = new() {
             Size = new Vector2(300),
             AnchorPosition = new Vector2(0.5f),
             OffsetPosition = new Vector2(0.5f),
             Position = new Vector2(-150, 0),
             Parent = Root,
-            Index = 9999998,
+            Index = 2,
             Name = "Left"
         };
 
-        ButtonRect rect2 = new(font) {
+        ButtonRect rect2 = new() {
             Size = new Vector2(300),
             AnchorPosition = new Vector2(0.5f),
             OffsetPosition = new Vector2(0.5f),
             Position = new Vector2(150, 0),
             Parent = Root,
-            Blocking = false,
-            Index = 9999999,
+            Index = 1,
             Name = "Right"
         };
-    } // FPS: 260
+
+        rect.MousePressEvent += (button, position) => {
+            if (button != MouseButton.Left) return;
+
+            rect.StopTransformSequences(nameof(rect.Position));
+            rect.Position = new Vector2(-150, 0);
+            // rect.MoveTo(new(-150, 50), 0.5f).Then().MoveTo(new(-150, 0), 0.5f).Then().Loop(0, 1).Then()
+            //     .SetLoopPoint(1).MoveTo(new(-150, -50), 0.5f).Then().MoveTo(new(-150, 0), 0.5f).Then().Loop(0, -1, 1);
+                // with easing:
+            rect.MoveTo(new(-150, 50), 0.5f, Ease.CubicOut).Then().MoveTo(new(-150, 0), 0.5f, Ease.CubicIn).Then().Loop(0, 1).Then()
+                .SetLoopPoint(1).MoveTo(new(-150, -50), 0.5f, Ease.CubicOut).Then().MoveTo(new(-150, 0), 0.5f, Ease.CubicIn).Then().Loop(0, -1, 1);
+        };
+
+        ButtonRect scaleButton = new() {
+            Size = new(50),
+            AnchorPosition = new(1, 0),
+            OffsetPosition = new(1, 0),
+            Parent = Root,
+            Index = 555
+        };
+
+        bool t = false;
+        scaleButton.MousePressEvent += (button, position) => {
+            if (button != MouseButton.Left) return;
+
+            Root.StopTransformSequences(nameof(Root.Scale));
+            Root.ScaleTo(new Vector2(t ? 1 : 1.5f), 0.5f, Ease.ElasticOut);
+
+            t = !t;
+        };
+
+        Slider slider = new() {
+            Size = new(300, 50),
+            AnchorPosition = new(0.5f, 1),
+            OffsetPosition = new(0.5f, 1),
+            Position = new(0, -10f),
+            Parent = Root,
+            Index = 3
+        };
+
+        GlobalInputElement globalElm = new() {
+            GrabFallback = false
+        };
+        Add(globalElm);
+
+        bool ctrl = false;
+        bool toggle = false;
+
+        globalElm.KeyDownEvent += (k) => {
+            if (k == Key.LeftControl || k == Key.RightControl) {
+                ctrl = true;
+                return;
+            }
+
+            if (ctrl && k == Key.D) {
+                if (toggle) {
+                    slider.MoveTo(new Vector2(0, -10), 0.3f, Ease.ExponentialOut);
+                } else {
+                    slider.MoveTo(new Vector2(0, 60), 0.3f, Ease.ExponentialOut);
+                }
+
+                toggle = !toggle;
+            }
+        };
+
+        globalElm.KeyUpEvent += (k) => {
+            if (k == Key.LeftControl || k == Key.RightControl) {
+                ctrl = false;
+            }
+        };
+    }
 
     public void LoadRenderer(SKSurface surface) {
         lock (this) Renderer = new SkiaRenderer(surface);
@@ -292,50 +321,7 @@ public class MyApp : Application {
 
     protected override void OnRender() {
         base.OnRender();
-        float fps = 1f / (float)Time.Elapsed.TotalSeconds;
-        // Cache.Rotation += 50f * (float)Time.Elapsed.TotalSeconds;
-        time += (float)Time.Elapsed.TotalSeconds;
-
-        // Cache.ForChildren(c => {
-        //     c.Rotation += 50f * (float)Time.Elapsed.TotalSeconds;
-        // });
-
-        Time.Restart();
-
+        float fps = 1f / (float)RenderTime.DeltaTime;
         fpsText.Text = $"FPS: {fps}";
-        // bouncyText.Scale = new Vector2(5 + MathF.Sin(time) * 2f);
-
-        float offset = 5f + MathF.Sin(time) * 1.5f;
-        // Cache.Scale = new Vector2(offset);
-    }
-
-    // from the front to the back (reverse render order)
-
-
-    public List<Element> GetElementsAt(Vector2 position, Element root, ref List<Element> elements) {
-        List<Element> xy = new();
-        foreach (Element x in PositionalInputList)
-            if (x.PointInside(position)) {
-                elements.Add(x);
-                break;
-            }
-
-        return elements;
-        // if (elements == null) elements = new();
-        // if (root == null) return elements;
-
-        // if (root.Children.Count > 0) {
-        //     foreach (Element child in root.Children) {
-        //         if (elements.Contains(child))
-        //             continue;
-
-        //         if (child.HandlePositionalInput && child.PointInside(position))
-        //             elements.Add(child);
-
-        //         GetElementsAt(position, child, ref elements);
-        //     }
-        // }
-
-        // return elements;
     }
 }

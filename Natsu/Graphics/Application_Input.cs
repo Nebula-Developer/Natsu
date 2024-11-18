@@ -23,11 +23,10 @@ public partial class Application {
 
     private InputElement _rawFocusedElement;
 
-    public Dictionary<MouseButton, bool> MouseState = new() {
-        { MouseButton.Left, false },
-        { MouseButton.Middle, false },
-        { MouseButton.Right, false }
-    };
+    public Vector2 MousePosition { get; private set; }
+
+    public Dictionary<MouseButton, bool> MouseState = new();
+    public Dictionary<Key, bool> Keys = new();
 
     protected List<GlobalInputElement> NonPositionalInputList = new();
     protected List<InputElement> PositionalInputList = new();
@@ -78,16 +77,7 @@ public partial class Application {
             NonPositionalInputList.Remove(input);
     }
 
-    public List<InputElement> GetInputCandidates(Vector2 position) {
-        List<InputElement> candidates = new();
-        foreach (InputElement elm in PositionalInputList)
-            if (elm.Bounds.Contains(position))
-                candidates.Add(elm);
-
-        candidates.AddRange(NonPositionalInputList);
-        candidates.Reverse();
-        return candidates;
-    }
+    public List<InputElement> GetInputCandidates(Vector2 position) => PositionalInputList.Where(x => x.PointInside(position)).ToList();
 
     public virtual void OnMouseDown(MouseButton button, Vector2 position) { }
     public virtual void OnMouseUp(MouseButton button, Vector2 position) { }
@@ -117,21 +107,18 @@ public partial class Application {
             if (elm.MouseDown(button, position))
                 return true;
 
-        InputElement focused = null;
-
         foreach (InputElement elm in elms) {
             _mouseDownCache[button].Add(elm);
 
-            if (focused == null)
-                focused = elm;
-
             if (elm.MouseDown(button, position)) {
-                _focusedElement = elm;
+                if (button == MouseButton.Left)
+                    _focusedElement = elm;
                 return true;
             }
         }
 
-        _focusedElement = focused;
+        if (button == MouseButton.Left)
+            _focusedElement = null;
         return false;
     }
 
@@ -147,13 +134,18 @@ public partial class Application {
         foreach (GlobalInputElement elm in NonPositionalInputList)
             elm.MouseUp(button, position);
 
-        foreach (InputElement elm in _mouseDownCache[button])
+        foreach (InputElement elm in _mouseDownCache[button]) {
             elm.MouseUp(button, position);
+            if (elm.PointInside(position)) elm.MousePress(button, position);
+            else elm.MousePressDodge(button, position);
+        }
 
         _mouseDownCache[button].Clear();
     }
 
     public void MouseMove(Vector2 position) {
+        MousePosition = position;
+
         MouseMoveEvent?.Invoke(position);
         OnMouseMove(position);
 
@@ -188,8 +180,13 @@ public partial class Application {
                     blocked = true;
 
                 _mouseEnterCache[elm] = blocked ? MouseEnterCacheState.OverBlock : MouseEnterCacheState.Over;
-            } else if (state.HasFlag(MouseEnterCacheState.Over)) elm.MouseMove(position);
+            } else if (state.HasFlag(MouseEnterCacheState.Over)) {
+                elm.MouseMove(position);
+            }
         }
+
+        if (_focusedElement != null && !elms.Contains(_focusedElement))
+            _focusedElement.MouseMove(position);
 
         foreach (GlobalInputElement elm in NonPositionalInputList)
             elm.MouseMove(position);
@@ -204,6 +201,8 @@ public partial class Application {
     }
 
     public void KeyDown(Key key) {
+        Keys[key] = true;
+
         KeyDownEvent?.Invoke(key);
         OnKeyDown(key);
 
@@ -214,6 +213,8 @@ public partial class Application {
     }
 
     public void KeyUp(Key key) {
+        Keys[key] = false;
+
         KeyUpEvent?.Invoke(key);
         OnKeyUp(key);
 

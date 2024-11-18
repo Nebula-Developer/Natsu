@@ -10,17 +10,7 @@
     <list default="true" id="a111921e-bb12-441d-8a1f-3c4f5c401376" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.editorconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Natsu/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Natsu/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu.Sandbox/MyApp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Sandbox/MyApp.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu.Sandbox/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Sandbox/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Application_Input.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Application_Input.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Element.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Element.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Element_Composite.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Element_Composite.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/GlobalInputElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/GlobalInputElement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/ImageElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/ImageElement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/InputElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/InputElement.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/FrameClock.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/FrameClock.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Natsu/Natsu.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Natsu.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaFont.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaFont.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +75,7 @@
       <workItem from="1731309594367" duration="139000" />
       <workItem from="1731309850883" duration="1214000" />
       <workItem from="1731311801713" duration="336000" />
-      <workItem from="1731894463350" duration="414000" />
+      <workItem from="1731894463350" duration="1035000" />
     </task>
     <servers />
   </component>

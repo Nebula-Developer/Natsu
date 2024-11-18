@@ -6,7 +6,7 @@ public class CachedElement : Element {
     public bool Valid;
 
     public CachedElement() {
-        OnSizeChange += _ => Valid = false;
+        OnSizeChanged += _ => Valid = false;
     }
 
     public IOffscreenSurface? Surface { get; private set; }

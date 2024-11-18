@@ -16,7 +16,7 @@ using MouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
 
 namespace Natsu.Sandbox;
 
-public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency = 5 }, NativeWindowSettings.Default) {
+public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency = 244 }, new NativeWindowSettings { ClientSize = new(800, 600), Title = "Natsu Sandbox", Vsync = VSyncMode.On }) {
     public List<OffscreenSurfaceElement> LayerSurfaces = new();
 
     public void CreateSurface(int width, int height) {
@@ -45,6 +45,7 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
         App.Load();
         App.Resize(Size.X, Size.Y);
     }
+
 
     public void LoadMaps() {
         XmlDocument doc = new();
@@ -144,6 +145,11 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
         base.OnRenderFrame(args);
         App.Render();
         SwapBuffers();
+    }
+
+    protected override void OnUpdateFrame(FrameEventArgs args) {
+        base.OnUpdateFrame(args);
+        App.Update();
     }
 
     protected override void OnResize(ResizeEventArgs e) {

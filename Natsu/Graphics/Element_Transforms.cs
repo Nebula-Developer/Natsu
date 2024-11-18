@@ -78,8 +78,7 @@ public partial class Element {
             Invalidate(Invalidation.Geometry);
         }
     }
-
-    public Vector2 DrawSize => Size - Margin * 2;
+    public Vector2 DrawSize => (Size - Margin * 2) / (ScaleAffectsDrawSize ? Vector2.One : Scale);
 
     public Vector2 Size {
         get => _size;
@@ -97,7 +96,7 @@ public partial class Element {
             if (_size == newValue) return;
 
             _size = newValue;
-            OnSizeChange?.Invoke(newValue);
+            OnSizeChanged?.Invoke(newValue);
             Invalidate(Invalidation.Geometry);
         }
     }
@@ -143,7 +142,6 @@ public partial class Element {
     }
 
     public Vector2 ToLocalSpace(Vector2 screenSpace) => Matrix.Invert().MapPoint(screenSpace);
-
     public Vector2 ToScreenSpace(Vector2 localSpace) => Matrix.MapPoint(localSpace);
 
     public void UpdateMatrix() {
@@ -180,7 +178,9 @@ public partial class Element {
 
     public void InvalidateParent(Invalidation invalidation) => Parent?.Invalidate(invalidation, false);
 
-    public event Action<Vector2>? OnSizeChange;
+    public event Action<Vector2>? OnSizeChanged;
+
+    public bool ScaleAffectsDrawSize { get; set; } = true;
 
     public void UpdateRelativeSize() {
         if (RelativeSizeAxes == Axes.None || Parent == null) return;
@@ -190,7 +190,7 @@ public partial class Element {
         if (_size == nSize) return;
 
         _size = nSize;
-        OnSizeChange?.Invoke(nSize);
+        OnSizeChanged?.Invoke(nSize);
         Invalidate(Invalidation.Geometry);
     }
 

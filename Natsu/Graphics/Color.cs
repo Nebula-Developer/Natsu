@@ -1,5 +1,7 @@
 #nullable disable
 
+using Natsu.Mathematics;
+
 using SkiaSharp;
 
 namespace Natsu.Graphics;
@@ -27,19 +29,58 @@ public class Color {
     public byte B { get; set; }
     public byte A { get; set; }
 
-    public static Color operator +(Color a, Color b) => new((byte)(a.R + b.R), (byte)(a.G + b.G), (byte)(a.B + b.B), (byte)(a.A + b.A));
+    public static Color operator +(Color a, Color b) => new(
+        (byte)Math.Clamp(a.R + b.R, 0, 255),
+        (byte)Math.Clamp(a.G + b.G, 0, 255),
+        (byte)Math.Clamp(a.B + b.B, 0, 255),
+        (byte)Math.Clamp(a.A + b.A, 0, 255)
+    );
 
-    public static Color operator -(Color a, Color b) => new((byte)(a.R - b.R), (byte)(a.G - b.G), (byte)(a.B - b.B), (byte)(a.A - b.A));
+    public static Color operator -(Color a, Color b) => new(
+        (byte)Math.Clamp(a.R - b.R, 0, 255),
+        (byte)Math.Clamp(a.G - b.G, 0, 255),
+        (byte)Math.Clamp(a.B - b.B, 0, 255),
+        (byte)Math.Clamp(a.A - b.A, 0, 255)
+    );
 
-    public static Color operator *(Color a, float b) => new((byte)(a.R * b), (byte)(a.G * b), (byte)(a.B * b), (byte)(a.A * b));
+    public static Color operator *(Color a, Color b) => new(
+        (byte)Math.Clamp(a.R * b.R, 0, 255),
+        (byte)Math.Clamp(a.G * b.G, 0, 255),
+        (byte)Math.Clamp(a.B * b.B, 0, 255),
+        (byte)Math.Clamp(a.A * b.A, 0, 255)
+    );
 
-    public static Color operator /(Color a, float b) => new((byte)(a.R / b), (byte)(a.G / b), (byte)(a.B / b), (byte)(a.A / b));
+    public static Color operator /(Color a, Color b) => new(
+        (byte)Math.Clamp(a.R / b.R, 0, 255),
+        (byte)Math.Clamp(a.G / b.G, 0, 255),
+        (byte)Math.Clamp(a.B / b.B, 0, 255),
+        (byte)Math.Clamp(a.A / b.A, 0, 255)
+    );
+
+    public static Color operator *(Color a, float b) => new(
+        (byte)Math.Clamp(a.R * b, 0, 255),
+        (byte)Math.Clamp(a.G * b, 0, 255),
+        (byte)Math.Clamp(a.B * b, 0, 255),
+        (byte)Math.Clamp(a.A * b, 0, 255)
+    );
+
+    public static Color operator /(Color a, float b) => new(
+        (byte)Math.Clamp(a.R / b, 0, 255),
+        (byte)Math.Clamp(a.G / b, 0, 255),
+        (byte)Math.Clamp(a.B / b, 0, 255),
+        (byte)Math.Clamp(a.A / b, 0, 255)
+    );
 
     public static bool operator ==(Color a, Color b) => a.R == b.R && a.G == b.G && a.B == b.B && a.A == b.A;
 
     public static bool operator !=(Color a, Color b) => a.R != b.R || a.G != b.G || a.B != b.B || a.A != b.A;
 
-    public static Color Lerp(Color a, Color b) => a + (b - a) / 2;
+    public static Color Lerp(Color a, Color b, float t) => new(
+        (byte)Easings.Lerp(a.R, b.R, t),
+        (byte)Easings.Lerp(a.G, b.G, t),
+        (byte)Easings.Lerp(a.B, b.B, t),
+        (byte)Easings.Lerp(a.A, b.A, t)
+    );
 
     public override bool Equals(object obj) => obj is Color other && this == other;
 
