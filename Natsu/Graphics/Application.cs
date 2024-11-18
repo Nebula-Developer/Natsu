@@ -1,7 +1,6 @@
 #nullable disable
 
 using Natsu.Graphics.Elements;
-using Natsu.Input;
 using Natsu.Mathematics;
 
 namespace Natsu.Graphics;
@@ -10,7 +9,9 @@ public partial class Application : IDisposable {
     public IRenderer Renderer;
     public ResourceLoader ResourceLoader;
 
-    public Application() => Root = new RootElement(this);
+    public Application() {
+        Root = new RootElement(this);
+    }
 
     public ICanvas Canvas => Renderer.Canvas;
 
@@ -24,6 +25,15 @@ public partial class Application : IDisposable {
         set => Resize((int)value.X, (int)value.Y);
     }
 
+    public void Dispose() {
+        Root.Dispose();
+        OnDispose();
+        Disposed?.Invoke();
+
+        ResourceLoader.Dispose();
+        Renderer.Dispose();
+    }
+
     protected virtual void OnLoad() { }
     protected virtual void OnDispose() { }
     protected virtual void OnUpdate() { }
@@ -35,15 +45,6 @@ public partial class Application : IDisposable {
     public event Action Updated;
     public event Action Rendered;
     public event Action<int, int> Resized;
-
-    public void Dispose() {
-        Root.Dispose();
-        OnDispose();
-        Disposed?.Invoke();
-
-        ResourceLoader.Dispose();
-        Renderer.Dispose();
-    }
 
 
     public void Load() {

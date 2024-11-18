@@ -23,14 +23,10 @@ public class ResourceLoader : IDisposable {
     public string CreateResourcePath(string path) => $"{Assembly.GetName().Name}.{path.Replace('/', '.')}";
 
     public byte[] LoadResource(string path, string? name = null) {
-        if (Data[name ?? path] is byte[] data) {
-            return data;
-        }
+        if (Data[name ?? path] is byte[] data) return data;
 
         using Stream? stream = Assembly.GetManifestResourceStream(CreateResourcePath(path));
-        if (stream == null) {
-            throw new InvalidOperationException($"Resource '{path}' not found");
-        }
+        if (stream == null) throw new InvalidOperationException($"Resource '{path}' not found");
 
         data = new byte[stream.Length];
         stream.Read(data, 0, data.Length);
@@ -39,9 +35,7 @@ public class ResourceLoader : IDisposable {
     }
 
     public byte[] LoadFile(string path, string? name = null) {
-        if (Data[name ?? path] is byte[] data) {
-            return data;
-        }
+        if (Data[name ?? path] is byte[] data) return data;
 
         data = File.ReadAllBytes(path);
         Data[name ?? path] = data;

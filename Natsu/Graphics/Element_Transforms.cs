@@ -20,9 +20,7 @@ public partial class Element {
 
     public Matrix Matrix {
         get {
-            if (DirtyMatrix.IsDirty) {
-                UpdateMatrix();
-            }
+            if (DirtyMatrix.IsDirty) UpdateMatrix();
 
             return DirtyMatrix.Value ?? SKMatrix.CreateIdentity();
         }
@@ -32,9 +30,7 @@ public partial class Element {
 
     public Vector2 WorldPosition {
         get {
-            if (DirtyMatrix.IsDirty) {
-                UpdateMatrix();
-            }
+            if (DirtyMatrix.IsDirty) UpdateMatrix();
 
             return _worldPosition;
         }
@@ -44,9 +40,7 @@ public partial class Element {
 
     public Bounds Bounds {
         get {
-            if (DirtyMatrix.IsDirty) {
-                UpdateMatrix();
-            }
+            if (DirtyMatrix.IsDirty) UpdateMatrix();
 
             return _bounds;
         }
@@ -58,9 +52,7 @@ public partial class Element {
     public float Rotation {
         get => _rotation;
         set {
-            if (_rotation == value) {
-                return;
-            }
+            if (_rotation == value) return;
 
             _rotation = value;
             Invalidate(Invalidation.Geometry);
@@ -70,9 +62,7 @@ public partial class Element {
     public Axes RelativeSizeAxes {
         get => _relativeSizeAxes;
         set {
-            if (_relativeSizeAxes == value) {
-                return;
-            }
+            if (_relativeSizeAxes == value) return;
 
             _relativeSizeAxes = value;
             Invalidate(Invalidation.Geometry);
@@ -82,9 +72,7 @@ public partial class Element {
     public Vector2 Margin {
         get => _margin;
         set {
-            if (_margin == value) {
-                return;
-            }
+            if (_margin == value) return;
 
             _margin = value;
             Invalidate(Invalidation.Geometry);
@@ -96,24 +84,17 @@ public partial class Element {
     public Vector2 Size {
         get => _size;
         set {
-            if (RelativeSizeAxes == Axes.Both) {
-                throw new InvalidOperationException("Cannot set size on element with both relative size axes.");
-            }
+            if (RelativeSizeAxes == Axes.Both) throw new InvalidOperationException("Cannot set size on element with both relative size axes.");
 
             Vector2 newValue;
             if (RelativeSizeAxes != Axes.None) {
-                if (Parent == null) {
-                    throw new InvalidOperationException("Cannot set size on element with relative size axes and no parent.");
-                }
+                if (Parent == null) throw new InvalidOperationException("Cannot set size on element with relative size axes and no parent.");
 
                 newValue = new Vector2(RelativeSizeAxes.HasFlag(Axes.X) ? Parent.Size.X : value.X, RelativeSizeAxes.HasFlag(Axes.Y) ? Parent.Size.Y : value.Y);
-            } else {
+            } else
                 newValue = value;
-            }
 
-            if (_size == newValue) {
-                return;
-            }
+            if (_size == newValue) return;
 
             _size = newValue;
             OnSizeChange?.Invoke(newValue);
@@ -124,9 +105,7 @@ public partial class Element {
     public Vector2 OffsetPosition {
         get => _offsetPosition;
         set {
-            if (_offsetPosition == value) {
-                return;
-            }
+            if (_offsetPosition == value) return;
 
             _offsetPosition = value;
             Invalidate(Invalidation.Geometry);
@@ -136,9 +115,7 @@ public partial class Element {
     public Vector2 AnchorPosition {
         get => _anchorPosition;
         set {
-            if (_anchorPosition == value) {
-                return;
-            }
+            if (_anchorPosition == value) return;
 
             _anchorPosition = value;
             Invalidate(Invalidation.Geometry);
@@ -148,9 +125,7 @@ public partial class Element {
     public Vector2 Position {
         get => _position;
         set {
-            if (_position == value) {
-                return;
-            }
+            if (_position == value) return;
 
             _position = value;
             Invalidate(Invalidation.Geometry);
@@ -160,9 +135,7 @@ public partial class Element {
     public Vector2 Scale {
         get => _scale;
         set {
-            if (_scale == value) {
-                return;
-            }
+            if (_scale == value) return;
 
             _scale = value;
             Invalidate(Invalidation.Geometry);
@@ -200,13 +173,9 @@ public partial class Element {
     public void InvalidateChildren(Invalidation invalidation, bool propagate = false) => ForChildren(child => child.Invalidate(invalidation, propagate));
 
     public void Invalidate(Invalidation invalidation, bool propagate = true, bool deep = false) {
-        if (invalidation.HasFlag(Invalidation.Geometry)) {
-            DirtyMatrix.Invalidate();
-        }
+        if (invalidation.HasFlag(Invalidation.Geometry)) DirtyMatrix.Invalidate();
 
-        if (propagate) {
-            InvalidateChildren(invalidation, deep);
-        }
+        if (propagate) InvalidateChildren(invalidation, deep);
     }
 
     public void InvalidateParent(Invalidation invalidation) => Parent?.Invalidate(invalidation, false);
@@ -214,15 +183,11 @@ public partial class Element {
     public event Action<Vector2>? OnSizeChange;
 
     public void UpdateRelativeSize() {
-        if (RelativeSizeAxes == Axes.None || Parent == null) {
-            return;
-        }
+        if (RelativeSizeAxes == Axes.None || Parent == null) return;
 
         Vector2 nSize = new(RelativeSizeAxes.HasFlag(Axes.X) ? Parent.Size.X : Size.X, RelativeSizeAxes.HasFlag(Axes.Y) ? Parent.Size.Y : Size.Y);
 
-        if (_size == nSize) {
-            return;
-        }
+        if (_size == nSize) return;
 
         _size = nSize;
         OnSizeChange?.Invoke(nSize);

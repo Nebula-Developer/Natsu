@@ -5,11 +5,14 @@ namespace Natsu.Graphics;
 public partial class Element : IDisposable {
     private Application? _app;
     private int _index;
+    private bool _loaded;
     private string? _name;
     private Element? _parent;
-    private bool _loaded;
 
     public bool DisposeChildren { get; set; } = true;
+
+    public bool Active { get; set; } = true;
+    public bool Visible { get; set; } = true;
 
     public virtual string Name {
         get => _name ?? GetType().Name;
@@ -32,7 +35,7 @@ public partial class Element : IDisposable {
             ForChildren(child => child.App = value);
             if (_app == value)
                 return;
-            
+
             _app?.RemoveInputCandidate(this);
 
             _app = value;
@@ -54,6 +57,11 @@ public partial class Element : IDisposable {
         }
     }
 
+    public bool Clip { get; set; } = false;
+    public float ClipRadius { get; set; } = 0;
+    public bool ClipDifference { get; set; } = false;
+    public bool ClipAntiAlias { get; set; } = true;
+
     public void Dispose() {
         OnDispose();
         Disposed?.Invoke();
@@ -62,19 +70,15 @@ public partial class Element : IDisposable {
             Clear(true);
     }
 
-    public void Load() {
+    public bool Load() {
         if (_loaded)
-            return;
+            return false;
 
         OnLoad();
         Loaded?.Invoke();
         _loaded = true;
+        return true;
     }
-    
-    public bool Clip { get; set; } = false;
-    public float ClipRadius { get; set; } = 0;
-    public bool ClipDifference { get; set; } = false;
-    public bool ClipAntiAlias { get; set; } = true;
 
     public virtual void ClipCanvas(ICanvas canvas) {
         if (ClipRadius == 0) {
@@ -86,11 +90,12 @@ public partial class Element : IDisposable {
     }
 
     public void Render(ICanvas canvas) {
+        if (!Visible)
+            return;
+
         canvas.SetMatrix(Matrix);
         int save = canvas.Save();
-        if (Clip) {
-            ClipCanvas(canvas);
-        }
+        if (Clip) ClipCanvas(canvas);
 
         OnRender(canvas);
         // Any bound rendering can happen here
@@ -103,11 +108,14 @@ public partial class Element : IDisposable {
     }
 
     public void Update() {
+        if (!Active)
+            return;
+
         OnUpdate();
         Updated?.Invoke();
         OnUpdateChildren();
     }
-    
+
     public virtual void OnLoad() { }
     public virtual void OnDispose() { }
 

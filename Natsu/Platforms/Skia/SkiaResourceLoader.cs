@@ -15,9 +15,7 @@ public class SkiaResourceLoader : IPlatformResourceLoader {
     public Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
 
     public IImage LoadImage(byte[] data, string name) {
-        if (Images[name] is { } cache) {
-            return cache;
-        }
+        if (Images[name] is { } cache) return cache;
 
         SKImage? image = SKImage.FromEncodedData(new SKMemoryStream(data));
         SkiaImage skiaImage = new(image);
@@ -26,9 +24,7 @@ public class SkiaResourceLoader : IPlatformResourceLoader {
     }
 
     public IFont LoadFont(byte[] data, string name) {
-        if (Fonts[name] is IFont cache) {
-            return cache;
-        }
+        if (Fonts[name] is IFont cache) return cache;
 
         SKTypeface? typeface = SKTypeface.FromData(SKData.CreateCopy(data));
         SkiaFont skiaFont = new(typeface);

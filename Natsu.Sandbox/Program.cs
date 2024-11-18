@@ -1,7 +1,8 @@
-﻿using System.Xml;
+using System.Xml;
 
 using Natsu.Graphics;
 using Natsu.Graphics.Elements;
+using Natsu.Input;
 using Natsu.Mathematics;
 using Natsu.Platforms.Skia;
 
@@ -15,7 +16,7 @@ using MouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
 
 namespace Natsu.Sandbox;
 
-public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency = 244 }, NativeWindowSettings.Default) {
+public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency = 5 }, NativeWindowSettings.Default) {
     public List<OffscreenSurfaceElement> LayerSurfaces = new();
 
     public void CreateSurface(int width, int height) {
@@ -24,11 +25,10 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
             _target = new GRBackendRenderTarget(width, height, 0, 8, new GRGlFramebufferInfo(0, (uint)SizedInternalFormat.Rgba8));
             _surface = SKSurface.Create(_context, _target, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
 
-            if (App == null) {
+            if (App == null)
                 App = new MyApp(_surface);
-            } else {
+            else
                 App.LoadRenderer(_surface);
-            }
 
             TryGetCurrentMonitorScale(out float dpiX, out float dpiY);
             App.Root.Scale = new Vector2(dpiX, dpiY);
@@ -116,9 +116,7 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
                 string[] tilesData = content.Split(',');
                 for (int i = 0; i < tilesData.Length; i++) {
                     int tileId = int.Parse(tilesData[i]);
-                    if (tileId == 0) {
-                        continue;
-                    }
+                    if (tileId == 0) continue;
 
                     Console.WriteLine($"Drawing tile {tileId}, count: {tiles.Count}");
                     int x = i % w;
@@ -168,13 +166,15 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
     protected override void OnMouseDown(MouseButtonEventArgs e) => App.MouseDown(ConvertButton(e.Button), new Vector2(MouseState.X, MouseState.Y));
     protected override void OnMouseUp(MouseButtonEventArgs e) => App.MouseUp(ConvertButton(e.Button), new Vector2(MouseState.X, MouseState.Y));
     protected override void OnMouseMove(MouseMoveEventArgs e) => App.MouseMove(new Vector2(MouseState.X, MouseState.Y));
-    protected override void OnMouseWheel(MouseWheelEventArgs e) => App.MouseWheel(new(e.Offset.X, e.Offset.Y));
+    protected override void OnMouseWheel(MouseWheelEventArgs e) => App.MouseWheel(new Vector2(e.Offset.X, e.Offset.Y));
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e) {
         if (e.IsRepeat) return;
-        App.KeyDown((Input.Key)e.Key);
+
+        App.KeyDown((Key)e.Key);
     }
-    protected override void OnKeyUp(KeyboardKeyEventArgs e) => App.KeyUp((Input.Key)e.Key);
+
+    protected override void OnKeyUp(KeyboardKeyEventArgs e) => App.KeyUp((Key)e.Key);
 
 
 #nullable disable

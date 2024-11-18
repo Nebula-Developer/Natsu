@@ -11,11 +11,15 @@ using SkiaSharp;
 namespace Natsu.Sandbox;
 
 public class ButtonRect : InputElement {
+
+    public Color BaseColor = Colors.Red;
+
+    public bool Blocking;
+    public Color HoverColor = Colors.Green;
     public RectElement Rect;
     public TextElement Text;
 
-    public Color BaseColor = Colors.Red;
-    public Color HoverColor = Colors.Green;
+    public string Value = "Yeah!";
 
     public ButtonRect(IFont font) {
         RawChildren = [
@@ -59,65 +63,59 @@ public class ButtonRect : InputElement {
     public override void OnMouseUp(MouseButton button, Vector2 position) {
         Scale = new Vector2(1f);
         Console.WriteLine("Mouse Up " + Name);
-        return;
     }
 
     public override void OnFocus() => Text.Paint.Color = Colors.Black;
     public override void OnBlur() => Text.Paint.Color = Colors.White;
 
-    public string Value = "Yeah!";
-
-    public string KeyString(Key key) {
-        return key switch {
-            Key.A => "a",
-            Key.B => "b",
-            Key.C => "c",
-            Key.D => "d",
-            Key.E => "e",
-            Key.F => "f",
-            Key.G => "g",
-            Key.H => "h",
-            Key.I => "i",
-            Key.J => "j",
-            Key.K => "k",
-            Key.L => "l",
-            Key.M => "m",
-            Key.N => "n",
-            Key.O => "o",
-            Key.P => "p",
-            Key.Q => "q",
-            Key.R => "r",
-            Key.S => "s",
-            Key.T => "t",
-            Key.U => "u",
-            Key.V => "v",
-            Key.W => "w",
-            Key.X => "x",
-            Key.Y => "y",
-            Key.Z => "z",
-            Key.D0 => "0",
-            Key.D1 => "1",
-            Key.D2 => "2",
-            Key.D3 => "3",
-            Key.D4 => "4",
-            Key.D5 => "5",
-            Key.D6 => "6",
-            Key.D7 => "7",
-            Key.D8 => "8",
-            Key.D9 => "9",
-            Key.Space => " ",
-            Key.Enter => "\n",
-            _ => ""
-        };
-    }
+    public string KeyString(Key key) => key switch {
+        Key.A => "a",
+        Key.B => "b",
+        Key.C => "c",
+        Key.D => "d",
+        Key.E => "e",
+        Key.F => "f",
+        Key.G => "g",
+        Key.H => "h",
+        Key.I => "i",
+        Key.J => "j",
+        Key.K => "k",
+        Key.L => "l",
+        Key.M => "m",
+        Key.N => "n",
+        Key.O => "o",
+        Key.P => "p",
+        Key.Q => "q",
+        Key.R => "r",
+        Key.S => "s",
+        Key.T => "t",
+        Key.U => "u",
+        Key.V => "v",
+        Key.W => "w",
+        Key.X => "x",
+        Key.Y => "y",
+        Key.Z => "z",
+        Key.D0 => "0",
+        Key.D1 => "1",
+        Key.D2 => "2",
+        Key.D3 => "3",
+        Key.D4 => "4",
+        Key.D5 => "5",
+        Key.D6 => "6",
+        Key.D7 => "7",
+        Key.D8 => "8",
+        Key.D9 => "9",
+        Key.Space => " ",
+        Key.Enter => "\n",
+        _ => ""
+    };
 
     public override bool OnKeyDown(Key key) {
         if (key == Key.Backspace) {
             if (Value.Length > 0)
                 Value = Value.Substring(0, Value.Length - 1);
-        } else {
+        } else
             Value += KeyString(key);
-        }
 
         Text.Text = Value;
         return Blocking;
@@ -128,8 +126,6 @@ public class ButtonRect : InputElement {
         Text.Text = Value;
         return Blocking;
     }
-
-    public bool Blocking = false;
 }
 
 public class MyApp : Application {
@@ -272,7 +268,7 @@ public class MyApp : Application {
             Size = new Vector2(300),
             AnchorPosition = new Vector2(0.5f),
             OffsetPosition = new Vector2(0.5f),
-            Position = new(-150, 0),
+            Position = new Vector2(-150, 0),
             Parent = Root,
             Index = 9999998,
             Name = "Left"
@@ -282,19 +278,16 @@ public class MyApp : Application {
             Size = new Vector2(300),
             AnchorPosition = new Vector2(0.5f),
             OffsetPosition = new Vector2(0.5f),
-            Position = new(150, 0),
+            Position = new Vector2(150, 0),
             Parent = Root,
             Blocking = false,
             Index = 9999999,
             Name = "Right"
         };
-
     } // FPS: 260
 
     public void LoadRenderer(SKSurface surface) {
-        lock (this) {
-            Renderer = new SkiaRenderer(surface);
-        }
+        lock (this) Renderer = new SkiaRenderer(surface);
     }
 
     protected override void OnRender() {
@@ -321,12 +314,11 @@ public class MyApp : Application {
 
     public List<Element> GetElementsAt(Vector2 position, Element root, ref List<Element> elements) {
         List<Element> xy = new();
-        foreach (Element x in PositionalInputList) {
+        foreach (Element x in PositionalInputList)
             if (x.PointInside(position)) {
                 elements.Add(x);
                 break;
             }
-        }
 
         return elements;
         // if (elements == null) elements = new();

@@ -1,4 +1,3 @@
-using Natsu.Graphics;
 using Natsu.Mathematics;
 
 namespace Natsu.Graphics.Elements;
@@ -40,14 +39,10 @@ public class OffscreenSurfaceElement : PaintableElement {
     public override void OnRender(ICanvas canvas) {
         base.OnRender(canvas);
 
-        if (Surface == null) {
-            return;
-        }
+        if (Surface == null) return;
 
         if (RenderSurface) {
-            if (ImageScaling) {
-                throw new InvalidOperationException("Cannot use ImageScaling and RenderSurface at the same time, IOffscreenSurface cannot be scaled directly");
-            }
+            if (ImageScaling) throw new InvalidOperationException("Cannot use ImageScaling and RenderSurface at the same time, IOffscreenSurface cannot be scaled directly");
 
             canvas.DrawOffscreenSurface(Surface, Vector2.Zero);
         } else {
@@ -56,11 +51,10 @@ public class OffscreenSurfaceElement : PaintableElement {
                 Validate(Surface.Snapshot());
             }
 
-            if (ImageScaling) {
+            if (ImageScaling)
                 canvas.DrawImage(_snapshot!, new Rect(0, 0, DrawSize.X, DrawSize.Y), Paint);
-            } else {
+            else
                 canvas.DrawOffscreenSurface(Surface, Vector2.Zero);
-            }
         }
     }
 }

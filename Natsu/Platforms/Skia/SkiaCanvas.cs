@@ -33,17 +33,13 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
     public void DrawOffscreenSurface(IOffscreenSurface surface, Vector2 position) {
         if (surface is SkiaOffscreenSurface skiaSurface) {
             if (skiaSurface.UseSnapshot) {
-                if (skiaSurface.Image == null) {
-                    throw new ArgumentException("SkiaOffscreenSurface not flushed before rendering");
-                }
+                if (skiaSurface.Image == null) throw new ArgumentException("SkiaOffscreenSurface not flushed before rendering");
 
                 Canvas.DrawImage(skiaSurface.Image, position);
-            } else {
+            } else
                 Canvas.DrawSurface(skiaSurface.Surface, position);
-            }
-        } else {
+        } else
             throw new ArgumentException("Non-SkiaOffscreenSurface provided to SkiaCanvas");
-        }
     }
 
     public void ResetMatrix() => Canvas.ResetMatrix();
@@ -74,9 +70,7 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
         };
         Paint.TextSize = paint.TextSize;
 
-        if (font is SkiaFont skiaFont) {
-            Paint.Typeface = skiaFont.Typeface;
-        }
+        if (font is SkiaFont skiaFont) Paint.Typeface = skiaFont.Typeface;
 
         return Paint;
     }

@@ -6,9 +6,7 @@ public class DirtyValue<T> where T : class {
 
     public void Invalidate() {
         IsDirty = true;
-        if (Value is IDisposable disposable) {
-            disposable.Dispose();
-        }
+        if (Value is IDisposable disposable) disposable.Dispose();
 
         Value = null;
     }

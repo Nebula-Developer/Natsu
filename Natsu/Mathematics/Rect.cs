@@ -32,9 +32,7 @@ public class Rect : IEquatable<Rect> {
     public bool Intersects(Rect other) => X < other.X + other.Width && X + Width > other.X && Y < other.Y + other.Height && Y + Height > other.Y;
 
     public Rect Intersection(Rect other) {
-        if (!Intersects(other)) {
-            return null;
-        }
+        if (!Intersects(other)) return null;
 
         float x = MathF.Max(X, other.X);
         float y = MathF.Max(Y, other.Y);

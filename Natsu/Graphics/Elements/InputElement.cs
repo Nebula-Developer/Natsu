@@ -4,6 +4,8 @@ using Natsu.Mathematics;
 namespace Natsu.Graphics.Elements;
 
 public class InputElement : Element {
+    public bool AcceptInput { get; set; } = true;
+
     public virtual bool OnMouseDown(MouseButton button, Vector2 position) => false;
     public virtual void OnMouseUp(MouseButton button, Vector2 position) { }
 
@@ -69,9 +71,7 @@ public class InputElement : Element {
         return OnKeyDown(key);
     }
 
-    public void KeyUp(Key key) {
-        KeyUpEvent?.Invoke(key);
-    }
+    public void KeyUp(Key key) => KeyUpEvent?.Invoke(key);
 
     public void Focus() {
         Focused?.Invoke();

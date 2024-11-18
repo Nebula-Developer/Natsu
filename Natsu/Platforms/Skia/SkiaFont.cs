@@ -12,7 +12,7 @@ public record SkiaFont(SKTypeface Typeface) : IFont {
             TextSize = size,
             IsAntialias = true
         };
-        
+
         float w = paint.MeasureText(text);
         return new Vector2(w, size);
     }

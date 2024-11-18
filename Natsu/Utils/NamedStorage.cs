@@ -9,11 +9,9 @@ public class NamedStorage<T> : IDisposable where T : class {
     }
 
     public void Dispose() {
-        foreach (T item in _storage.Values) {
-            if (item is IDisposable disposable) {
+        foreach (T item in _storage.Values)
+            if (item is IDisposable disposable)
                 disposable.Dispose();
-            }
-        }
 
         _storage.Clear();
     }

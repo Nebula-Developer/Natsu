@@ -27,9 +27,7 @@ public class SkiaOffscreenSurface : IOffscreenSurface {
     }
 
     public IImage Snapshot() {
-        if (Image == null) {
-            throw new InvalidOperationException("SkiaOffscreenSurface not flushed before snapshot");
-        }
+        if (Image == null) throw new InvalidOperationException("SkiaOffscreenSurface not flushed before snapshot");
 
         return new SkiaImage(Image);
     }
