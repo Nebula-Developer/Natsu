@@ -2,7 +2,7 @@ using SkiaSharp;
 
 namespace Natsu.Mathematics;
 
-public class Matrix {
+public struct Matrix {
     public SKMatrix SkiaMatrix { get; set; } = SKMatrix.CreateIdentity();
 
     public void Reset() => SkiaMatrix = SKMatrix.CreateIdentity();
@@ -53,4 +53,6 @@ public class Matrix {
         SkiaMatrix.TryInvert(out SKMatrix inverted);
         return inverted;
     }
+
+    public Matrix() { }
 }

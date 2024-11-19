@@ -8,8 +8,23 @@ public class DirtyValue<T> where T : class {
         IsDirty = true;
         if (Value is IDisposable disposable) disposable.Dispose();
 
+    
         Value = null;
     }
+
+    public T Validate(T t) {
+        Value = t;
+        IsDirty = false;
+        return t;
+    }
+}
+
+public class DirtyStruct<T> where T : struct {
+    public T Value;
+    
+    public bool IsDirty { get; private set; }
+
+    public void Invalidate() => IsDirty = true;
 
     public T Validate(T t) {
         Value = t;

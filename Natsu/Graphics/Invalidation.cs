@@ -2,9 +2,10 @@
 
 namespace Natsu.Graphics;
 
+[Flags]
 public enum Invalidation {
-    None = 0,
-    Geometry = 1,
-    Appearance = 2,
-    Layout = 3
+    None = 1 << 0,
+    Geometry = 1 << 1,
+    DrawSize = 1 << 2,
+    All = Geometry | DrawSize
 }

@@ -1,3 +1,5 @@
+using Natsu.Mathematics;
+
 namespace Natsu.Graphics;
 
 public partial class Element {
@@ -15,7 +17,7 @@ public partial class Element {
                 App = Parent.App;
             else if (_app != null) App.ConstructInputLists();
 
-            UpdateMatrix();
+            Invalidate(Invalidation.All);
         }
     }
 
@@ -32,11 +34,13 @@ public partial class Element {
     }
 
     public void Remove(params Element[] elements) {
-        lock (_children)
+        lock (_children) {
             foreach (Element element in elements) {
                 _children.Remove(element);
                 if (element.Parent == this) element.Parent = null;
             }
+            CildrenChanged();
+        }
     }
 
     private void addChild(Element element) {
@@ -48,15 +52,18 @@ public partial class Element {
                 }
 
             _children.Add(element);
+            CildrenChanged();
         }
     }
 
     public void Add(params Element[] elements) {
-        lock (_children)
+        lock (_children) {
             foreach (Element element in elements) {
                 addChild(element);
                 if (element.Parent != this) element.Parent = this;
             }
+            CildrenChanged();
+        }
     }
 
     public void Clear(bool dispose = false) {
@@ -64,6 +71,7 @@ public partial class Element {
             if (dispose) ForChildren(child => child.Dispose());
 
             _children.Clear();
+            CildrenChanged();
         }
     }
 
@@ -81,4 +89,14 @@ public partial class Element {
     }
 
     public bool HasChild(Element element) => _children.Contains(element);
+
+    public virtual void OnChildrenChange() { }
+    public event Action? ChildrenChangedEvent;
+
+    public void CildrenChanged() {
+        if (ChildRelativeSizeAxes != Axes.None)
+            Invalidate(Invalidation.Geometry);
+        OnChildrenChange();
+        ChildrenChangedEvent?.Invoke();
+    }
 }

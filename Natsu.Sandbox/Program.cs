@@ -16,7 +16,7 @@ using MouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
 
 namespace Natsu.Sandbox;
 
-public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency = 244 }, new NativeWindowSettings { ClientSize = new(800, 600), Title = "Natsu Sandbox", Vsync = VSyncMode.On }) {
+public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency = 500 }, new NativeWindowSettings { ClientSize = new(800, 600), Title = "Natsu Sandbox", Vsync = VSyncMode.Off }) {
     public List<OffscreenSurfaceElement> LayerSurfaces = new();
 
     public void CreateSurface(int width, int height) {
@@ -145,10 +145,44 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
         }
     }
 
+    List<float> fps = new();
+
     protected override void OnRenderFrame(FrameEventArgs args) {
         base.OnRenderFrame(args);
         App.Render();
+
+        fps.Add((float)(1 / args.Time));
+        if (fps.Count > 0) {
+            const float div = 2;
+            while (fps.Count > Size.X / div) {
+                fps.RemoveAt(0);
+            }
+
+            SKPath path = new();
+            float max = fps.Max();
+            float min = fps.Min();
+            float avg = fps.Average();
+            const float graphHeight = 100;
+
+            path.MoveTo(0, 0);
+            for (int i = 0; i < fps.Count; i++) {
+                float x = i * div;
+                float y = graphHeight - (fps[i] / max) * graphHeight;
+                path.LineTo(x, y);
+            }
+            path.LineTo(fps.Count * div, 0);
+            path.Close();
+
+            App.Canvas.DrawPath(new VectorPath(path), new Paint { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 });
+            SkiaCanvas canvas = (SkiaCanvas)App.Canvas;
+            canvas.Canvas.DrawText($"FPS: {avg}, Min: {min}, Max: {max}", 0, graphHeight + 12, new SKPaint { Color = SKColors.White, TextSize = 12 });
+            App.Renderer.Flush();
+
+        }
+
+
         SwapBuffers();
+
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args) {

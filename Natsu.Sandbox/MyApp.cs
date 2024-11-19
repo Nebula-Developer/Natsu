@@ -304,9 +304,42 @@ public class MyApp : Application {
             AnchorPosition = new(0.5f),
             OffsetPosition = new(0.5f),
             Paint = new Paint {
-                TextSize = 20
+                TextSize = 20,
+                IsAntialias = true
             }
         });
+
+        for (int i = 0; i < 100; i++) {
+            TextElement test2;
+
+            RectElement childBasedRect = new() {
+                Size = new(100, 100),
+                Position = new(100 * i, 100 * i),
+                AnchorPosition = new(0.5f),
+                OffsetPosition = new(0.5f),
+                ChildRelativeSizeAxes = Axes.Both,
+                Index = 100,
+                Parent = Root,
+                Paint = new() {
+                    Color = Colors.Red
+                },
+                Name = "Test",
+                RawChildren = [
+                    test2 = new TextElement("Test", font) {
+                        Paint = new Paint {
+                            TextSize = 20,
+                            IsAntialias = true
+                        },
+                        // Rotation = 45,
+                        Name = "Test2"
+                    }
+                ]
+            };
+
+            childBasedRect.Updated += () => {
+                test2.Rotation += (float)UpdateTime.DeltaTime * i;
+            };
+        }
 
         bool t = false;
         scaleButton.MousePressEvent += (button, position) => {
