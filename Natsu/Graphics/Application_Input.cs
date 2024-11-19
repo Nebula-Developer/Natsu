@@ -22,14 +22,14 @@ public partial class Application {
     private readonly Dictionary<InputElement, MouseEnterCacheState> _mouseEnterCache = new();
 
     private InputElement _rawFocusedElement;
-
-    public Vector2 MousePosition { get; private set; }
+    public Dictionary<Key, bool> Keys = new();
 
     public Dictionary<MouseButton, bool> MouseState = new();
-    public Dictionary<Key, bool> Keys = new();
 
     protected List<GlobalInputElement> NonPositionalInputList = new();
     protected List<InputElement> PositionalInputList = new();
+
+    public Vector2 MousePosition { get; private set; }
 
     private InputElement _focusedElement {
         get => _rawFocusedElement;
@@ -180,9 +180,7 @@ public partial class Application {
                     blocked = true;
 
                 _mouseEnterCache[elm] = blocked ? MouseEnterCacheState.OverBlock : MouseEnterCacheState.Over;
-            } else if (state.HasFlag(MouseEnterCacheState.Over)) {
-                elm.MouseMove(position);
-            }
+            } else if (state.HasFlag(MouseEnterCacheState.Over)) elm.MouseMove(position);
         }
 
         if (_focusedElement != null && !elms.Contains(_focusedElement))

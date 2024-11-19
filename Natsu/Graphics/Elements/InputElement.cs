@@ -7,6 +7,11 @@ public class InputElement : Element {
     public bool AcceptInput { get; set; } = true;
     public bool GrabFallback { get; set; } = false;
 
+    public Dictionary<MouseButton, bool> MouseButtons { get; } = new();
+    public Dictionary<Key, bool> Keys { get; } = new();
+    public bool IsMouseOver { get; private set; }
+    public bool IsFocused { get; private set; }
+
     public virtual bool OnMouseDown(MouseButton button, Vector2 position) => GrabFallback;
     public virtual void OnMouseUp(MouseButton button, Vector2 position) { }
     public virtual void OnMousePress(MouseButton button, Vector2 position) { }
@@ -40,11 +45,6 @@ public class InputElement : Element {
 
     public event Action? Focused;
     public event Action? Blurred;
-
-    public Dictionary<MouseButton, bool> MouseButtons { get; } = new();
-    public Dictionary<Key, bool> Keys { get; } = new();
-    public bool IsMouseOver { get; private set; }
-    public bool IsFocused { get; private set; }
 
     public bool MouseDown(MouseButton button, Vector2 position) {
         MouseButtons[button] = true;

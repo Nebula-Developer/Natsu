@@ -1,4 +1,3 @@
-
 namespace Natsu.Mathematics;
 
 public enum TransformLoopMode {
@@ -26,23 +25,6 @@ We also keep track of the total end time of the sequence, so we can know when th
 */
 
 public class Transform {
-    public double StartTime { get; set; }
-    public double EndTime { get; set; }
-    public double Duration {
-        get => EndTime - StartTime;
-        set => EndTime = StartTime + value;
-    }
-
-    public bool Performed { get; set; } = false;
-
-    public Easing Ease { get; set; } = Easings.Linear;
-
-    public Action<double> Setter { get; set; }
-
-    public void SetProgress(double progress) {
-        progress = Math.Clamp(progress, 0, 1);
-        Setter(Ease(progress));
-    }
 
     public Transform(Action<double> setter, double duration, double startTime = 0) {
         if (setter == null) throw new ArgumentNullException(nameof(setter));
@@ -53,15 +35,48 @@ public class Transform {
         StartTime = startTime;
         Duration = duration;
     }
+
+    public double StartTime { get; set; }
+    public double EndTime { get; set; }
+    public double Duration {
+        get => EndTime - StartTime;
+        set => EndTime = StartTime + value;
+    }
+
+    public bool Performed { get; set; }
+
+    public Easing Ease { get; set; } = Easings.Linear;
+
+    public Action<double> Setter { get; set; }
+
+    public void SetProgress(double progress) {
+        progress = Math.Clamp(progress, 0, 1);
+        Setter(Ease(progress));
+    }
 }
 
 public class TransformSequence {
+
+    private readonly List<Transform> _affectedElements = new();
+
+    public TransformSequence(string name) {
+        Name = name;
+    }
+
     public List<Transform> Sequence { get; } = new();
-    public double BaseTime { get; set; } = 0;
+    public double BaseTime { get; set; }
     public double EndTime => Math.Max(BaseTime, Sequence.Max(t => t.EndTime));
-    public double Time { get; set; } = 0;
+    public double Time { get; set; }
 
     public string Name { get; set; } = "";
+
+    public bool IsComplete => Time >= EndTime;
+
+    public bool Stopped { get; set; }
+
+    public Dictionary<int, double> LoopPoints { get; } = new() {
+        { 0, 0 }
+    };
 
     public void Update(double dt) {
         Time += dt;
@@ -69,17 +84,13 @@ public class TransformSequence {
         Update();
     }
 
-    private readonly List<Transform> _affectedElements = new();
-
-    public bool IsComplete => Time >= EndTime;
-
-    public bool Stopped { get; set; } = false;
     public void Stop() => Stopped = true;
 
     public void Update() {
-        foreach (var transform in Sequence) {
+        foreach (Transform transform in Sequence) {
             if (transform.Duration == 0 && Time >= transform.StartTime) {
                 if (transform.Performed) continue;
+
                 transform.Performed = true;
                 transform.SetProgress(1);
                 continue;
@@ -107,17 +118,9 @@ public class TransformSequence {
         }
     }
 
-    public TransformSequence(string name) {
-        Name = name;
-    }
-
-    public Dictionary<int, double> LoopPoints { get; } = new() {
-        {0, 0}
-    };
-
     public void Reset() {
         Time = 0;
-        foreach (var transform in Sequence) {
+        foreach (Transform transform in Sequence) {
             transform.Performed = false;
             if (transform.Duration > 0)
                 transform.SetProgress(0);
@@ -126,21 +129,21 @@ public class TransformSequence {
 
     public void ResetTo(int point) {
         Time = LoopPoints[point];
-        foreach (var transform in Sequence) {
+        foreach (Transform transform in Sequence)
             if (Time > transform.StartTime) {
                 transform.Performed = false;
                 transform.SetProgress(0);
             }
-        }
     }
 }
 
 public class TransformSequence<T> : TransformSequence where T : class {
-    public T Target { get; set; }
 
     public TransformSequence(T target, string name) : base(name) {
         Target = target;
     }
+
+    public T Target { get; set; }
 
     /*
     Eg. If we want to scale from where we currently are to 2,2, then back to 1,1,
@@ -149,7 +152,7 @@ public class TransformSequence<T> : TransformSequence where T : class {
     so we can use it in the next transform.
     */
     public Dictionary<string, object> FutureData { get; } = new();
-    
+
 
     public TransformSequence<T> Then(float delay = 0) {
         BaseTime = EndTime + delay;
@@ -167,11 +170,11 @@ public class TransformSequence<T> : TransformSequence where T : class {
     public TransformSequence<T> Loop(double delay, int times = -1, int point = 0) {
         if (!LoopPoints.ContainsKey(point))
             throw new ArgumentOutOfRangeException(nameof(point), "Loop point does not exist.");
-        
+
         int count = 0;
-        Transform t = new Transform(_ => {
+        Transform t = new(_ => {
             if (times == -1 || count++ < times)
-                this.ResetTo(point);
+                ResetTo(point);
         }, 0);
         t.StartTime = EndTime + delay;
         t.EndTime = EndTime + delay;

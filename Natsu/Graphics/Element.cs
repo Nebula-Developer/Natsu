@@ -19,43 +19,6 @@ public partial class Element : IDisposable {
         set => _name = value;
     }
 
-    #nullable disable
-    public Application App {
-        get {
-            if (_app != null)
-                return _app;
-
-            if (Parent != null) {
-                App = Parent.App;
-                return _app!;
-            }
-
-            return null;
-        }
-        set => setApp(value);
-    }
-
-    private bool setApp(Application app, bool constructInputLists = false) {
-        if (_app == app)
-            return false;
-
-        _app?.RemoveInputCandidate(this);
-
-        Application old = _app;
-        _app = app;
-
-        ForChildren(child => child.setApp(app, false));
-
-        if (constructInputLists)
-            app.ConstructInputLists();
-
-        AppChanged?.Invoke(old);
-        OnAppChange(old);
-
-        return true;
-    }
-    #nullable restore
-
     public IRenderer Renderer => App.Renderer;
     public ResourceLoader ResourceLoader => App.ResourceLoader;
 
@@ -123,9 +86,9 @@ public partial class Element : IDisposable {
     public void Update() {
         if (!Active)
             return;
-        
+
         UpdateTransformSequences();
-        
+
         OnUpdate();
         Updated?.Invoke();
         OnUpdateChildren();
@@ -149,4 +112,39 @@ public partial class Element : IDisposable {
     public event Action? Rendered;
 
     public event Action<Application>? AppChanged;
+#nullable disable
+    public Application App {
+        get {
+            if (_app != null)
+                return _app;
+
+            if (Parent != null) {
+                App = Parent.App;
+                return _app!;
+            }
+
+            return null;
+        }
+        set => setApp(value);
+    }
+
+    private bool setApp(Application app, bool constructInputLists = false) {
+        if (_app == app)
+            return false;
+
+        _app?.RemoveInputCandidate(this);
+
+        Application old = _app;
+        _app = app;
+
+        ForChildren(child => child.setApp(app));
+
+        if (constructInputLists)
+            app.ConstructInputLists();
+
+        AppChanged?.Invoke(old);
+        OnAppChange(old);
+
+        return true;
+    }
 }

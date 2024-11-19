@@ -1,4 +1,3 @@
-
 namespace Natsu.Mathematics;
 
 public static class Precision {

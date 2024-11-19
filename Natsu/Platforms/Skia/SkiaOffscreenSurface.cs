@@ -6,7 +6,11 @@ namespace Natsu.Platforms.Skia;
 
 public class SkiaOffscreenSurface : IOffscreenSurface {
     public SkiaOffscreenSurface(int width, int height) {
+        if (width < 1 || height < 1) throw new ArgumentException("IOffscreenSurface width and height must be greater than 0");
+
         Surface = SKSurface.Create(new SKImageInfo(width, height));
+        if (Surface == null) throw new InvalidOperationException("Failed to create SkiaSurface");
+
         Canvas = new SkiaCanvas(Surface.Canvas);
         Width = width;
         Height = height;

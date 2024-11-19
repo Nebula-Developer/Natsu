@@ -8,7 +8,7 @@ public class DirtyValue<T> where T : class {
         IsDirty = true;
         if (Value is IDisposable disposable) disposable.Dispose();
 
-    
+
         Value = null;
     }
 
@@ -21,7 +21,7 @@ public class DirtyValue<T> where T : class {
 
 public class DirtyStruct<T> where T : struct {
     public T Value;
-    
+
     public bool IsDirty { get; private set; }
 
     public void Invalidate() => IsDirty = true;

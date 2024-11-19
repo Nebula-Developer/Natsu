@@ -39,6 +39,7 @@ public partial class Element {
                 _children.Remove(element);
                 if (element.Parent == this) element.Parent = null;
             }
+
             CildrenChanged();
         }
     }
@@ -62,6 +63,7 @@ public partial class Element {
                 addChild(element);
                 if (element.Parent != this) element.Parent = this;
             }
+
             CildrenChanged();
         }
     }
