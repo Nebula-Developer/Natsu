@@ -22,6 +22,7 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
     public void CreateSurface(int width, int height) {
         lock (this) {
             _surface?.Dispose();
+            
             _target = new GRBackendRenderTarget(width, height, 0, 8, new GRGlFramebufferInfo(0, (uint)SizedInternalFormat.Rgba8));
             _surface = SKSurface.Create(_context, _target, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
 
@@ -29,10 +30,13 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
                 App = new MyApp(_surface);
             else
                 App.LoadRenderer(_surface);
-
-            TryGetCurrentMonitorScale(out float dpiX, out float dpiY);
-            App.Root.Scale = new Vector2(dpiX, dpiY);
         }
+    }
+
+    public void ResizeApp() {
+        TryGetCurrentMonitorScale(out float scaleX, out float scaleY);
+        App.Root.Scale = new Vector2(scaleX, scaleY);
+        App.Root.Size = new Vector2(Size.X * scaleX, Size.Y * scaleY);
     }
 
     protected override void OnLoad() {
@@ -43,7 +47,7 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
         CreateSurface(Size.X, Size.Y);
 
         App.Load();
-        App.Resize(Size.X, Size.Y);
+        ResizeApp();
     }
 
 
@@ -157,7 +161,7 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
         float clampHeight = Math.Max(e.Height, 1);
 
         CreateSurface((int)clampWidth, (int)clampHeight);
-        App.Resize((int)clampWidth, (int)clampHeight);
+        ResizeApp();
     }
 
     public Input.MouseButton ConvertButton(MouseButton button) => button switch {
@@ -193,32 +197,6 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
 #nullable restore
 }
 
-public class TestCanvas : SkiaCanvas {
-    protected TestCanvas(SKCanvas canvas, SKSurface surface) : base(canvas) {
-        Surface = surface;
-    }
-
-    public SKSurface Surface { get; }
-
-    public static TestCanvas FromSize(int w, int h) {
-        SKSurface surface = SKSurface.Create(new SKImageInfo(w, h));
-        return new TestCanvas(surface.Canvas, surface);
-    }
-
-    public void ToImage(string path) {
-        Surface.Flush();
-        using SKImage image = Surface.Snapshot();
-        using SKData data = image.Encode();
-        using FileStream fs = new(path, FileMode.Create);
-        data.SaveTo(fs);
-    }
-}
-
 public static class Program {
-    public static void Main(string[] args) {
-        HashSet<int> set = new();
-        set.Add(1);
-        set.Add(1);
-        new AppWindow().Run();
-    }
+    public static void Main(string[] args) => new AppWindow().Run();
 }

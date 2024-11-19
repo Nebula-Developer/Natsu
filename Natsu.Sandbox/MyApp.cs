@@ -50,7 +50,8 @@ public class ButtonRect : InputElement {
                     }
                 ],
                 AnchorPosition = new(0.5f),
-                OffsetPosition = new(0.5f)
+                OffsetPosition = new(0.5f),
+                Clip = true
             },
         ];
     }
@@ -89,6 +90,7 @@ public class ButtonRect : InputElement {
 
 public class Slider : Element {
     public RectElement Background, Bar, Thumb;
+    public Element ThumbContainer;
     public InputElement ThumbInput;
 
     public Slider() {
@@ -97,7 +99,7 @@ public class Slider : Element {
                 Parent = this,
                 RelativeSizeAxes = Axes.Both,
                 Paint = new Paint {
-                    Color = new Color(130, 140, 150, 255),
+                    Color = new Color(100, 110, 130),
                     IsAntialias = true,
                     FilterQuality = FilterQuality.Medium
                 },
@@ -107,26 +109,34 @@ public class Slider : Element {
                         Parent = this,
                         RelativeSizeAxes = Axes.Both,
                         Paint = new Paint {
-                            Color = new Color(170, 190, 200, 255),
+                            Color = new Color(170, 190, 200),
                             IsAntialias = true,
                             FilterQuality = FilterQuality.Medium
                         },
                         RoundedCorners = new(7.5f),
-                        Margin = new(5)
+                        Margin = new(5),
+                        RawChildren = [
+                            ThumbContainer = new Element() {
+                                Margin = new(5, 0),
+                                RelativeSizeAxes = Axes.Both,
+                                RawChildren = [
+                                    Thumb = new RectElement {
+                                        Parent = this,
+                                        Size = new(30, 30),
+                                        Paint = new Paint {
+                                            Color = new Color(200, 230, 255),
+                                            IsAntialias = true,
+                                            FilterQuality = FilterQuality.Medium
+                                        },
+                                        RoundedCorners = new(3),
+                                        AnchorPosition = new(1f, 0.5f),
+                                        OffsetPosition = new(1f, 0.5f),
+                                        // Position = new(25, 0)
+                                    }
+                                ]
+                            }
+                        ]
                     },
-                    Thumb = new RectElement {
-                        Parent = this,
-                        Size = new(20, 25),
-                        Paint = new Paint {
-                            Color = new Color(200, 210, 220, 255),
-                            IsAntialias = true,
-                            FilterQuality = FilterQuality.Medium
-                        },
-                        RoundedCorners = new(3),
-                        AnchorPosition = new(0, 0.5f),
-                        OffsetPosition = new(0.5f, 0.5f),
-                        Position = new(20, 0)
-                    }
                 ],
                 AnchorPosition = new(0.5f),
                 OffsetPosition = new(0.5f)
@@ -143,11 +153,18 @@ public class Slider : Element {
 
         void updatePos(Vector2 position) {
             float coord = ThumbInput.ToLocalSpace(position).X;
-            coord = Math.Clamp(coord, 20, DrawSize.X - Thumb.DrawSize.X);
-            Thumb.StopTransformSequences(nameof(Thumb.Position));
-            Thumb.MoveTo(new Vector2(coord, 0), 0.2f, Ease.ExponentialOut);
+            coord = Math.Clamp(coord, 25, DrawSize.X - Thumb.DrawSize.X + 5);
+            Thumb.StopTransformSequences("Anchor", "Offset");
+            // Thumb.MoveTo(new Vector2(coord, 0), 0.2f, Ease.ExponentialOut);
 
-            value = (coord - 20) / (DrawSize.X - Thumb.DrawSize.X - 20);
+            value = (coord - 25) / (DrawSize.X - Thumb.DrawSize.X - 20);
+            value = Math.Clamp(value, 0, 1);
+
+            // Thumb.AnchorPosition = new Vector2(value, 0.5f);
+            // Thumb.OffsetPosition = new Vector2(value, 0.5f);
+            Thumb.AnchorTo(new Vector2(value, 0.5f), 0.2f, Ease.ExponentialOut);
+            Thumb.OffsetTo(new Vector2(value, 0.5f), 0.2f, Ease.ExponentialOut);
+
             updateRoot();
         }
 
@@ -178,10 +195,14 @@ public class Slider : Element {
             Thumb.ColorTo(Colors.White, 0.2f, Ease.ExponentialOut);
 
             Background.StopTransformSequences();
-            Background.ScaleTo(new Vector2(1.05f), 0.2f, Ease.ExponentialOut);
+            Background.ScaleTo(new Vector2(1.02f), 0.2f, Ease.ExponentialOut);
             Background.ColorTo(Colors.White, 0.2f, Ease.ExponentialOut);
+
             Bar.StopTransformSequences();
             Bar.MarginTo(new Vector2(3), 0.2f, Ease.ExponentialOut);
+
+            ThumbContainer.StopTransformSequences();
+            ThumbContainer.MarginTo(new Vector2(10, 0), 0.2f, Ease.ExponentialOut);
         };
 
         ThumbInput.MouseUpEvent += (button, position) => {
@@ -190,13 +211,17 @@ public class Slider : Element {
 
             Thumb.StopTransformSequences(nameof(Thumb.Scale), nameof(Thumb.Paint.Color));
             Thumb.ScaleTo(new Vector2(1), 0.2f, Ease.ExponentialOut);
-            Thumb.ColorTo(new Color(200, 210, 220, 255), 0.2f, Ease.ExponentialOut);
+            Thumb.ColorTo(new Color(200, 230, 255), 0.2f, Ease.ExponentialOut);
 
             Background.StopTransformSequences();
             Background.ScaleTo(new Vector2(1), 0.2f, Ease.ExponentialOut);
-            Background.ColorTo(new Color(130, 140, 150, 255), 0.2f, Ease.ExponentialOut);
+            Background.ColorTo(new Color(100, 110, 130), 0.2f, Ease.ExponentialOut);
+
             Bar.StopTransformSequences();
             Bar.MarginTo(new Vector2(5), 0.2f, Ease.ExponentialOut);
+
+            ThumbContainer.StopTransformSequences();
+            ThumbContainer.MarginTo(new Vector2(5, 0), 0.2f, Ease.ExponentialOut);
         };
 
         ThumbInput.MouseMoveEvent += (position) => {
@@ -225,7 +250,7 @@ public class MyApp : Application {
         };
 
         ButtonRect rect = new() {
-            Size = new Vector2(300),
+            Size = new Vector2(300, 100),
             AnchorPosition = new Vector2(0.5f),
             OffsetPosition = new Vector2(0.5f),
             Position = new Vector2(-150, 0),
@@ -235,7 +260,7 @@ public class MyApp : Application {
         };
 
         ButtonRect rect2 = new() {
-            Size = new Vector2(300),
+            Size = new Vector2(300, 100),
             AnchorPosition = new Vector2(0.5f),
             OffsetPosition = new Vector2(0.5f),
             Position = new Vector2(150, 0),
@@ -244,25 +269,44 @@ public class MyApp : Application {
             Name = "Right"
         };
 
+        ImageElement test = new(ResourceLoader.LoadResourceImage("Resources/testimage.png")) {
+            RelativeSizeAxes = Axes.Both,
+            AnchorPosition = new Vector2(0.5f),
+            OffsetPosition = new Vector2(0.5f),
+            Parent = rect.Flash
+        };
+
         rect.MousePressEvent += (button, position) => {
             if (button != MouseButton.Left) return;
 
             rect.StopTransformSequences(nameof(rect.Position));
             rect.Position = new Vector2(-150, 0);
-            // rect.MoveTo(new(-150, 50), 0.5f).Then().MoveTo(new(-150, 0), 0.5f).Then().Loop(0, 1).Then()
-            //     .SetLoopPoint(1).MoveTo(new(-150, -50), 0.5f).Then().MoveTo(new(-150, 0), 0.5f).Then().Loop(0, -1, 1);
-                // with easing:
             rect.MoveTo(new(-150, 50), 0.5f, Ease.CubicOut).Then().MoveTo(new(-150, 0), 0.5f, Ease.CubicIn).Then().Loop(0, 1).Then()
-                .SetLoopPoint(1).MoveTo(new(-150, -50), 0.5f, Ease.CubicOut).Then().MoveTo(new(-150, 0), 0.5f, Ease.CubicIn).Then().Loop(0, -1, 1);
+                .SetLoopPoint(1).MoveTo(new(-150, -50), 0.5f, Ease.CubicOut).Then().MoveTo(new(-150, 0), 0.5f, Ease.CubicIn).Then().Loop(0, int.MaxValue, 0);
+        };
+
+        rect2.MousePressEvent += (button, position) => {
+            if (button != MouseButton.Left) return;
+            rect2.StopTransformSequences(nameof(rect2.Rotation));
+            float rot = MathF.Round(rect2.Rotation / 90) * 90 + 90;
+            rect2.RotateTo(rot, 1f, Ease.ElasticOut);
         };
 
         ButtonRect scaleButton = new() {
-            Size = new(50),
+            Size = new(100, 50),
             AnchorPosition = new(1, 0),
             OffsetPosition = new(1, 0),
             Parent = Root,
             Index = 555
         };
+
+        scaleButton.Background.Add(new TextElement("Scale", font) {
+            AnchorPosition = new(0.5f),
+            OffsetPosition = new(0.5f),
+            Paint = new Paint {
+                TextSize = 20
+            }
+        });
 
         bool t = false;
         scaleButton.MousePressEvent += (button, position) => {
@@ -275,12 +319,14 @@ public class MyApp : Application {
         };
 
         Slider slider = new() {
-            Size = new(300, 50),
+            RelativeSizeAxes = Axes.X,
+            Margin = new(30, 30),
+            Size = new(0, 110),
             AnchorPosition = new(0.5f, 1),
-            OffsetPosition = new(0.5f, 1),
-            Position = new(0, -10f),
+            OffsetPosition = new(0.5f, 0.5f),
             Parent = Root,
-            Index = 3
+            Index = 3,
+            Position = new(0, -55)
         };
 
         GlobalInputElement globalElm = new() {
@@ -299,9 +345,9 @@ public class MyApp : Application {
 
             if (ctrl && k == Key.D) {
                 if (toggle) {
-                    slider.MoveTo(new Vector2(0, -10), 0.3f, Ease.ExponentialOut);
+                    slider.MoveTo(new Vector2(0, -55), 0.3f, Ease.ExponentialOut);
                 } else {
-                    slider.MoveTo(new Vector2(0, 60), 0.3f, Ease.ExponentialOut);
+                    slider.MoveTo(new Vector2(0, 30), 0.3f, Ease.ExponentialOut);
                 }
 
                 toggle = !toggle;

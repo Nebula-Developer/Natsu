@@ -151,6 +151,36 @@ public static class ElementTransform {
         return sequence.TransformTo("Margin", (t) => sequence.Target.Margin = currentMargin.Lerp(margin, (float)t), duration, ease);
     }
 
+    public static TransformSequence<T> AnchorTo<T>(this T element, Vector2 anchor, double duration = 0, Ease ease = Ease.Linear)
+    where T : Element {
+        Vector2 currentAnchor = element.AnchorPosition;
+        var seq = element.TransformTo("Anchor", (t) => element.AnchorPosition = currentAnchor.Lerp(anchor, (float)t), duration, ease);
+        seq.FutureData["Anchor"] = anchor;
+        return seq;
+    }
+
+    public static TransformSequence<T> AnchorTo<T>(this TransformSequence<T> sequence, Vector2 anchor, double duration = 0, Ease ease = Ease.Linear)
+    where T : Element {
+        Vector2 currentAnchor = sequence.FutureData.ContainsKey("Anchor") ? (Vector2)sequence.FutureData["Anchor"] : sequence.Target.AnchorPosition;
+        sequence.FutureData["Anchor"] = anchor;
+        return sequence.TransformTo("Anchor", (t) => sequence.Target.AnchorPosition = currentAnchor.Lerp(anchor, (float)t), duration, ease);
+    }
+
+    public static TransformSequence<T> OffsetTo<T>(this T element, Vector2 offset, double duration = 0, Ease ease = Ease.Linear)
+    where T : Element {
+        Vector2 currentOffset = element.OffsetPosition;
+        var seq = element.TransformTo("Offset", (t) => element.OffsetPosition = currentOffset.Lerp(offset, (float)t), duration, ease);
+        seq.FutureData["Offset"] = offset;
+        return seq;
+    }
+
+    public static TransformSequence<T> OffsetTo<T>(this TransformSequence<T> sequence, Vector2 offset, double duration = 0, Ease ease = Ease.Linear)
+    where T : Element {
+        Vector2 currentOffset = sequence.FutureData.ContainsKey("Offset") ? (Vector2)sequence.FutureData["Offset"] : sequence.Target.OffsetPosition;
+        sequence.FutureData["Offset"] = offset;
+        return sequence.TransformTo("Offset", (t) => sequence.Target.OffsetPosition = currentOffset.Lerp(offset, (float)t), duration, ease);
+    }
+
     public static TransformSequence<T> ColorTo<T>(this T element, Color color, double duration = 0, Ease ease = Ease.Linear)
     where T : PaintableElement {
         Color currentColor = element.Paint.Color;

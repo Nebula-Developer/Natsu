@@ -47,14 +47,14 @@ public partial class Element {
         private set => _bounds = value;
     }
 
-    public Rect RectBounds => new(0, 0, Size.X, Size.Y);
+    public Rect RectBounds => new(0, 0, DrawSize.X, DrawSize.Y);
 
     public float Rotation {
         get => _rotation;
         set {
             if (_rotation == value) return;
 
-            _rotation = value;
+            _rotation = value % 360;
             Invalidate(Invalidation.Geometry);
         }
     }
@@ -86,11 +86,9 @@ public partial class Element {
             if (RelativeSizeAxes == Axes.Both) throw new InvalidOperationException("Cannot set size on element with both relative size axes.");
 
             Vector2 newValue;
-            if (RelativeSizeAxes != Axes.None) {
-                if (Parent == null) throw new InvalidOperationException("Cannot set size on element with relative size axes and no parent.");
-
-                newValue = new Vector2(RelativeSizeAxes.HasFlag(Axes.X) ? Parent.Size.X : value.X, RelativeSizeAxes.HasFlag(Axes.Y) ? Parent.Size.Y : value.Y);
-            } else
+            if (RelativeSizeAxes != Axes.None && Parent != null)
+                newValue = new Vector2(RelativeSizeAxes.HasFlag(Axes.X) ? Parent.DrawSize.X : value.X, RelativeSizeAxes.HasFlag(Axes.Y) ? Parent.DrawSize.Y : value.Y);
+            else
                 newValue = value;
 
             if (_size == newValue) return;
@@ -185,7 +183,7 @@ public partial class Element {
     public void UpdateRelativeSize() {
         if (RelativeSizeAxes == Axes.None || Parent == null) return;
 
-        Vector2 nSize = new(RelativeSizeAxes.HasFlag(Axes.X) ? Parent.Size.X : Size.X, RelativeSizeAxes.HasFlag(Axes.Y) ? Parent.Size.Y : Size.Y);
+        Vector2 nSize = new(RelativeSizeAxes.HasFlag(Axes.X) ? Parent.DrawSize.X : Size.X, RelativeSizeAxes.HasFlag(Axes.Y) ? Parent.DrawSize.Y : Size.Y);
 
         if (_size == nSize) return;
 
