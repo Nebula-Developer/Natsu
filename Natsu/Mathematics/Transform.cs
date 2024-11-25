@@ -49,10 +49,15 @@ public class Transform {
 
     public Action<double> Setter { get; set; }
 
-    public void SetProgress(double progress) {
+    public void SetProgress(double progress, TransformSequence? sequence = null) {
         progress = Math.Clamp(progress, 0, 1);
         Setter(Ease(progress));
+        OnSetProgress(progress, sequence);
     }
+
+    public virtual void Reset(TransformSequence? sequence = null) => Performed = false;
+
+    public virtual void OnSetProgress(double progress, TransformSequence? sequence = null) { }
 }
 
 public class TransformSequence {
@@ -67,6 +72,7 @@ public class TransformSequence {
     public double BaseTime { get; set; }
     public double EndTime => Math.Max(BaseTime, Sequence.Max(t => t.EndTime));
     public double Time { get; set; }
+    public double DeltaTime { get; set; }
 
     public string Name { get; set; } = "";
 
@@ -80,6 +86,7 @@ public class TransformSequence {
 
     public void Update(double dt) {
         Time += dt;
+        DeltaTime = dt;
         if (Time > EndTime) Time = EndTime;
         Update();
     }
@@ -92,48 +99,46 @@ public class TransformSequence {
                 if (transform.Performed) continue;
 
                 transform.Performed = true;
-                transform.SetProgress(1);
+                transform.SetProgress(1, this);
                 continue;
             }
 
-            if (Time >= transform.StartTime && Time <= transform.EndTime) {
+            if (Time >= transform.StartTime && (Time <= transform.EndTime || !transform.Performed)) {
                 if (!_affectedElements.Contains(transform))
                     _affectedElements.Add(transform);
 
                 double progress = (Time - transform.StartTime) / transform.Duration;
 
-                if (Precision.Approximately(progress, 0))
+                if (progress <= 0)
                     progress = 0;
-                else if (Precision.Approximately(progress, 1)) {
+                else if (progress >= 1) {
                     progress = 1;
                     _affectedElements.Remove(transform);
                 }
 
-                transform.SetProgress(progress);
+                transform.SetProgress(progress, this);
             } else if (_affectedElements.Contains(transform)) {
                 _affectedElements.Remove(transform);
                 transform.Performed = true;
-                transform.SetProgress(1);
+                transform.SetProgress(1, this);
             }
         }
     }
 
     public void Reset() {
-        Time = 0;
         foreach (Transform transform in Sequence) {
             transform.Performed = false;
-            if (transform.Duration > 0)
-                transform.SetProgress(0);
+            if (transform.Duration > 0) transform.Reset(this);
         }
+
+        Time = 0;
     }
 
     public void ResetTo(int point) {
-        Time = LoopPoints[point];
         foreach (Transform transform in Sequence)
-            if (Time > transform.StartTime) {
-                transform.Performed = false;
-                transform.SetProgress(0);
-            }
+            if (transform.StartTime > LoopPoints[point])
+                transform.Reset(this);
+        Time = LoopPoints[point] + Precision.Epsilon;
     }
 }
 
@@ -171,14 +176,9 @@ public class TransformSequence<T> : TransformSequence where T : class {
         if (!LoopPoints.ContainsKey(point))
             throw new ArgumentOutOfRangeException(nameof(point), "Loop point does not exist.");
 
-        int count = 0;
-        Transform t = new(_ => {
-            if (times == -1 || count++ < times)
-                ResetTo(point);
-        }, 0);
-        t.StartTime = EndTime + delay;
-        t.EndTime = EndTime + delay;
+        LoopTransform t = new(EndTime + delay, times, point);
         BaseTime = EndTime + delay;
+
         Sequence.Add(t);
         return this;
     }
@@ -186,5 +186,33 @@ public class TransformSequence<T> : TransformSequence where T : class {
     public TransformSequence<T> SetLoopPoint(int point) {
         LoopPoints[point] = EndTime + Precision.Epsilon;
         return this;
+    }
+}
+
+public class LoopTransform : Transform {
+
+    public LoopTransform(double startTime, int times = -1, int point = 0) : base(_ => { }, 0) {
+        StartTime = startTime;
+        Times = times;
+        Point = point;
+    }
+
+    public int Times { get; set; }
+    public int Count { get; set; }
+    public int Point { get; set; }
+
+    public void Loop(TransformSequence? sequence) {
+        if (sequence == null) return;
+
+        if (Times == -1 || Count++ < Times)
+            sequence.ResetTo(Point);
+    }
+
+    public override void OnSetProgress(double progress, TransformSequence? sequence) => Loop(sequence);
+
+    public override void Reset(TransformSequence? sequence = null) {
+        base.Reset(sequence);
+        if (sequence?.Time > StartTime + sequence?.DeltaTime)
+            Count = 0;
     }
 }

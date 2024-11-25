@@ -147,7 +147,8 @@ public class Slider : Element {
             ThumbInput = new InputElement {
                 Parent = this,
                 RelativeSizeAxes = Axes.Both,
-                GrabFallback = true
+                GrabFallback = true,
+                Cursor = CursorStyle.ResizeHorizontal
             }
         ];
 
@@ -158,13 +159,10 @@ public class Slider : Element {
             float coord = ThumbInput.ToLocalSpace(position).X;
             coord = Math.Clamp(coord, 25, DrawSize.X - Thumb.DrawSize.X + 5);
             Thumb.StopTransformSequences("Anchor", "Offset");
-            // Thumb.MoveTo(new Vector2(coord, 0), 0.2f, Ease.ExponentialOut);
 
             value = (coord - 25) / (DrawSize.X - Thumb.DrawSize.X - 20);
             value = Math.Clamp(value, 0, 1);
 
-            // Thumb.AnchorPosition = new Vector2(value, 0.5f);
-            // Thumb.OffsetPosition = new Vector2(value, 0.5f);
             Thumb.AnchorTo(new Vector2(value, 0.5f), 0.2f, Ease.ExponentialOut);
             Thumb.OffsetTo(new Vector2(value, 0.5f), 0.2f, Ease.ExponentialOut);
 
@@ -238,12 +236,9 @@ public class Slider : Element {
 }
 
 public class MyApp : Application {
-    private readonly TextElement fpsText;
+    private TextElement? fpsText;
 
-    public MyApp(SKSurface baseSurface) {
-        LoadRenderer(baseSurface);
-        ResourceLoader = new ResourceLoader(new SkiaResourceLoader());
-
+    protected override void OnLoad() {
         IFont font = ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf");
 
         fpsText = new TextElement("FPS: 0", font) {
@@ -287,8 +282,8 @@ public class MyApp : Application {
 
             rect.StopTransformSequences(nameof(rect.Position));
             rect.Position = new Vector2(-150, 0);
-            rect.MoveTo(new Vector2(-150, 50), 0.5f, Ease.CubicOut).Then().MoveTo(new Vector2(-150, 0), 0.5f, Ease.CubicIn).Then().Loop(0, 1).Then().SetLoopPoint(1).MoveTo(new Vector2(-150, -50), 0.5f, Ease.CubicOut).Then()
-                .MoveTo(new Vector2(-150, 0), 0.5f, Ease.CubicIn).Then().Loop(0, int.MaxValue);
+            rect.MoveTo(new Vector2(-150, 50), 0.5f, Ease.CubicOut).Then().MoveTo(new Vector2(-150, 0), 0.5f, Ease.CubicIn).Then().Loop(0, 1).Then().SetLoopPoint(1) // Go to start once
+                .MoveTo(new Vector2(-150, -50), 0.5f, Ease.CubicOut).Then().MoveTo(new Vector2(-150, 0), 0.5f, Ease.CubicIn).Then().Loop(0); // To to start infinitely
         };
 
         rect2.MousePressEvent += (button, position) => {
@@ -373,6 +368,6 @@ public class MyApp : Application {
     protected override void OnRender() {
         base.OnRender();
         float fps = 1f / (float)RenderTime.DeltaTime;
-        fpsText.Text = $"FPS: {fps}";
+        fpsText!.Text = $"FPS: {fps}";
     }
 }

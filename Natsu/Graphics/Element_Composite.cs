@@ -62,6 +62,7 @@ public partial class Element {
             foreach (Element element in elements) {
                 addChild(element);
                 if (element.Parent != this) element.Parent = this;
+                if (!element.Loaded && Loaded) element.Load();
             }
 
             CildrenChanged();
@@ -79,8 +80,8 @@ public partial class Element {
 
     public void ForChildren(Action<Element> action) {
         lock (_children)
-            foreach (Element child in _children)
-                action(child);
+            for (int i = 0; i < _children.Count; i++)
+                action(_children[i]);
     }
 
     public void SortChild(Element element) {

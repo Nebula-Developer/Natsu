@@ -1,7 +1,7 @@
 namespace Natsu.Mathematics;
 
 public static class Precision {
-    public const float Epsilon = 0.0001f;
+    public const float Epsilon = 1e-6f;
 
     public static bool Approximately(float a, float b) => Math.Abs(a - b) < Epsilon;
     public static bool Approximately(double a, double b) => Math.Abs(a - b) < Epsilon;

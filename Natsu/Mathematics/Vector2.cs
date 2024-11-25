@@ -49,6 +49,12 @@ public struct Vector2 : IEquatable<Vector2> {
 
     public Vector2 Lerp(Vector2 other, float t) => Lerp(this, other, t);
 
+    public Vector2 Max(Vector2 other) => new(MathF.Max(X, other.X), MathF.Max(Y, other.Y));
+    public Vector2 Min(Vector2 other) => new(MathF.Min(X, other.X), MathF.Min(Y, other.Y));
+
+    public static Vector2 Max(Vector2 a, Vector2 b) => a.Max(b);
+    public static Vector2 Min(Vector2 a, Vector2 b) => a.Min(b);
+
     public Vector2 Rotate(float degrees, Vector2 point) {
         float radians = MathF.PI * degrees / 180;
         float x = MathF.Cos(radians) * (X - point.X) - MathF.Sin(radians) * (Y - point.Y) + point.X;

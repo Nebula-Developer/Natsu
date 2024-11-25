@@ -13,12 +13,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../Natsu/Natsu.csproj"/>
-        <EmbeddedResource Include="Resources\**\*.*"/>
+        <ProjectReference Include="../Natsu/Natsu.csproj" />
+        <ProjectReference Include="../Natsu.Desktop/Natsu.Desktop.csproj" />
+        <EmbeddedResource Include="Resources\**\*.*" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="opentk" Version="4.8.2"/>
+        <PackageReference Include="opentk" Version="4.8.2" />
     </ItemGroup>
 
 </Project>

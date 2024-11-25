@@ -2,11 +2,14 @@
 
 using Natsu.Graphics.Elements;
 using Natsu.Mathematics;
+using Natsu.Platforms;
 
 namespace Natsu.Graphics;
 
 public partial class Application : IDisposable {
     private Vector2 _size;
+    public INativePlatform Platform;
+
     public IRenderer Renderer;
     public ResourceLoader ResourceLoader;
 

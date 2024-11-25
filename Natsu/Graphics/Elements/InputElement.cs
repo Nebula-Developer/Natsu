@@ -6,6 +6,8 @@ namespace Natsu.Graphics.Elements;
 public class InputElement : Element {
     public bool AcceptInput { get; set; } = true;
     public bool GrabFallback { get; set; } = false;
+    public bool HoverCursor { get; set; } = true;
+    public CursorStyle Cursor { get; set; } = CursorStyle.Pointer;
 
     public Dictionary<MouseButton, bool> MouseButtons { get; } = new();
     public Dictionary<Key, bool> Keys { get; } = new();

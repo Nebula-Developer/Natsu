@@ -68,7 +68,7 @@ public static class ElementTransform {
 
     public static TransformSequence<T> ScaleTo<T>(this T element, Vector2 scale, double duration = 0, Ease ease = Ease.Linear) where T : Element {
         Vector2 currentScale = element.Scale;
-        TransformSequence<T> seq = element.TransformTo("Scale", t => element.Scale = currentScale.Lerp(scale, (float)t), duration, ease);
+        TransformSequence<T> seq = element.TransformTo("Scale", t => element.Scale = currentScale.Lerp(scale, (float)t).Max(0), duration, ease);
         seq.FutureData["Scale"] = scale;
         return seq;
     }
@@ -76,7 +76,7 @@ public static class ElementTransform {
     public static TransformSequence<T> ScaleTo<T>(this TransformSequence<T> sequence, Vector2 scale, double duration = 0, Ease ease = Ease.Linear) where T : Element {
         Vector2 currentScale = sequence.FutureData.ContainsKey("Scale") ? (Vector2)sequence.FutureData["Scale"] : sequence.Target.Scale;
         sequence.FutureData["Scale"] = scale;
-        return sequence.TransformTo("Scale", t => sequence.Target.Scale = currentScale.Lerp(scale, (float)t), duration, ease);
+        return sequence.TransformTo("Scale", t => sequence.Target.Scale = currentScale.Lerp(scale, (float)t).Max(0), duration, ease);
     }
 
     public static TransformSequence<T> MoveTo<T>(this T element, Vector2 position, double duration = 0, Ease ease = Ease.Linear) where T : Element {
@@ -191,15 +191,5 @@ public static class ElementTransform {
             color.A = (byte)Easings.Lerp(currentAlpha, alpha, (float)t);
             sequence.Target.Paint.Color = color;
         }, duration, ease);
-    }
-}
-
-public static class Test {
-    public static void Testing() {
-        Element x = new();
-
-        // x.TransformTo<Element, Vector2>("Scale", (t) => x.Scale = new Vector2((float)t), 5, Ease.ExponentialInOut)
-        //  .Then().TransformTo<Element, Vector2>("Scale", (t) => x.Scale = new Vector2(0.5f)
-        //  .Lerp(new Vector2(1), (float)t), 5, Ease.ExponentialInOut).Loop();
     }
 }

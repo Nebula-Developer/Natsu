@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Natsu", "Natsu\Natsu.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Natsu.Sandbox", "Natsu.Sandbox\Natsu.Sandbox.csproj", "{822F1827-AFDF-423C-B326-A13907E9F077}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Natsu.Desktop", "Natsu.Desktop\Natsu.Desktop.csproj", "{0A2511AA-F01E-497E-9843-F3E920D57CCA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{822F1827-AFDF-423C-B326-A13907E9F077}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{822F1827-AFDF-423C-B326-A13907E9F077}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{822F1827-AFDF-423C-B326-A13907E9F077}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A2511AA-F01E-497E-9843-F3E920D57CCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A2511AA-F01E-497E-9843-F3E920D57CCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A2511AA-F01E-497E-9843-F3E920D57CCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A2511AA-F01E-497E-9843-F3E920D57CCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

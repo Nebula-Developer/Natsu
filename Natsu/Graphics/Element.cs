@@ -1,11 +1,11 @@
 using Natsu.Mathematics;
+using Natsu.Platforms;
 
 namespace Natsu.Graphics;
 
 public partial class Element : IDisposable {
     private Application? _app;
     private int _index;
-    private bool _loaded;
     private string? _name;
     private Element? _parent;
 
@@ -13,6 +13,7 @@ public partial class Element : IDisposable {
 
     public bool Active { get; set; } = true;
     public bool Visible { get; set; } = true;
+    public bool Loaded { get; set; }
 
     public virtual string Name {
         get => _name ?? GetType().Name;
@@ -21,6 +22,7 @@ public partial class Element : IDisposable {
 
     public IRenderer Renderer => App.Renderer;
     public ResourceLoader ResourceLoader => App.ResourceLoader;
+    public INativePlatform Platform => App.Platform;
 
     public int Index {
         get => _index;
@@ -34,7 +36,7 @@ public partial class Element : IDisposable {
     }
 
     public bool Clip { get; set; } = false;
-    public float ClipRadius { get; set; } = 0;
+    public Vector2 ClipRadius { get; set; } = 0;
     public bool ClipDifference { get; set; } = false;
     public bool ClipAntiAlias { get; set; } = true;
 
@@ -47,17 +49,18 @@ public partial class Element : IDisposable {
     }
 
     public bool Load() {
-        if (_loaded)
+        if (Loaded)
             return false;
 
         OnLoad();
-        Loaded?.Invoke();
-        _loaded = true;
+        LoadEvent?.Invoke();
+        Loaded = true;
+
         return true;
     }
 
     public virtual void ClipCanvas(ICanvas canvas) {
-        if (ClipRadius == 0) {
+        if (ClipRadius == Vector2.Zero) {
             canvas.ClipRect(new Rect(0, 0, MathF.Round(DrawSize.X), MathF.Round(DrawSize.Y)), ClipDifference, ClipAntiAlias);
             return;
         }
@@ -105,7 +108,7 @@ public partial class Element : IDisposable {
 
     public virtual void OnAppChange(Application? old) { }
 
-    public event Action? Loaded;
+    public event Action? LoadEvent;
     public event Action? Disposed;
 
     public event Action? Updated;
@@ -120,7 +123,7 @@ public partial class Element : IDisposable {
 
             if (Parent != null) {
                 App = Parent.App;
-                return _app!;
+                return _app;
             }
 
             return null;

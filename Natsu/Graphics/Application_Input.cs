@@ -190,6 +190,14 @@ public partial class Application {
 
         foreach (GlobalInputElement elm in NonPositionalInputList)
             elm.MouseMove(position);
+
+        // get the upmost element that is blocking the mouse
+        List<InputElement> interacting = InteractingElements;
+        if (interacting.Count > 0) {
+            InputElement top = interacting[0];
+            if (top.HoverCursor)
+                Platform.Cursor = top.Cursor;
+        } else Platform.Cursor = CursorStyle.Default;
     }
 
     public void MouseWheel(Vector2 delta) {
