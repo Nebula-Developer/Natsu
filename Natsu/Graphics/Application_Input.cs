@@ -94,6 +94,7 @@ public partial class Application {
     public event Action<Key> KeyUpEvent;
 
     public bool MouseDown(MouseButton button, Vector2 position) {
+        MouseMove(position);
         MouseState[button] = true;
 
         MouseDownEvent?.Invoke(button, position);
@@ -123,6 +124,7 @@ public partial class Application {
     }
 
     public void MouseUp(MouseButton button, Vector2 position) {
+        MouseMove(position);
         MouseState[button] = false;
 
         MouseUpEvent?.Invoke(button, position);
