@@ -7,22 +7,26 @@ using Natsu.Mathematics;
 using Natsu.Platforms.Skia;
 
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
 using SkiaSharp;
 
 using MouseButton = OpenTK.Windowing.GraphicsLibraryFramework.MouseButton;
+using Vector2 = Natsu.Mathematics.Vector2;
 
 namespace Natsu.Sandbox;
 
-public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency = 244 }, new NativeWindowSettings { ClientSize = new(800, 600), Title = "Natsu Sandbox", Vsync = VSyncMode.On }) {
+public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency = 500 }, new NativeWindowSettings { ClientSize = new Vector2i(800, 600), Title = "Natsu Sandbox", Vsync = VSyncMode.On }) {
+
+    private readonly List<float> fps = new();
     public List<OffscreenSurfaceElement> LayerSurfaces = new();
 
     public void CreateSurface(int width, int height) {
         lock (this) {
             _surface?.Dispose();
-            
+
             _target = new GRBackendRenderTarget(width, height, 0, 8, new GRGlFramebufferInfo(0, (uint)SizedInternalFormat.Rgba8));
             _surface = SKSurface.Create(_context, _target, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
 
@@ -35,7 +39,7 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
 
     public void ResizeApp() {
         TryGetCurrentMonitorScale(out float scaleX, out float scaleY);
-        App.Root.Scale = new Vector2(scaleX, scaleY);
+        // App.Root.Scale = new Vector2(scaleX, scaleY);
         App.Root.Size = new Vector2(Size.X * scaleX, Size.Y * scaleY);
     }
 
@@ -148,6 +152,35 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
     protected override void OnRenderFrame(FrameEventArgs args) {
         base.OnRenderFrame(args);
         App.Render();
+
+        fps.Add((float)(1 / args.Time));
+        if (fps.Count > 0) {
+            const float div = 2;
+            while (fps.Count > Size.X / div) fps.RemoveAt(0);
+
+            SKPath path = new();
+            float max = fps.Max();
+            float min = fps.Min();
+            float avg = fps.Average();
+            const float graphHeight = 100;
+
+            path.MoveTo(0, 0);
+            for (int i = 0; i < fps.Count; i++) {
+                float x = i * div;
+                float y = graphHeight - fps[i] / max * graphHeight;
+                path.LineTo(x, y);
+            }
+
+            path.LineTo(fps.Count * div, 0);
+            path.Close();
+
+            App.Canvas.DrawPath(new VectorPath(path), new Paint { Color = SKColors.White, IsStroke = true, StrokeWidth = 1 });
+            SkiaCanvas canvas = (SkiaCanvas)App.Canvas;
+            canvas.Canvas.DrawText($"FPS: {avg}, Min: {min}, Max: {max}", 0, graphHeight + 12, new SKPaint { Color = SKColors.White, TextSize = 12 });
+            App.Renderer.Flush();
+        }
+
+
         SwapBuffers();
     }
 
@@ -198,5 +231,43 @@ public class AppWindow() : GameWindow(new GameWindowSettings { UpdateFrequency =
 }
 
 public static class Program {
-    public static void Main(string[] args) => new AppWindow().Run();
+    // public static void LogSKMatrix(SKMatrix matrix) {
+    //     for (int i = 0; i < 3; i++) Console.WriteLine($"[{matrix.Values[i * 3]}, {matrix.Values[i * 3 + 1]}, {matrix.Values[i * 3 + 2]}]");
+    // }
+
+    // public static void LogMatrix(Matrix matrix) {
+    //     for (int i = 0; i < 3; i++) Console.WriteLine($"[{matrix.Values[i, 0]}, {matrix.Values[i, 1]}, {matrix.Values[i, 2]}]");
+    // }
+
+    // 2 0 10 cos(0) -sin(0) 10
+    // 0 2 10 sin(0) cos(0) 10
+    // 0 0 1
+
+    // m1 m2 m3
+    // m4 m5 m6
+    // m7 m8 m9
+
+    // x
+    // y
+    // 1
+
+    // x = m1 * x + m2 * y + m3
+
+    public static void Main(string[] args) =>
+        // Matrix testMatrix = new();
+        // Matrix matrix = new();
+        // testMatrix.PreRotate(45, -10, -10);
+        // matrix.PreRotate(45, -10, -10);
+        // testMatrix.PreRotate(45, 10, 50);
+        // matrix.PreRotate(45, 10, 50);
+        // testMatrix.PreScale(2, 2);
+        // matrix.PreScale(2, 2);
+        // testMatrix.PreTranslate(10, 10);
+        // matrix.PreTranslate(10, 10);
+        // testMatrix.PreSkew(10, 10);
+        // matrix.PreSkew(10, 10);
+        // LogSKMatrix(testMatrix);
+        // Console.WriteLine();
+        // LogMatrix(matrix);
+        new AppWindow().Run();
 }

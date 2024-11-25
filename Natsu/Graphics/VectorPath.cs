@@ -5,6 +5,13 @@ using SkiaSharp;
 namespace Natsu.Graphics;
 
 public class VectorPath {
+
+    public VectorPath() { }
+
+    public VectorPath(SKPath path) {
+        SkiaPath = path;
+    }
+
     public SKPath SkiaPath { get; } = new();
 
     public void MoveTo(Vector2 point) => SkiaPath.MoveTo(point.X, point.Y);

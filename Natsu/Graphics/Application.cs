@@ -6,6 +6,7 @@ using Natsu.Mathematics;
 namespace Natsu.Graphics;
 
 public partial class Application : IDisposable {
+    private Vector2 _size;
     public IRenderer Renderer;
     public ResourceLoader ResourceLoader;
 
@@ -24,7 +25,6 @@ public partial class Application : IDisposable {
         get => _size;
         set => Resize((int)value.X, (int)value.Y);
     }
-    private Vector2 _size;
 
     public void Dispose() {
         Root.Dispose();
@@ -56,7 +56,7 @@ public partial class Application : IDisposable {
 
     public void Update() {
         UpdateTime.Update();
-        
+
         Root.Update();
         OnUpdate();
         Updated?.Invoke();
@@ -76,12 +76,11 @@ public partial class Application : IDisposable {
 
     public void Resize(int width, int height) {
         _size = new Vector2(width, height);
-        
+        Root.Size = new Vector2(width, height);
+
         Renderer.Resize(width, height);
         OnResize(width, height);
         Resized?.Invoke(width, height);
-
-        Root.Size = new Vector2(width, height);
     }
 
     public void Add(params Element[] elements) => Root.Add(elements);
