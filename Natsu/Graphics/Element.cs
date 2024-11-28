@@ -1,5 +1,6 @@
 using Natsu.Mathematics;
 using Natsu.Platforms;
+using Natsu.System;
 
 namespace Natsu.Graphics;
 
@@ -55,6 +56,8 @@ public partial class Element : IDisposable {
         OnLoad();
         LoadEvent?.Invoke();
         Loaded = true;
+
+        ForChildren(child => child.Load());
 
         return true;
     }
