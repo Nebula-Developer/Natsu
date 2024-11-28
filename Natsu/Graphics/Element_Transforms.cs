@@ -244,11 +244,13 @@ public partial class Element {
         return bounds;
     }
 
-    public Vector2 GetDistantChildrenPosition() {
+    public Vector2 GetDistantChildrenPosition() => Vector2.Zero; /* {
+        // TODO: Implement this
+
         float maxX = 0, maxY = 0;
 
         ForChildren(child => {
-            if (child == null) return;
+            if (child == null || child.RelativeSizeAxes == Axes.Both) return;
 
             float rx = child.RelativeSizeAxes.HasFlag(Axes.X) ? 0 : child.DrawSize.X;
             float ry = child.RelativeSizeAxes.HasFlag(Axes.Y) ? 0 : child.DrawSize.Y;
@@ -267,7 +269,7 @@ public partial class Element {
         });
 
         return new Vector2(maxX, maxY);
-    }
+    } */
 
     private void PropogateChildrenSizeChange() => ForChildren(child => {
         if (child == null) return;

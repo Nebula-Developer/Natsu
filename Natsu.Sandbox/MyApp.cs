@@ -10,9 +10,12 @@ namespace Natsu.Sandbox;
 
 public class ButtonRect : InputElement {
     public RectElement Background, Border, Flash;
+    public Element ContentWrapper;
+
+    public override Element ContentContainer => ContentWrapper;
 
     public ButtonRect() {
-        RawChildren = [
+        Children = [
             Background = new RectElement {
                 Parent = this,
                 RelativeSizeAxes = Axes.Both,
@@ -22,7 +25,7 @@ public class ButtonRect : InputElement {
                     FilterQuality = FilterQuality.Medium
                 },
                 RoundedCorners = new Vector2(10),
-                RawChildren = [
+                Content = [
                     Flash = new RectElement {
                         Parent = this,
                         RelativeSizeAxes = Axes.Both,
@@ -31,7 +34,8 @@ public class ButtonRect : InputElement {
                             IsAntialias = true,
                             FilterQuality = FilterQuality.Medium
                         },
-                        RoundedCorners = new Vector2(10)
+                        RoundedCorners = new Vector2(10),
+                        Index = 10
                     },
                     Border = new RectElement {
                         Parent = this,
@@ -44,8 +48,14 @@ public class ButtonRect : InputElement {
                             IsStroke = true
                         },
                         RoundedCorners = new Vector2(10 - 2.5f),
-                        Margin = new Vector2(2.5f)
-                    }
+                        Margin = new Vector2(2.5f),
+                        Index = 9
+                    },
+                    ContentWrapper = new Element {
+                        Parent = this,
+                        RelativeSizeAxes = Axes.Both,
+                        Index = 8
+                    },
                 ],
                 AnchorPosition = new Vector2(0.5f),
                 OffsetPosition = new Vector2(0.5f),
@@ -75,18 +85,6 @@ public class ButtonRect : InputElement {
         Flash.StopTransformSequences();
         Flash.ColorTo(Colors.White).Then().ColorTo(Colors.WhiteTransparent, 0.5f);
     }
-
-    public override bool OnMouseEnter(Vector2 position) => true;
-    public override void OnMouseLeave(Vector2 position) { }
-
-    public override void OnRenderChildren(ICanvas canvas) {
-        base.OnRenderChildren(canvas);
-
-        if (IsFocused) {
-            canvas.DrawLine(new Vector2(0, 0), new Vector2(DrawSize.X, DrawSize.Y), new Paint { Color = Colors.Red, StrokeWidth = 2 });
-            canvas.DrawLine(new Vector2(0, DrawSize.Y), new Vector2(DrawSize.X, 0), new Paint { Color = Colors.Red, StrokeWidth = 2 });
-        }
-    }
 }
 
 public class Slider : Element {
@@ -95,7 +93,7 @@ public class Slider : Element {
     public InputElement ThumbInput;
 
     public Slider() {
-        RawChildren = [
+        Children = [
             Background = new RectElement {
                 Parent = this,
                 RelativeSizeAxes = Axes.Both,
@@ -105,7 +103,7 @@ public class Slider : Element {
                     FilterQuality = FilterQuality.Medium
                 },
                 RoundedCorners = new Vector2(10),
-                RawChildren = [
+                Content = [
                     Bar = new RectElement {
                         Parent = this,
                         RelativeSizeAxes = Axes.Both,
@@ -116,11 +114,11 @@ public class Slider : Element {
                         },
                         RoundedCorners = new Vector2(7.5f),
                         Margin = new Vector2(5),
-                        RawChildren = [
+                        Content = [
                             ThumbContainer = new Element {
                                 Margin = new Vector2(5, 0),
                                 RelativeSizeAxes = Axes.Both,
-                                RawChildren = [
+                                Content = [
                                     Thumb = new RectElement {
                                         Parent = this,
                                         Size = new Vector2(30, 30),
@@ -267,14 +265,24 @@ public class MyApp : Application {
             Position = new Vector2(150, 0),
             Parent = Root,
             Index = 1,
-            Name = "Right"
+            Name = "Right",
+            Content = [
+                new TextElement("Rotate", font) {
+                    AnchorPosition = new Vector2(0.5f),
+                    OffsetPosition = new Vector2(0.5f),
+                    Paint = new Paint {
+                        TextSize = 20,
+                        IsAntialias = true
+                    }
+                }
+            ]
         };
 
         ImageElement test = new(ResourceLoader.LoadResourceImage("Resources/testimage.png")) {
             RelativeSizeAxes = Axes.Both,
             AnchorPosition = new Vector2(0.5f),
             OffsetPosition = new Vector2(0.5f),
-            Parent = rect.Flash
+            Parent = rect.ContentContainer
         };
 
         rect.MousePressEvent += (button, position) => {

@@ -7,28 +7,43 @@ public partial class Element {
 
     public Element? Parent {
         get => _parent;
+        set => RawParent = value?.ContentContainer;
+    }
+
+    public Element? RawParent {
         set {
             if (Parent?.HasChild(this) == true) Parent.Remove(this);
 
             _parent = value;
             if (Parent?.HasChild(this) == false) Parent.Add(this);
 
-            if (Parent != null && Parent._app != null && Parent._app != App)
+            if (Parent?._app != null && Parent._app != App)
                 App = Parent.App;
-            else if (_app != null) App.ConstructInputLists();
+            
+            if (_app != null) App.ConstructInputLists();
 
             Invalidate(Invalidation.All);
         }
     }
 
-    public IReadOnlyList<Element> Children => _children;
+    public virtual Element ContentContainer => this;
 
-    public List<Element> RawChildren {
+    public virtual IReadOnlyList<Element> Content {
+        get => ContentContainer._children.AsReadOnly();
+        set {
+            lock (_children) {
+                ContentContainer.Clear();
+                ContentContainer.Add([.. value]);
+            }
+        }
+    }
+
+    public virtual IReadOnlyList<Element> Children {
         get => _children;
         set {
             lock (_children) {
                 Clear();
-                Add(value.ToArray());
+                Add([.. value]);
             }
         }
     }
@@ -37,7 +52,7 @@ public partial class Element {
         lock (_children) {
             foreach (Element element in elements) {
                 _children.Remove(element);
-                if (element.Parent == this) element.Parent = null;
+                if (element.Parent == this) element._parent = null;
             }
 
             CildrenChanged();
@@ -61,7 +76,7 @@ public partial class Element {
         lock (_children) {
             foreach (Element element in elements) {
                 addChild(element);
-                if (element.Parent != this) element.Parent = this;
+                if (element.Parent != this) element._parent = this;
                 if (!element.Loaded && Loaded) element.Load();
             }
 
