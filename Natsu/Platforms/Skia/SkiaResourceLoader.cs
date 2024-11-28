@@ -8,13 +8,13 @@ using SkiaSharp;
 
 namespace Natsu.Platforms.Skia;
 
-public class SkiaResourceLoader : IPlatformResourceLoader {
+public class SkiaResourceLoader : ResourceLoader {
     public NamedStorage<IImage> Images { get; } = new();
     public NamedStorage<IFont> Fonts { get; } = new();
 
     public Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
 
-    public IImage LoadImage(byte[] data, string name) {
+    public override IImage LoadImage(byte[] data, string name) {
         if (Images[name] is { } cache) return cache;
 
         SKImage? image = SKImage.FromEncodedData(new SKMemoryStream(data));
@@ -23,7 +23,7 @@ public class SkiaResourceLoader : IPlatformResourceLoader {
         return skiaImage;
     }
 
-    public IFont LoadFont(byte[] data, string name) {
+    public override IFont LoadFont(byte[] data, string name) {
         if (Fonts[name] is IFont cache) return cache;
 
         SKTypeface? typeface = SKTypeface.FromData(SKData.CreateCopy(data));
@@ -32,7 +32,7 @@ public class SkiaResourceLoader : IPlatformResourceLoader {
         return skiaFont;
     }
 
-    public void Dispose() {
+    protected override void OnDispose() {
         Images.Dispose();
         Fonts.Dispose();
     }

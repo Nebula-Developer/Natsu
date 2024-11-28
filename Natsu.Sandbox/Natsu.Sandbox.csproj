@@ -13,8 +13,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../Natsu/Natsu.csproj" />
-        <ProjectReference Include="../Natsu.Desktop/Natsu.Desktop.csproj" />
+        <ProjectReference Include="..\Natsu\Natsu.csproj" />
+        <ProjectReference Include="..\Natsu.Desktop\Natsu.Desktop.csproj" />
         <EmbeddedResource Include="Resources\**\*.*" />
     </ItemGroup>
 

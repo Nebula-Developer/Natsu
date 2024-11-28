@@ -1,31 +1,75 @@
 using System.Reflection;
 using System.Text;
 
+using Natsu.Graphics;
 using Natsu.System;
 using Natsu.Utils;
 
-namespace Natsu.Graphics;
+namespace Natsu.System;
 
-public class ResourceLoader : IDisposable {
-    public ResourceLoader(IPlatformResourceLoader platformLoader) {
-        PlatformLoader = platformLoader;
+public static partial class StringExtensions {
+    public static string FormatResourcePath(this string path, Assembly asm) => $"{asm.GetName().Name}.{path.Replace('/', '.')}";
+}
+
+public abstract class ResourceLoader : IDisposable {
+    public NamedStorage<byte[]> Data { get; } = new();
+    public NamedStorage<IFont> FontData { get; } = new();
+    public NamedStorage<IImage> ImageData { get; } = new();
+
+    public virtual Assembly ProjectAssembly { get; } = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
+    public virtual Assembly FrameworkAssembly { get; } = Assembly.GetExecutingAssembly();
+
+    public virtual IFont DefaultFont => LoadFrameworkResourceFont("Resources/Fonts/Roboto/Roboto-Regular.ttf");
+
+    #region Project Assembly Resource Loading
+    public byte[] LoadResource(string path, string? name = null) => LoadData(path, name, () => ProjectAssembly.GetManifestResourceStream(path.FormatResourcePath(ProjectAssembly)));
+
+    public string LoadResourceString(string path, string? name = null) => Encoding.UTF8.GetString(LoadResource(path, name));
+
+    public IImage LoadResourceImage(string path, string? name = null) => LoadImageData(path, name);
+
+    public IFont LoadResourceFont(string path, string? name = null) => LoadFontData(path, name);
+    #endregion
+
+    #region Framework Assembly Resource Loading
+    public byte[] LoadFrameworkResource(string path, string? name = null) => LoadData(path, name, () => FrameworkAssembly.GetManifestResourceStream(path.FormatResourcePath(FrameworkAssembly)));
+
+    public string LoadFrameworkResourceString(string path, string? name = null) => Encoding.UTF8.GetString(LoadFrameworkResource(path, name));
+
+    public IImage LoadFrameworkResourceImage(string path, string? name = null) => LoadFrameworkImageData(path, name);
+
+    public IFont LoadFrameworkResourceFont(string path, string? name = null) => LoadFrameworkFontData(path, name);
+    #endregion
+
+    #region File Loading (from external files)
+    public byte[] LoadFile(string path, string? name = null) => LoadData(path, name, () => new FileStream(path, FileMode.Open, FileAccess.Read));
+
+    public string LoadFileString(string path, string? name = null) => Encoding.UTF8.GetString(LoadFile(path, name));
+
+    public IImage LoadFileImage(string path, string? name = null) {
+        if (ImageData[name ?? path] is IImage image) return image;
+
+        byte[] data = LoadFile(path, name);
+        image = LoadImage(data, name ?? path);
+        ImageData[name ?? path] = image;
+        return image;
     }
 
-    public NamedStorage<byte[]> Data { get; } = new();
+    public IFont LoadFileFont(string path, string? name = null) {
+        if (FontData[name ?? path] is IFont font) return font;
 
-    public IPlatformResourceLoader PlatformLoader { get; }
+        byte[] data = LoadFile(path, name);
+        font = LoadFont(data, name ?? path);
+        FontData[name ?? path] = font;
+        return font;
+    }
+    #endregion
 
-    public Assembly Assembly { get; } = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
-
-    // We know that Data has a non disposable value type
-    public void Dispose() => PlatformLoader.Dispose();
-
-    public string CreateResourcePath(string path) => $"{Assembly.GetName().Name}.{path.Replace('/', '.')}";
-
-    public byte[] LoadResource(string path, string? name = null) {
+    #region Helper Methods
+    private byte[] LoadData(string path, string? name, Func<Stream?> openStreamFunc) {
         if (Data[name ?? path] is byte[] data) return data;
 
-        using Stream? stream = Assembly.GetManifestResourceStream(CreateResourcePath(path));
+        using Stream? stream = openStreamFunc();
         if (stream == null) throw new InvalidOperationException($"Resource '{path}' not found");
 
         data = new byte[stream.Length];
@@ -34,27 +78,50 @@ public class ResourceLoader : IDisposable {
         return data;
     }
 
-    public byte[] LoadFile(string path, string? name = null) {
-        if (Data[name ?? path] is byte[] data) return data;
+    private IFont LoadFontData(string path, string? name) {
+        if (FontData[name ?? path] is IFont font) return font;
 
-        data = File.ReadAllBytes(path);
-        Data[name ?? path] = data;
-        return data;
+        byte[] data = LoadResource(path, name);
+        font = LoadFont(data, name ?? path);
+        FontData[name ?? path] = font;
+        return font;
     }
 
-    public string LoadResourceString(string path, string? name = null) => Encoding.UTF8.GetString(LoadResource(path, name));
+    private IImage LoadImageData(string path, string? name) {
+        if (ImageData[name ?? path] is IImage image) return image;
 
-    public string LoadFileString(string path, string? name = null) => Encoding.UTF8.GetString(LoadFile(path, name));
+        byte[] data = LoadResource(path, name);
+        image = LoadImage(data, name ?? path);
+        ImageData[name ?? path] = image;
+        return image;
+    }
 
-    public IImage LoadImageBytes(byte[] data, string name) => PlatformLoader.LoadImage(data, name);
+    private IFont LoadFrameworkFontData(string path, string? name) {
+        if (FontData[name ?? path] is IFont font) return font;
 
-    public IFont LoadFontBytes(byte[] data, string name) => PlatformLoader.LoadFont(data, name);
+        byte[] data = LoadFrameworkResource(path, name);
+        font = LoadFont(data, name ?? path);
+        FontData[name ?? path] = font;
+        return font;
+    }
 
-    public IImage LoadResourceImage(string path, string? name = null) => PlatformLoader.LoadImage(LoadResource(path, name), name ?? path);
+    private IImage LoadFrameworkImageData(string path, string? name) {
+        if (ImageData[name ?? path] is IImage image) return image;
 
-    public IFont LoadResourceFont(string path, string? name = null) => PlatformLoader.LoadFont(LoadResource(path, name), name ?? path);
+        byte[] data = LoadFrameworkResource(path, name);
+        image = LoadImage(data, name ?? path);
+        ImageData[name ?? path] = image;
+        return image;
+    }
+    #endregion
 
-    public IImage LoadFileImage(string path, string? name = null) => PlatformLoader.LoadImage(LoadFile(path, name), name ?? path);
+    public abstract IImage LoadImage(byte[] data, string name);
+    public abstract IFont LoadFont(byte[] data, string name);
 
-    public IFont LoadFileFont(string path, string? name = null) => PlatformLoader.LoadFont(LoadFile(path, name), name ?? path);
+    protected virtual void OnDispose() { }
+
+    public void Dispose() {
+        OnDispose();
+        Data.Dispose();
+    }
 }

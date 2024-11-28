@@ -121,7 +121,7 @@ public class Slider : Element {
                                 Content = [
                                     Thumb = new RectElement {
                                         Parent = this,
-                                        Size = new Vector2(30, 30),
+                                        Size = new Vector2(30),
                                         RelativeSizeAxes = Axes.Y,
                                         Margin = new Vector2(0, 5),
                                         Paint = new Paint {
@@ -132,7 +132,6 @@ public class Slider : Element {
                                         RoundedCorners = new Vector2(3),
                                         AnchorPosition = new Vector2(1f, 0.5f),
                                         OffsetPosition = new Vector2(1f, 0.5f)
-                                        // Position = new(25, 0)
                                     }
                                 ]
                             }
@@ -161,8 +160,8 @@ public class Slider : Element {
             value = (coord - 25) / (DrawSize.X - Thumb.DrawSize.X - 20);
             value = Math.Clamp(value, 0, 1);
 
-            Thumb.AnchorTo(new Vector2(value, 0.5f), 0.2f, Ease.ExponentialOut);
-            Thumb.OffsetTo(new Vector2(value, 0.5f), 0.2f, Ease.ExponentialOut);
+            Thumb.AnchorTo(new Vector2(value, 0.5f), 0.3f, Ease.ExponentialOut);
+            Thumb.OffsetTo(new Vector2(value, 0.5f), 0.3f, Ease.ExponentialOut);
 
             updateRoot();
         }
@@ -237,9 +236,7 @@ public class MyApp : Application {
     private TextElement? fpsText;
 
     protected override void OnLoad() {
-        IFont font = ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf");
-
-        fpsText = new TextElement("FPS: 0", font) {
+        fpsText = new TextElement("FPS: 0") {
             Parent = Root,
             Paint = new Paint {
                 TextSize = 30,
@@ -267,7 +264,7 @@ public class MyApp : Application {
             Index = 1,
             Name = "Right",
             Content = [
-                new TextElement("Rotate", font) {
+                new TextElement("Rotate") {
                     AnchorPosition = new Vector2(0.5f),
                     OffsetPosition = new Vector2(0.5f),
                     Paint = new Paint {
@@ -310,7 +307,7 @@ public class MyApp : Application {
             Index = 555
         };
 
-        scaleButton.Background.Add(new TextElement("Scale", font) {
+        scaleButton.Background.Add(new TextElement("Scale") {
             AnchorPosition = new Vector2(0.5f),
             OffsetPosition = new Vector2(0.5f),
             Paint = new Paint {
@@ -332,7 +329,7 @@ public class MyApp : Application {
         Slider slider = new() {
             RelativeSizeAxes = Axes.X,
             Margin = new Vector2(20, 0),
-            Size = new Vector2(0, 110),
+            Size = new Vector2(0, 50),
             AnchorPosition = new Vector2(0.5f, 1),
             OffsetPosition = new Vector2(0.5f, 1f),
             Parent = Root,

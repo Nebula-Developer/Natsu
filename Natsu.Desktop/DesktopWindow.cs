@@ -52,7 +52,7 @@ public class DesktopWindow {
 
     public void Load() {
         App.Platform = Window;
-        App.ResourceLoader = new ResourceLoader(new SkiaResourceLoader());
+        App.ResourceLoader = new SkiaResourceLoader();
 
         CreateSurface(Window.Size);
 

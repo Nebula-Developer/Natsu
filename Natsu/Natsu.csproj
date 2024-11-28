@@ -7,12 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="Resources\**\*.*" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Roslynator.Analyzers" Version="4.12.9">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="SkiaSharp" Version="2.88.8"/>
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.8"/>
+        <PackageReference Include="SkiaSharp" Version="2.88.8" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.8" />
     </ItemGroup>
 
 </Project>

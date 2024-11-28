@@ -3,6 +3,7 @@
 using Natsu.Graphics.Elements;
 using Natsu.Mathematics;
 using Natsu.Platforms;
+using Natsu.System;
 
 namespace Natsu.Graphics;
 
