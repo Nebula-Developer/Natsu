@@ -93,7 +93,7 @@ public partial class Element {
     }
 
     public DirtyStruct<Vector2> DirtyDrawSize { get; } = new();
-    // public Vector2 DrawSize => (_size - _margin * 2) / (ScaleAffectsDrawSize ? Vector2.One : _scale);
+    
     public Vector2 DrawSize {
         get {
             if (DirtyDrawSize.IsDirty)
@@ -103,7 +103,7 @@ public partial class Element {
         }
     }
 
-    public Vector2 Size {
+    public virtual Vector2 Size {
         get => _size;
         set {
             if ((RelativeSizeAxes | ChildRelativeSizeAxes) == Axes.Both) throw new InvalidOperationException("Cannot set size on element with both relative size axes.");
@@ -120,7 +120,7 @@ public partial class Element {
 
     public Vector2 RelativeSize {
         get {
-            if (RelativeSizeAxes == Axes.None && ChildRelativeSizeAxes == Axes.None) return _size;
+            if (RelativeSizeAxes == Axes.None && ChildRelativeSizeAxes == Axes.None) return Size;
 
             if (DirtyDrawSize.IsDirty) UpdateDrawSize();
 
@@ -301,7 +301,7 @@ public partial class Element {
     }
 
     public void UpdateDrawSize() {
-        Vector2 nSize = _size;
+        Vector2 nSize = Size;
 
         if (RelativeSizeAxes != Axes.None || ChildRelativeSizeAxes != Axes.None)
             nSize = ReplaceRelativeAxes(nSize);

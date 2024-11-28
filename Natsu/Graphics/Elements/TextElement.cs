@@ -5,12 +5,13 @@ namespace Natsu.Graphics.Elements;
 public class TextElement : PaintableElement {
     private string _text = string.Empty;
     private bool _sizeValid;
+    private Vector2 _textSize;
 
     public string Text {
         get => _text;
         set {
             _text = value;
-            _sizeValid = false;
+            InvalidateAutoSize();
         }
     }
 
@@ -34,26 +35,48 @@ public class TextElement : PaintableElement {
         }
         set {
             _font = value;
-            _sizeValid = false;
+            InvalidateAutoSize();
         }
+    }
+
+    private void InvalidateAutoSize() {
+        Invalidate(Invalidation.Geometry);
+        _sizeValid = false;
     }
     
     public void CalculateSize() {
         if (Font == null) return;
-        Size = Font.MeasureText(Text, Paint.TextSize);
+        _textSize = Font.MeasureText(Text, Paint.TextSize);
     }
 
     private void AssignPaintEvent() {
-        Paint.OnChanged += () => _sizeValid = false;
-        _sizeValid = false;
+        Paint.OnChanged += () => InvalidateAutoSize();
+        InvalidateAutoSize();
     }
 
     public override void OnPaintChanged() => AssignPaintEvent();
     public override void OnLoad() => AssignPaintEvent();
 
+    public override Vector2 Size {
+        get {
+            if (!AutoSize) return base.Size;
+            if (!_sizeValid) CalculateSize();
+            return _textSize;
+        }
+        set => base.Size = value;
+    }
+
+    public bool AutoSize {
+        get => _autoSize;
+        set {
+            _autoSize = value;
+            Invalidate(Invalidation.DrawSize);
+        }
+    }
+    private bool _autoSize = true;
+
     public override void OnRender(ICanvas canvas) {
         if (Font == null) return;
-        if (!_sizeValid) CalculateSize();
         canvas.DrawText(Text, new Vector2(0, 0), Font, Paint);
     }
 }

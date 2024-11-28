@@ -336,38 +336,6 @@ public class MyApp : Application {
             Index = 3,
             Position = new Vector2(0, -20)
         };
-
-        GlobalInputElement globalElm = new() {
-            GrabFallback = false
-        };
-        Add(globalElm);
-
-        bool ctrl = false;
-        bool toggle = false;
-
-        globalElm.KeyDownEvent += k => {
-            if (k == Key.LeftControl || k == Key.RightControl) {
-                ctrl = true;
-                return;
-            }
-
-            if (ctrl && k == Key.D) {
-                if (toggle)
-                    slider.MoveTo(new Vector2(0, -20), 0.3f, Ease.ExponentialOut);
-                else
-                    slider.MoveTo(new Vector2(0, 110), 0.3f, Ease.ExponentialOut);
-
-                toggle = !toggle;
-            }
-        };
-
-        globalElm.KeyUpEvent += k => {
-            if (k == Key.LeftControl || k == Key.RightControl) ctrl = false;
-        };
-    }
-
-    public void LoadRenderer(SKSurface surface) {
-        lock (this) Renderer = new SkiaRenderer(surface);
     }
 
     protected override void OnRender() {
