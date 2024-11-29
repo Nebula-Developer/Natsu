@@ -5,7 +5,7 @@ namespace Natsu.Graphics.Elements;
 
 public class InputElement : Element {
     public bool AcceptInput { get; set; } = true;
-    public bool GrabFallback { get; set; } = false;
+    public bool GrabFallback { get; set; } = true;
     public bool HoverCursor { get; set; } = true;
     public CursorStyle Cursor { get; set; } = CursorStyle.Pointer;
 

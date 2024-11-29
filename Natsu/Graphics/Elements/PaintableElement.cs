@@ -11,5 +11,10 @@ public class PaintableElement : Element {
         }
     }
 
+    public Color Color {
+        get => Paint.Color;
+        set => Paint.Color = value;
+    }
+
     public virtual void OnPaintChanged() { }
 }
