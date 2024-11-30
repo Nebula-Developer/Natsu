@@ -33,7 +33,7 @@ public partial class Application : IDisposable {
     public void Dispose() {
         Root.Dispose();
         OnDispose();
-        Disposed?.Invoke();
+        DoDispose?.Invoke();
 
         ResourceLoader.Dispose();
         Renderer.Dispose();
@@ -45,17 +45,17 @@ public partial class Application : IDisposable {
     protected virtual void OnRender() { }
     protected virtual void OnResize(int width, int height) { }
 
-    public event Action Loaded;
-    public event Action Disposed;
-    public event Action Updated;
-    public event Action Rendered;
-    public event Action<int, int> Resized;
+    public event Action DoLoad;
+    public event Action DoDispose;
+    public event Action DoUpdate;
+    public event Action DoRender;
+    public event Action<int, int> DoResize;
 
 
     public void Load() {
         Root.Load();
         OnLoad();
-        Loaded?.Invoke();
+        DoLoad?.Invoke();
     }
 
     public void Update() {
@@ -63,7 +63,7 @@ public partial class Application : IDisposable {
 
         Root.Update();
         OnUpdate();
-        Updated?.Invoke();
+        DoUpdate?.Invoke();
     }
 
     public void Render() {
@@ -72,7 +72,7 @@ public partial class Application : IDisposable {
         Canvas.Clear(Colors.Black);
         Root.Render(Canvas);
         OnRender();
-        Rendered?.Invoke();
+        DoRender?.Invoke();
         Canvas.ResetMatrix();
 
         Renderer.Flush();
@@ -84,7 +84,7 @@ public partial class Application : IDisposable {
 
         Renderer.Resize(width, height);
         OnResize(width, height);
-        Resized?.Invoke(width, height);
+        DoResize?.Invoke(width, height);
     }
 
     public void Add(params Element[] elements) => Root.Add(elements);

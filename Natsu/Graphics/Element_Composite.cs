@@ -109,12 +109,12 @@ public partial class Element {
     public bool HasChild(Element element) => _children.Contains(element);
 
     public virtual void OnChildrenChange() { }
-    public event Action? ChildrenChangedEvent;
+    public event Action? DoChildrenChange;
 
     public void CildrenChanged() {
         if (ChildRelativeSizeAxes != Axes.None)
             Invalidate(Invalidation.Geometry);
         OnChildrenChange();
-        ChildrenChangedEvent?.Invoke();
+        DoChildrenChange?.Invoke();
     }
 }

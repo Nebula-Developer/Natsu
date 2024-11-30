@@ -111,7 +111,7 @@ public partial class Element {
             if (_size == value) return;
 
             _size = value;
-            OnSizeChanged?.Invoke(_size);
+            DoSizeChange?.Invoke(_size);
 
             Invalidate(Invalidation.DrawSize);
             PropogateChildrenSizeChange();
@@ -230,7 +230,7 @@ public partial class Element {
 
     public void InvalidateParent(Invalidation invalidation) => Parent?.Invalidate(invalidation, false);
 
-    public event Action<Vector2>? OnSizeChanged;
+    public event Action<Vector2>? DoSizeChange;
 
     public Bounds GetChildBounds() {
         Bounds bounds = Bounds.Empty;

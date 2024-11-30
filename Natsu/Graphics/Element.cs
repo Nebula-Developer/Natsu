@@ -43,7 +43,7 @@ public partial class Element : IDisposable {
 
     public void Dispose() {
         OnDispose();
-        Disposed?.Invoke();
+        DoDispose?.Invoke();
         Parent?.Remove(this);
         if (DisposeChildren)
             Clear(true);
@@ -54,7 +54,7 @@ public partial class Element : IDisposable {
             return false;
 
         OnLoad();
-        LoadEvent?.Invoke();
+        DoLoad?.Invoke();
         Loaded = true;
 
         ForChildren(child => child.Load());
@@ -84,7 +84,7 @@ public partial class Element : IDisposable {
         // eg:
         // canvas.DrawRect(new(0, 0, MathF.Round(DrawSize.X), MathF.Round(DrawSize.Y)), new Paint() { Color = Colors.Magenta, IsStroke = true, StrokeWidth = 2 });
         OnRenderChildren(canvas);
-        Rendered?.Invoke();
+        DoRender?.Invoke();
 
         canvas.Restore(save);
     }
@@ -96,7 +96,7 @@ public partial class Element : IDisposable {
         UpdateTransformSequences();
 
         OnUpdate();
-        Updated?.Invoke();
+        DoUpdate?.Invoke();
         OnUpdateChildren();
     }
 
@@ -111,13 +111,13 @@ public partial class Element : IDisposable {
 
     public virtual void OnAppChange(Application? old) { }
 
-    public event Action? LoadEvent;
-    public event Action? Disposed;
+    public event Action? DoLoad;
+    public event Action? DoDispose;
 
-    public event Action? Updated;
-    public event Action? Rendered;
+    public event Action? DoUpdate;
+    public event Action? DoRender;
 
-    public event Action<Application>? AppChanged;
+    public event Action<Application>? DoAppChange;
 #nullable disable
     public Application App {
         get {
@@ -148,7 +148,7 @@ public partial class Element : IDisposable {
         if (constructInputLists)
             app.ConstructInputLists();
 
-        AppChanged?.Invoke(old);
+        DoAppChange?.Invoke(old);
         OnAppChange(old);
 
         return true;

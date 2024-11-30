@@ -86,18 +86,18 @@ public partial class Application {
     public virtual void OnKeyDown(Key key) { }
     public virtual void OnKeyUp(Key key) { }
 
-    public event Action<MouseButton, Vector2> MouseDownEvent;
-    public event Action<MouseButton, Vector2> MouseUpEvent;
-    public event Action<Vector2> MouseMoveEvent;
-    public event Action<Vector2> MouseWheelEvent;
-    public event Action<Key> KeyDownEvent;
-    public event Action<Key> KeyUpEvent;
+    public event Action<MouseButton, Vector2> DoMouseDown;
+    public event Action<MouseButton, Vector2> DoMouseUp;
+    public event Action<Vector2> DoMouseMove;
+    public event Action<Vector2> DoMouseWheel;
+    public event Action<Key> DoKeyDown;
+    public event Action<Key> DoKeyUp;
 
     public bool MouseDown(MouseButton button, Vector2 position) {
         MouseMove(position);
         MouseState[button] = true;
 
-        MouseDownEvent?.Invoke(button, position);
+        DoMouseDown?.Invoke(button, position);
         OnMouseDown(button, position);
 
         List<InputElement> elms = InteractingElements;
@@ -127,7 +127,7 @@ public partial class Application {
         MouseMove(position);
         MouseState[button] = false;
 
-        MouseUpEvent?.Invoke(button, position);
+        DoMouseUp?.Invoke(button, position);
         OnMouseUp(button, position);
 
         if (!_mouseDownCache.ContainsKey(button))
@@ -148,7 +148,7 @@ public partial class Application {
     public void MouseMove(Vector2 position) {
         MousePosition = position;
 
-        MouseMoveEvent?.Invoke(position);
+        DoMouseMove?.Invoke(position);
         OnMouseMove(position);
 
         List<InputElement> elms = GetInputCandidates(position);
@@ -201,7 +201,7 @@ public partial class Application {
     }
 
     public void MouseWheel(Vector2 delta) {
-        MouseWheelEvent?.Invoke(delta);
+        DoMouseWheel?.Invoke(delta);
         OnMouseWheel(delta);
 
         foreach (InputElement elm in AllInteractingElements)
@@ -211,7 +211,7 @@ public partial class Application {
     public void KeyDown(Key key) {
         Keys[key] = true;
 
-        KeyDownEvent?.Invoke(key);
+        DoKeyDown?.Invoke(key);
         OnKeyDown(key);
 
         foreach (GlobalInputElement elm in NonPositionalInputList)
@@ -223,7 +223,7 @@ public partial class Application {
     public void KeyUp(Key key) {
         Keys[key] = false;
 
-        KeyUpEvent?.Invoke(key);
+        DoKeyUp?.Invoke(key);
         OnKeyUp(key);
 
         foreach (GlobalInputElement elm in NonPositionalInputList)

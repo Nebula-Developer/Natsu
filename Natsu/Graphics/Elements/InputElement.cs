@@ -31,88 +31,88 @@ public class InputElement : Element {
     public virtual void OnFocus() { }
     public virtual void OnBlur() { }
 
-    public event Action<MouseButton, Vector2>? MouseDownEvent;
-    public event Action<MouseButton, Vector2>? MouseUpEvent;
-    public event Action<MouseButton, Vector2>? MousePressEvent;
-    public event Action<MouseButton, Vector2>? MousePressDodgeEvent;
+    public event Action<MouseButton, Vector2>? DoMouseDown;
+    public event Action<MouseButton, Vector2>? DoMouseUp;
+    public event Action<MouseButton, Vector2>? DoMousePress;
+    public event Action<MouseButton, Vector2>? DoMousePressDodge;
 
-    public event Action<Vector2>? MouseEnterEvent;
-    public event Action<Vector2>? MouseLeaveEvent;
+    public event Action<Vector2>? DoMouseEnter;
+    public event Action<Vector2>? DoMouseLeave;
 
-    public event Action<Vector2>? MouseMoveEvent;
-    public event Action<Vector2>? MouseWheelEvent;
+    public event Action<Vector2>? DoMouseMove;
+    public event Action<Vector2>? DoMouseWheel;
 
-    public event Action<Key>? KeyDownEvent;
-    public event Action<Key>? KeyUpEvent;
+    public event Action<Key>? DoKeyDown;
+    public event Action<Key>? DoKeyUp;
 
-    public event Action? Focused;
-    public event Action? Blurred;
+    public event Action? DoFocus;
+    public event Action? DoBlur;
 
     public bool MouseDown(MouseButton button, Vector2 position) {
         MouseButtons[button] = true;
-        MouseDownEvent?.Invoke(button, position);
+        DoMouseDown?.Invoke(button, position);
         return OnMouseDown(button, position);
     }
 
     public void MouseUp(MouseButton button, Vector2 position) {
         MouseButtons[button] = false;
-        MouseUpEvent?.Invoke(button, position);
+        DoMouseUp?.Invoke(button, position);
         OnMouseUp(button, position);
     }
 
     public void MousePress(MouseButton button, Vector2 position) {
-        MousePressEvent?.Invoke(button, position);
+        DoMousePress?.Invoke(button, position);
         OnMousePress(button, position);
     }
 
     public void MousePressDodge(MouseButton button, Vector2 position) {
-        MousePressDodgeEvent?.Invoke(button, position);
+        DoMousePressDodge?.Invoke(button, position);
         OnMousePressDodge(button, position);
     }
 
     public bool MouseEnter(Vector2 position) {
         IsMouseOver = true;
-        MouseEnterEvent?.Invoke(position);
+        DoMouseEnter?.Invoke(position);
         return OnMouseEnter(position);
     }
 
     public void MouseLeave(Vector2 position) {
         IsMouseOver = false;
-        MouseLeaveEvent?.Invoke(position);
+        DoMouseLeave?.Invoke(position);
         OnMouseLeave(position);
     }
 
     public void MouseMove(Vector2 position) {
-        MouseMoveEvent?.Invoke(position);
+        DoMouseMove?.Invoke(position);
         OnMouseMove(position);
     }
 
     public void MouseWheel(Vector2 delta) {
-        MouseWheelEvent?.Invoke(delta);
+        DoMouseWheel?.Invoke(delta);
         OnMouseWheel(delta);
     }
 
     public bool KeyDown(Key key) {
         Keys[key] = true;
-        KeyDownEvent?.Invoke(key);
+        DoKeyDown?.Invoke(key);
         return OnKeyDown(key);
     }
 
     public void KeyUp(Key key) {
         Keys[key] = false;
-        KeyUpEvent?.Invoke(key);
+        DoKeyUp?.Invoke(key);
         OnKeyUp(key);
     }
 
     public void Focus() {
         IsFocused = true;
-        Focused?.Invoke();
+        DoFocus?.Invoke();
         OnFocus();
     }
 
     public void Blur() {
         IsFocused = false;
-        Blurred?.Invoke();
+        DoBlur?.Invoke();
         OnBlur();
     }
 }

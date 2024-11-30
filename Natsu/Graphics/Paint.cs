@@ -12,7 +12,7 @@ public class Paint {
         get => _color;
         set {
             _color = value;
-            OnChanged?.Invoke();
+            DoChange?.Invoke();
         }
     }
 
@@ -20,7 +20,7 @@ public class Paint {
         get => _strokeWidth;
         set {
             _strokeWidth = value;
-            OnChanged?.Invoke();
+            DoChange?.Invoke();
         }
     }
 
@@ -28,7 +28,7 @@ public class Paint {
         get => _isStroke;
         set {
             _isStroke = value;
-            OnChanged?.Invoke();
+            DoChange?.Invoke();
         }
     }
 
@@ -36,7 +36,7 @@ public class Paint {
         get => _isAntialias;
         set {
             _isAntialias = value;
-            OnChanged?.Invoke();
+            DoChange?.Invoke();
         }
     }
 
@@ -44,7 +44,7 @@ public class Paint {
         get => _filterQuality;
         set {
             _filterQuality = value;
-            OnChanged?.Invoke();
+            DoChange?.Invoke();
         }
     }
 
@@ -52,9 +52,9 @@ public class Paint {
         get => _fontSize;
         set {
             _fontSize = value;
-            OnChanged?.Invoke();
+            DoChange?.Invoke();
         }
     }
 
-    public event Action? OnChanged;
+    public event Action? DoChange;
 }

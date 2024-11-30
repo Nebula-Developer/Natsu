@@ -50,7 +50,7 @@ public class TextElement : PaintableElement {
     }
 
     private void AssignPaintEvent() {
-        Paint.OnChanged += () => InvalidateAutoSize();
+        Paint.DoChange += () => InvalidateAutoSize();
         InvalidateAutoSize();
     }
 
