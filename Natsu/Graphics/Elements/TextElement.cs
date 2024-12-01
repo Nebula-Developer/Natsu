@@ -3,17 +3,12 @@ using Natsu.Mathematics;
 namespace Natsu.Graphics.Elements;
 
 public class TextElement : PaintableElement {
-    private string _text = string.Empty;
-    private bool _sizeValid;
-    private Vector2 _textSize;
+    private bool _autoSize = true;
 
-    public string Text {
-        get => _text;
-        set {
-            _text = value;
-            InvalidateAutoSize();
-        }
-    }
+    private IFont? _font;
+    private bool _sizeValid;
+    private string _text = string.Empty;
+    private Vector2 _textSize;
 
     public TextElement() { }
 
@@ -26,7 +21,13 @@ public class TextElement : PaintableElement {
         Font = font;
     }
 
-    private IFont? _font;
+    public string Text {
+        get => _text;
+        set {
+            _text = value;
+            InvalidateAutoSize();
+        }
+    }
     public IFont? Font {
         get {
             if (_font == null && App != null)
@@ -39,27 +40,10 @@ public class TextElement : PaintableElement {
         }
     }
 
-    private void InvalidateAutoSize() {
-        Invalidate(Invalidation.Geometry);
-        _sizeValid = false;
-    }
-    
-    public void CalculateSize() {
-        if (Font == null) return;
-        _textSize = Font.MeasureText(Text, Paint.TextSize);
-    }
-
-    private void AssignPaintEvent() {
-        Paint.DoChange += () => InvalidateAutoSize();
-        InvalidateAutoSize();
-    }
-
-    public override void OnPaintChanged() => AssignPaintEvent();
-    public override void OnLoad() => AssignPaintEvent();
-
     public override Vector2 Size {
         get {
             if (!AutoSize) return base.Size;
+
             if (!_sizeValid) CalculateSize();
             return _textSize;
         }
@@ -73,10 +57,29 @@ public class TextElement : PaintableElement {
             Invalidate(Invalidation.DrawSize);
         }
     }
-    private bool _autoSize = true;
+
+    private void InvalidateAutoSize() {
+        Invalidate(Invalidation.Geometry);
+        _sizeValid = false;
+    }
+
+    public void CalculateSize() {
+        if (Font == null) return;
+
+        _textSize = Font.MeasureText(Text, Paint.TextSize);
+    }
+
+    private void AssignPaintEvent() {
+        Paint.DoChange += () => InvalidateAutoSize();
+        InvalidateAutoSize();
+    }
+
+    public override void OnPaintChanged() => AssignPaintEvent();
+    public override void OnLoad() => AssignPaintEvent();
 
     public override void OnRender(ICanvas canvas) {
         if (Font == null) return;
+
         canvas.DrawText(Text, new Vector2(0, 0), Font, Paint);
     }
 }

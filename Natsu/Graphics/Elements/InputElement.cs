@@ -115,4 +115,9 @@ public class InputElement : Element {
         DoBlur?.Invoke();
         OnBlur();
     }
+
+    public override void OnAppChange(Application? old) {
+        old?.RemoveInputCandidate(this);
+        App?.ConstructInputLists();
+    }
 }

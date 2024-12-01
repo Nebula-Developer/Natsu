@@ -1,4 +1,3 @@
-
 using Natsu.Graphics.Elements;
 
 namespace Natsu.Graphics;
@@ -14,6 +13,7 @@ public class GraphElement : PaintableElement {
 
     public override void OnRender(ICanvas canvas) {
         if (Path == null) return;
+
         canvas.DrawPath(Path, Paint);
     }
 }

@@ -2,12 +2,11 @@ using System.Reflection;
 using System.Text;
 
 using Natsu.Graphics;
-using Natsu.System;
 using Natsu.Utils;
 
 namespace Natsu.System;
 
-public static partial class StringExtensions {
+public static class StringExtensions {
     public static string FormatResourcePath(this string path, Assembly asm) => $"{asm.GetName().Name}.{path.Replace('/', '.')}";
 }
 
@@ -21,7 +20,18 @@ public abstract class ResourceLoader : IDisposable {
 
     public virtual IFont DefaultFont => LoadFrameworkResourceFont("Resources/Fonts/Roboto/Roboto-Regular.ttf");
 
+    public void Dispose() {
+        OnDispose();
+        Data.Dispose();
+    }
+
+    public abstract IImage LoadImage(byte[] data, string name);
+    public abstract IFont LoadFont(byte[] data, string name);
+
+    protected virtual void OnDispose() { }
+
     #region Project Assembly Resource Loading
+
     public byte[] LoadResource(string path, string? name = null) => LoadData(path, name, () => ProjectAssembly.GetManifestResourceStream(path.FormatResourcePath(ProjectAssembly)));
 
     public string LoadResourceString(string path, string? name = null) => Encoding.UTF8.GetString(LoadResource(path, name));
@@ -29,9 +39,11 @@ public abstract class ResourceLoader : IDisposable {
     public IImage LoadResourceImage(string path, string? name = null) => LoadImageData(path, name);
 
     public IFont LoadResourceFont(string path, string? name = null) => LoadFontData(path, name);
+
     #endregion
 
     #region Framework Assembly Resource Loading
+
     public byte[] LoadFrameworkResource(string path, string? name = null) => LoadData(path, name, () => FrameworkAssembly.GetManifestResourceStream(path.FormatResourcePath(FrameworkAssembly)));
 
     public string LoadFrameworkResourceString(string path, string? name = null) => Encoding.UTF8.GetString(LoadFrameworkResource(path, name));
@@ -39,9 +51,11 @@ public abstract class ResourceLoader : IDisposable {
     public IImage LoadFrameworkResourceImage(string path, string? name = null) => LoadFrameworkImageData(path, name);
 
     public IFont LoadFrameworkResourceFont(string path, string? name = null) => LoadFrameworkFontData(path, name);
+
     #endregion
 
     #region File Loading (from external files)
+
     public byte[] LoadFile(string path, string? name = null) => LoadData(path, name, () => new FileStream(path, FileMode.Open, FileAccess.Read));
 
     public string LoadFileString(string path, string? name = null) => Encoding.UTF8.GetString(LoadFile(path, name));
@@ -63,9 +77,11 @@ public abstract class ResourceLoader : IDisposable {
         FontData[name ?? path] = font;
         return font;
     }
+
     #endregion
 
     #region Helper Methods
+
     private byte[] LoadData(string path, string? name, Func<Stream?> openStreamFunc) {
         if (Data[name ?? path] is byte[] data) return data;
 
@@ -113,15 +129,7 @@ public abstract class ResourceLoader : IDisposable {
         ImageData[name ?? path] = image;
         return image;
     }
+
     #endregion
 
-    public abstract IImage LoadImage(byte[] data, string name);
-    public abstract IFont LoadFont(byte[] data, string name);
-
-    protected virtual void OnDispose() { }
-
-    public void Dispose() {
-        OnDispose();
-        Data.Dispose();
-    }
 }

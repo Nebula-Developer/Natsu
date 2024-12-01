@@ -16,7 +16,6 @@ public partial class Application {
         OverBlock = Over | Blocking
     }
 
-    // each mouse button has a cache of what elements hadneld its down event
     private readonly Dictionary<MouseButton, HashSet<InputElement>> _mouseDownCache = new();
 
     private readonly Dictionary<InputElement, MouseEnterCacheState> _mouseEnterCache = new();
@@ -191,7 +190,6 @@ public partial class Application {
         foreach (GlobalInputElement elm in NonPositionalInputList)
             elm.MouseMove(position);
 
-        // get the upmost element that is blocking the mouse
         List<InputElement> interacting = InteractingElements;
         if (interacting.Count > 0) {
             InputElement top = interacting[0];

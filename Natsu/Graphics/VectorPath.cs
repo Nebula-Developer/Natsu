@@ -14,6 +14,8 @@ public class VectorPath {
 
     public SKPath SkiaPath { get; } = new();
 
+    public Vector2[] Points => SkiaPath.Points.Select(p => new Vector2(p.X, p.Y)).ToArray();
+
     public void MoveTo(Vector2 point) => SkiaPath.MoveTo(point.X, point.Y);
 
     public void LineTo(Vector2 point) => SkiaPath.LineTo(point.X, point.Y);
@@ -39,6 +41,4 @@ public class VectorPath {
     public void AddPoly(Vector2[] points, bool close) => SkiaPath.AddPoly(points.Select(p => new SKPoint(p.X, p.Y)).ToArray(), close);
     public void Clear() => SkiaPath.Rewind();
     public void Reset() => SkiaPath.Reset();
-        
-    public Vector2[] Points => SkiaPath.Points.Select(p => new Vector2(p.X, p.Y)).ToArray();
 }

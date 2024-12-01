@@ -13,16 +13,8 @@ public partial class Element {
     public Element? RawParent {
         set {
             if (Parent?.HasChild(this) == true) Parent.Remove(this);
-
-            _parent = value;
-            if (Parent?.HasChild(this) == false) Parent.Add(this);
-
-            if (Parent?._app != null && Parent._app != App)
-                App = Parent.App;
-            
-            if (_app != null) App.ConstructInputLists();
-
-            Invalidate(Invalidation.All);
+            if (value?.HasChild(this) == false) value.Add(this);
+            updateParent(value);
         }
     }
 
@@ -48,6 +40,15 @@ public partial class Element {
         }
     }
 
+    private void updateParent(Element? value) {
+        _parent = value;
+
+        if (Parent?._app != null && Parent._app != App)
+            App = Parent.App;
+
+        Invalidate(Invalidation.All);
+    }
+
     public void Remove(params Element[] elements) {
         lock (_children) {
             foreach (Element element in elements) {
@@ -60,6 +61,8 @@ public partial class Element {
     }
 
     private void addChild(Element element) {
+        if (_children.Contains(element) || element == this) return;
+
         lock (_children) {
             for (int i = 0; i < _children.Count; i++)
                 if (_children[i].Index > element.Index) {
@@ -76,7 +79,7 @@ public partial class Element {
         lock (_children) {
             foreach (Element element in elements) {
                 addChild(element);
-                if (element.Parent != this) element._parent = this;
+                if (element.Parent != this) element.updateParent(this);
                 if (!element.Loaded && Loaded) element.Load();
             }
 

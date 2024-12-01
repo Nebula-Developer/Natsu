@@ -145,9 +145,6 @@ public partial class Element : IDisposable {
 
         ForChildren(child => child.setApp(app));
 
-        if (constructInputLists)
-            app.ConstructInputLists();
-
         DoAppChange?.Invoke(old);
         OnAppChange(old);
 

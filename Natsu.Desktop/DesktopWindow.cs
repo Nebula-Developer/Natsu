@@ -81,7 +81,6 @@ public class DesktopWindow {
     public void MouseWheel(MouseWheelEventArgs e) => App.MouseWheel(new Vector2(e.Offset.X, e.Offset.Y));
 
     public void Run() => Window.Run();
-
 #nullable disable
     private GRContext _context;
     private GRGlInterface _interface;

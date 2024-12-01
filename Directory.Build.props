@@ -1,0 +1,30 @@
+<!-- Global configuration -->
+
+<Project>
+    <PropertyGroup>
+        <!-- PACKAGE VERSION CONTROL -->
+        <!-- /////////////////////// -->
+        <Version>0.1.0-beta</Version>
+        <!-- /////////////////////// -->
+
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <Authors>NebulaDev</Authors>
+        <Description>A cross-platform 2D game/application framework built with flexibility in mind.</Description>
+        <PackageTags>game, framework, engine, 2d, cross-platform</PackageTags>
+
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+
+        <PackageProjectUrl>https://github.com/nebula-developer/natsu</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/nebula-developer/natsu</RepositoryUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)/README.md" Pack="true" PackagePath=""/>
+        <None Include="$(MSBuildThisFileDirectory)/LICENSE" Pack="true" PackagePath=""/>
+    </ItemGroup>
+</Project>

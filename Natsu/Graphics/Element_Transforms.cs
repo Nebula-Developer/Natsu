@@ -93,7 +93,7 @@ public partial class Element {
     }
 
     public DirtyStruct<Vector2> DirtyDrawSize { get; } = new();
-    
+
     public Vector2 DrawSize {
         get {
             if (DirtyDrawSize.IsDirty)
