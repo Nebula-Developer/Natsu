@@ -36,7 +36,7 @@ public class OffscreenSurfaceElement : PaintableElement {
         Valid = true;
     }
 
-    public override void OnRender(ICanvas canvas) {
+    protected override void OnRender(ICanvas canvas) {
         base.OnRender(canvas);
 
         if (Surface == null) return;

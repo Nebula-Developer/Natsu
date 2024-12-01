@@ -16,5 +16,5 @@ public class PaintableElement : Element {
         set => Paint.Color = value;
     }
 
-    public virtual void OnPaintChanged() { }
+    protected virtual void OnPaintChanged() { }
 }

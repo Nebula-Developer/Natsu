@@ -28,11 +28,11 @@ public class CachedElement : Element {
         }
     }
 
-    public override void OnRender(ICanvas canvas) {
+    protected override void OnRender(ICanvas canvas) {
         if (Surface == null || !Valid) Rerender();
 
         if (Surface != null) canvas.DrawOffscreenSurface(Surface, new Vector2(0, 0));
     }
 
-    public override void OnRenderChildren(ICanvas canvas) { }
+    protected override void OnRenderChildren(ICanvas canvas) { }
 }

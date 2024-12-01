@@ -78,12 +78,12 @@ public partial class Application {
 
     public List<InputElement> GetInputCandidates(Vector2 position) => PositionalInputList.Where(x => x.PointInside(position)).ToList();
 
-    public virtual void OnMouseDown(MouseButton button, Vector2 position) { }
-    public virtual void OnMouseUp(MouseButton button, Vector2 position) { }
-    public virtual void OnMouseMove(Vector2 position) { }
-    public virtual void OnMouseWheel(Vector2 delta) { }
-    public virtual void OnKeyDown(Key key) { }
-    public virtual void OnKeyUp(Key key) { }
+    protected virtual void OnMouseDown(MouseButton button, Vector2 position) { }
+    protected virtual void OnMouseUp(MouseButton button, Vector2 position) { }
+    protected virtual void OnMouseMove(Vector2 position) { }
+    protected virtual void OnMouseWheel(Vector2 delta) { }
+    protected virtual void OnKeyDown(Key key) { }
+    protected virtual void OnKeyUp(Key key) { }
 
     public event Action<MouseButton, Vector2> DoMouseDown;
     public event Action<MouseButton, Vector2> DoMouseUp;

@@ -111,7 +111,7 @@ public partial class Element {
 
     public bool HasChild(Element element) => _children.Contains(element);
 
-    public virtual void OnChildrenChange() { }
+    protected virtual void OnChildrenChange() { }
     public event Action? DoChildrenChange;
 
     public void CildrenChanged() {

@@ -9,5 +9,5 @@ public class ImageElement : PaintableElement {
 
     public IImage Image { get; }
 
-    public override void OnRender(ICanvas canvas) => canvas.DrawImage(Image, new Rect(0, 0, DrawSize.X, DrawSize.Y), Paint);
+    protected override void OnRender(ICanvas canvas) => canvas.DrawImage(Image, new Rect(0, 0, DrawSize.X, DrawSize.Y), Paint);
 }

@@ -74,10 +74,10 @@ public class TextElement : PaintableElement {
         InvalidateAutoSize();
     }
 
-    public override void OnPaintChanged() => AssignPaintEvent();
-    public override void OnLoad() => AssignPaintEvent();
+    protected override void OnPaintChanged() => AssignPaintEvent();
+    protected override void OnLoad() => AssignPaintEvent();
 
-    public override void OnRender(ICanvas canvas) {
+    protected override void OnRender(ICanvas canvas) {
         if (Font == null) return;
 
         canvas.DrawText(Text, new Vector2(0, 0), Font, Paint);

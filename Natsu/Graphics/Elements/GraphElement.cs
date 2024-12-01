@@ -11,7 +11,7 @@ public class GraphElement : PaintableElement {
         Path = path;
     }
 
-    public override void OnRender(ICanvas canvas) {
+    protected override void OnRender(ICanvas canvas) {
         if (Path == null) return;
 
         canvas.DrawPath(Path, Paint);

@@ -100,16 +100,16 @@ public partial class Element : IDisposable {
         OnUpdateChildren();
     }
 
-    public virtual void OnLoad() { }
-    public virtual void OnDispose() { }
+    protected virtual void OnLoad() { }
+    protected virtual void OnDispose() { }
 
-    public virtual void OnUpdate() { }
-    public virtual void OnUpdateChildren() => ForChildren(child => child.Update());
+    protected virtual void OnUpdate() { }
+    protected virtual void OnUpdateChildren() => ForChildren(child => child.Update());
 
-    public virtual void OnRender(ICanvas canvas) { }
-    public virtual void OnRenderChildren(ICanvas canvas) => ForChildren(child => child.Render(canvas));
+    protected virtual void OnRender(ICanvas canvas) { }
+    protected virtual void OnRenderChildren(ICanvas canvas) => ForChildren(child => child.Render(canvas));
 
-    public virtual void OnAppChange(Application? old) { }
+    protected virtual void OnAppChange(Application? old) { }
 
     public event Action? DoLoad;
     public event Action? DoDispose;

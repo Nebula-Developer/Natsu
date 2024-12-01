@@ -57,7 +57,7 @@ public class Transform {
 
     public virtual void Reset(TransformSequence? sequence = null) => Performed = false;
 
-    public virtual void OnSetProgress(double progress, TransformSequence? sequence = null) { }
+    protected virtual void OnSetProgress(double progress, TransformSequence? sequence = null) { }
 }
 
 public class TransformSequence {
@@ -208,7 +208,7 @@ public class LoopTransform : Transform {
             sequence.ResetTo(Point);
     }
 
-    public override void OnSetProgress(double progress, TransformSequence? sequence) => Loop(sequence);
+    protected override void OnSetProgress(double progress, TransformSequence? sequence) => Loop(sequence);
 
     public override void Reset(TransformSequence? sequence = null) {
         base.Reset(sequence);

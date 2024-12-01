@@ -14,22 +14,22 @@ public class InputElement : Element {
     public bool IsMouseOver { get; private set; }
     public bool IsFocused { get; private set; }
 
-    public virtual bool OnMouseDown(MouseButton button, Vector2 position) => GrabFallback;
-    public virtual void OnMouseUp(MouseButton button, Vector2 position) { }
-    public virtual void OnMousePress(MouseButton button, Vector2 position) { }
-    public virtual void OnMousePressDodge(MouseButton button, Vector2 position) { }
+    protected virtual bool OnMouseDown(MouseButton button, Vector2 position) => GrabFallback;
+    protected virtual void OnMouseUp(MouseButton button, Vector2 position) { }
+    protected virtual void OnMousePress(MouseButton button, Vector2 position) { }
+    protected virtual void OnMousePressDodge(MouseButton button, Vector2 position) { }
 
-    public virtual bool OnMouseEnter(Vector2 position) => GrabFallback;
-    public virtual void OnMouseLeave(Vector2 position) { }
+    protected virtual bool OnMouseEnter(Vector2 position) => GrabFallback;
+    protected virtual void OnMouseLeave(Vector2 position) { }
 
-    public virtual void OnMouseMove(Vector2 position) { }
-    public virtual void OnMouseWheel(Vector2 delta) { }
+    protected virtual void OnMouseMove(Vector2 position) { }
+    protected virtual void OnMouseWheel(Vector2 delta) { }
 
-    public virtual bool OnKeyDown(Key key) => GrabFallback;
-    public virtual bool OnKeyUp(Key key) => GrabFallback;
+    protected virtual bool OnKeyDown(Key key) => GrabFallback;
+    protected virtual bool OnKeyUp(Key key) => GrabFallback;
 
-    public virtual void OnFocus() { }
-    public virtual void OnBlur() { }
+    protected virtual void OnFocus() { }
+    protected virtual void OnBlur() { }
 
     public event Action<MouseButton, Vector2>? DoMouseDown;
     public event Action<MouseButton, Vector2>? DoMouseUp;
@@ -116,7 +116,7 @@ public class InputElement : Element {
         OnBlur();
     }
 
-    public override void OnAppChange(Application? old) {
+    protected override void OnAppChange(Application? old) {
         old?.RemoveInputCandidate(this);
         App?.ConstructInputLists();
     }
