@@ -4,7 +4,7 @@
     <PropertyGroup>
         <!-- PACKAGE VERSION CONTROL -->
         <!-- /////////////////////// -->
-        <Version>0.1.0-beta</Version>
+        <Version>0.1.1-beta</Version>
         <!-- /////////////////////// -->
 
         <TargetFramework>net8.0</TargetFramework>

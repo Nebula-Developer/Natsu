@@ -38,7 +38,7 @@ public partial class Element {
         }
     }
 
-    protected virtual Vector2 ComputeAnchorPosition => AnchorPosition * Parent?.DrawSize ?? Vector2.Zero;
+    protected virtual Vector2 ComputeAnchorPosition => AnchorPosition * ContentParent?.DrawSize ?? Vector2.Zero;
     public Vector2 test => ComputeAnchorPosition;
 
     public Bounds Bounds {
@@ -192,7 +192,7 @@ public partial class Element {
     public void UpdateMatrix() {
         UpdateDrawSize();
 
-        Matrix matrix = Parent?.ChildAccessMatrix.Copy() ?? new Matrix();
+        Matrix matrix = ContentParent?.ChildAccessMatrix.Copy() ?? new Matrix();
         Vector2 offset = RelativeSize * OffsetPosition;
 
         Vector2 translate = -offset + Position;
@@ -228,7 +228,7 @@ public partial class Element {
         if (propagate) InvalidateChildren(invalidation, deep);
     }
 
-    public void InvalidateParent(Invalidation invalidation) => Parent?.Invalidate(invalidation, false);
+    public void InvalidateParent(Invalidation invalidation) => ContentParent?.Invalidate(invalidation, false);
 
     public event Action<Vector2>? DoSizeChange;
 
@@ -292,10 +292,10 @@ public partial class Element {
         Vector2 distPos = ChildRelativeSizeAxes != Axes.None ? GetDistantChildrenPosition() : Vector2.Zero;
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.X)) newX = distPos.X;
-        else if (RelativeSizeAxes.HasFlag(Axes.X) && Parent != null) newX = Parent.DrawSize.X;
+        else if (RelativeSizeAxes.HasFlag(Axes.X) && ContentParent != null) newX = ContentParent.DrawSize.X;
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.Y)) newY = distPos.Y;
-        else if (RelativeSizeAxes.HasFlag(Axes.Y) && Parent != null) newY = Parent.DrawSize.Y;
+        else if (RelativeSizeAxes.HasFlag(Axes.Y) && ContentParent != null) newY = ContentParent.DrawSize.Y;
 
         return new Vector2(newX, newY);
     }
@@ -314,7 +314,7 @@ public partial class Element {
 
         if (drawSize == oldValue) return;
 
-        if (Parent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(Invalidation.DrawSize);
+        if (ContentParent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(Invalidation.DrawSize);
         PropogateChildrenSizeChange();
 
         if (!DirtyMatrix.IsDirty) CalculateBounds();

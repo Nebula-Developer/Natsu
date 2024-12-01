@@ -13,7 +13,7 @@ public class Slider : Element {
     public Slider() {
         Children = [
             Background = new RectElement {
-                Parent = this,
+                ContentParent = this,
                 RelativeSizeAxes = Axes.Both,
                 Paint = new Paint {
                     Color = new Color(100, 110, 130),
@@ -23,7 +23,7 @@ public class Slider : Element {
                 RoundedCorners = new Vector2(10),
                 Content = [
                     Bar = new RectElement {
-                        Parent = this,
+                        ContentParent = this,
                         RelativeSizeAxes = Axes.Both,
                         Paint = new Paint {
                             Color = new Color(170, 190, 200),
@@ -38,7 +38,7 @@ public class Slider : Element {
                                 RelativeSizeAxes = Axes.Both,
                                 Content = [
                                     Thumb = new RectElement {
-                                        Parent = this,
+                                        ContentParent = this,
                                         Size = new Vector2(30),
                                         RelativeSizeAxes = Axes.Y,
                                         Margin = new Vector2(0, 5),
@@ -60,7 +60,7 @@ public class Slider : Element {
                 OffsetPosition = new Vector2(0.5f)
             },
             ThumbInput = new InputElement {
-                Parent = this,
+                ContentParent = this,
                 RelativeSizeAxes = Axes.Both,
                 GrabFallback = true,
                 Cursor = CursorStyle.ResizeHorizontal
@@ -155,7 +155,7 @@ public class MyApp : Application {
 
     protected override void OnLoad() {
         Add(fpsText = new TextElement {
-            Parent = Root,
+            ContentParent = Root,
             Text = "FPS: 0",
             Position = new Vector2(20, 20),
             Index = 10
@@ -167,7 +167,7 @@ public class MyApp : Application {
             Size = new Vector2(0, 50),
             AnchorPosition = new Vector2(0.5f, 1),
             OffsetPosition = new Vector2(0.5f, 1f),
-            Parent = Root,
+            ContentParent = Root,
             Index = 3,
             Position = new Vector2(0, -20)
         };

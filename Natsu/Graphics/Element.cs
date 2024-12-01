@@ -32,7 +32,7 @@ public partial class Element : IDisposable {
                 return;
 
             _index = value;
-            Parent?.SortChild(this);
+            ContentParent?.SortChild(this);
         }
     }
 
@@ -44,7 +44,7 @@ public partial class Element : IDisposable {
     public void Dispose() {
         OnDispose();
         DoDispose?.Invoke();
-        Parent?.Remove(this);
+        ContentParent?.Remove(this);
         if (DisposeChildren)
             Clear(true);
     }
@@ -124,8 +124,8 @@ public partial class Element : IDisposable {
             if (_app != null)
                 return _app;
 
-            if (Parent != null) {
-                App = Parent.App;
+            if (ContentParent != null) {
+                App = ContentParent.App;
                 return _app;
             }
 
