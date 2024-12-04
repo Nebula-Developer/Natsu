@@ -52,7 +52,7 @@ public partial class Application {
         if (cur.Children.Count > 0)
             lock (cur.Children)
                 for (int i = cur.Children.Count - 1; i >= 0; i--) {
-                    if (!cur.Children[i].Active || cur.Children[i] is CachedElement)
+                    if (!cur.Children[i].Active || (cur.Children[i] is CachedElement e && !e.PassThrough))
                         continue;
 
                     elements.AddRange(ConditionalElementTree(cur.Children[i], condition));
@@ -184,7 +184,7 @@ public partial class Application {
             } else if (state.HasFlag(MouseEnterCacheState.Over)) elm.MouseMove(position);
         }
 
-        if (_focusedElement != null && !elms.Contains(_focusedElement))
+        if (_focusedElement != null /* && !elms.Contains(_focusedElement) */)
             _focusedElement.MouseMove(position);
 
         foreach (GlobalInputElement elm in NonPositionalInputList)

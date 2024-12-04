@@ -4,6 +4,7 @@ namespace Natsu.Graphics;
 
 public partial class Element {
     private readonly List<Element> _children = new();
+    private Element? _parent;
 
     public Element? ContentParent {
         get => _parent;
@@ -11,11 +12,8 @@ public partial class Element {
     }
 
     public Element? Parent {
-        set {
-            if (ContentParent?.HasChild(this) == true) ContentParent.Remove(this);
-            if (value?.HasChild(this) == false) value.Add(this);
-            updateParent(value);
-        }
+        get => _parent;
+        set => updateParent(value);
     }
 
     public virtual Element ContentContainer => this;
@@ -40,7 +38,10 @@ public partial class Element {
         }
     }
 
-    private void updateParent(Element? value) {
+    private void updateParent(Element? value, bool parentCheck = true) {
+        if (_parent != value && Parent?.HasChild(this) == true) Parent.Remove(this);
+        if (parentCheck && value?.HasChild(this) == false) value.Add(this);
+
         _parent = value;
 
         if (ContentParent?._app != null && ContentParent._app != App)
@@ -79,7 +80,7 @@ public partial class Element {
         lock (_children) {
             foreach (Element element in elements) {
                 addChild(element);
-                if (element.ContentParent != this) element.updateParent(this);
+                if (element.ContentParent != this) element.updateParent(this, false);
                 if (!element.Loaded && Loaded) element.Load();
             }
 

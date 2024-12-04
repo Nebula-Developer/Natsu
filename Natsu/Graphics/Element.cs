@@ -8,7 +8,6 @@ public partial class Element : IDisposable {
     private Application? _app;
     private int _index;
     private string? _name;
-    private Element? _parent;
 
     public bool DisposeChildren { get; set; } = true;
 
