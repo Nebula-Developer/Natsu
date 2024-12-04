@@ -52,7 +52,7 @@ public partial class Application {
         if (cur.Children.Count > 0)
             lock (cur.Children)
                 for (int i = cur.Children.Count - 1; i >= 0; i--) {
-                    if (!cur.Children[i].Active || (cur.Children[i] is CachedElement e && !e.PassThrough))
+                    if (!cur.Children[i].Active || cur.Children[i].BlockPositionalInput)
                         continue;
 
                     elements.AddRange(ConditionalElementTree(cur.Children[i], condition));
@@ -152,6 +152,9 @@ public partial class Application {
 
         List<InputElement> elms = GetInputCandidates(position);
 
+        foreach (GlobalInputElement elm in NonPositionalInputList)
+            elm.MouseMove(position);
+
         foreach (InputElement elm in _mouseEnterCache.Keys.ToList())
             if (!elms.Contains(elm)) {
                 if (_mouseEnterCache[elm].HasFlag(MouseEnterCacheState.Over)) elm.MouseLeave(position);
@@ -186,9 +189,6 @@ public partial class Application {
 
         if (_focusedElement != null /* && !elms.Contains(_focusedElement) */)
             _focusedElement.MouseMove(position);
-
-        foreach (GlobalInputElement elm in NonPositionalInputList)
-            elm.MouseMove(position);
 
         List<InputElement> interacting = InteractingElements;
         if (interacting.Count > 0) {

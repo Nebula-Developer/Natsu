@@ -13,6 +13,7 @@ public partial class Element : IDisposable {
 
     public bool Active { get; set; } = true;
     public bool Visible { get; set; } = true;
+    public virtual bool BlockPositionalInput { get; set; }
     public bool Loaded { get; set; }
 
     public virtual string Name {
