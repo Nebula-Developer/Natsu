@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <PackageReference Include="opentk" Version="4.8.2" />
+        <PackageReference Include="TextCopy" Version="6.2.1" />
     </ItemGroup>
 
 </Project>

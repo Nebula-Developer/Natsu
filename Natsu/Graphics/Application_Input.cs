@@ -3,6 +3,7 @@
 using Natsu.Graphics.Elements;
 using Natsu.Input;
 using Natsu.Mathematics;
+using Natsu.Utils;
 
 namespace Natsu.Graphics;
 
@@ -21,12 +22,15 @@ public partial class Application {
     private readonly Dictionary<InputElement, MouseEnterCacheState> _mouseEnterCache = new();
 
     private InputElement _rawFocusedElement;
-    public Dictionary<Key, bool> Keys = new();
+    public FallbackDictionary<Key, bool> Keys = new(false);
 
-    public Dictionary<MouseButton, bool> MouseState = new();
+    public FallbackDictionary<MouseButton, bool> MouseState = new(false);
 
     protected List<GlobalInputElement> NonPositionalInputList = new();
     protected List<InputElement> PositionalInputList = new();
+
+    public FallbackDictionary<int, Vector2> TouchPositions = new(new Vector2(0));
+    public FallbackDictionary<int, bool> TouchState = new(false);
 
     public Vector2 MousePosition { get; private set; }
 

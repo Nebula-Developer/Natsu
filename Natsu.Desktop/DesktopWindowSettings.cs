@@ -4,7 +4,7 @@ using OpenTK.Windowing.Desktop;
 
 using Vector2 = Natsu.Mathematics.Vector2;
 
-namespace Natsu.Platforms.Desktop;
+namespace Natsu.Native.Desktop;
 
 public class DesktopWindowSettings {
     public GameWindowSettings GameWindowSettings { get; set; } = new() { UpdateFrequency = 300 };

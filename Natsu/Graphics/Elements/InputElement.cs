@@ -1,5 +1,6 @@
 using Natsu.Input;
 using Natsu.Mathematics;
+using Natsu.Utils;
 
 namespace Natsu.Graphics.Elements;
 
@@ -9,15 +10,9 @@ public class InputElement : Element {
     public bool HoverCursor { get; set; } = true;
     public CursorStyle Cursor { get; set; } = CursorStyle.Pointer;
 
-    public Dictionary<MouseButton, bool> MouseButtons { get; } = new() {
-        { MouseButton.Left, false },
-        { MouseButton.Right, false },
-        { MouseButton.Middle, false },
-        { MouseButton.X1, false },
-        { MouseButton.X2, false }
-    };
+    public FallbackDictionary<MouseButton, bool> MouseButtons { get; } = new(false);
+    public FallbackDictionary<Key, bool> Keys { get; } = new(false);
 
-    public Dictionary<Key, bool> Keys { get; } = new();
     public bool IsMouseOver { get; private set; }
     public bool IsFocused { get; private set; }
 

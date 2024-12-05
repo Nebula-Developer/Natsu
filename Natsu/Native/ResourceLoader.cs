@@ -4,7 +4,7 @@ using System.Text;
 using Natsu.Graphics;
 using Natsu.Utils;
 
-namespace Natsu.System;
+namespace Natsu.Native;
 
 public static class StringExtensions {
     public static string FormatResourcePath(this string path, Assembly asm) => $"{asm.GetName().Name}.{path.Replace('/', '.')}";

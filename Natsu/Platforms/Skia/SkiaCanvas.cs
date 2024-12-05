@@ -3,7 +3,7 @@ using Natsu.Mathematics;
 
 using SkiaSharp;
 
-namespace Natsu.Platforms.Skia;
+namespace Natsu.Native.Skia;
 
 public class SkiaCanvas(SKCanvas canvas) : ICanvas {
     public SKCanvas Canvas { get; } = canvas;

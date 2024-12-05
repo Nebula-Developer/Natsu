@@ -5,9 +5,11 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 
+using TextCopy;
+
 using static OpenTK.Windowing.Common.Input.MouseCursor;
 
-namespace Natsu.Platforms.Desktop;
+namespace Natsu.Native.Desktop;
 
 public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) : GameWindow(settings.GameWindowSettings, settings.NativeWindowSettings), INativePlatform {
     public DesktopWindow Bridge { get; } = bridge;
@@ -58,6 +60,11 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
     public bool KeyboardVisible {
         get => false;
         set { }
+    }
+
+    public string Clipboard {
+        get => ClipboardService.GetText() ?? "";
+        set => ClipboardService.SetText(value);
     }
 
     protected override void OnLoad() => Bridge.Load();

@@ -1,4 +1,4 @@
-using Natsu.Platforms.Desktop;
+using Natsu.Native.Desktop;
 
 namespace Natsu.Sandbox;
 

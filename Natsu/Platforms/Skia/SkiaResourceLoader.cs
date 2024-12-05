@@ -1,12 +1,11 @@
 using System.Reflection;
 
 using Natsu.Graphics;
-using Natsu.System;
 using Natsu.Utils;
 
 using SkiaSharp;
 
-namespace Natsu.Platforms.Skia;
+namespace Natsu.Native.Skia;
 
 public class SkiaResourceLoader : ResourceLoader {
     public NamedStorage<IImage> Images { get; } = new();

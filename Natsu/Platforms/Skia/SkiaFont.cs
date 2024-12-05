@@ -3,7 +3,7 @@ using Natsu.Mathematics;
 
 using SkiaSharp;
 
-namespace Natsu.Platforms.Skia;
+namespace Natsu.Native.Skia;
 
 public record SkiaFont(SKTypeface Typeface) : IFont {
     public Vector2 MeasureText(string text, float size) {

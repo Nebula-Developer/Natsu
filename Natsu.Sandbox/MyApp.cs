@@ -151,7 +151,6 @@ public class Slider : Element {
 }
 
 public class TextBox : InputElement {
-    private readonly List<float> _substringWidths = new();
     private int _caretIndex;
     private Vector2 _clickPos;
 
@@ -159,11 +158,12 @@ public class TextBox : InputElement {
     private int _selectionEnd;
 
     private int _selectionStart;
+    private Dictionary<int, float> _substringWidths = new();
 
     private Vector2 _targetPos;
     public RectElement Background, Caret, Selection;
 
-    public int Limit = 0;
+    public int Limit = 1000;
 
     public TextElement Preview;
     public Element PreviewContent;
@@ -276,10 +276,18 @@ public class TextBox : InputElement {
     private void calculateSubstringWidths() {
         _substringWidths.Clear();
         float width = 0;
+
+        Dictionary<char, float> charWidths = new();
+
         for (int i = 0; i < Text.Length; i++) {
-            width += Preview.Font?.MeasureText(Text[i..(i + 1)], Preview.Paint.TextSize).X ?? 0;
-            _substringWidths.Add(width);
+            char c = Text[i];
+            if (!charWidths.ContainsKey(c))
+                charWidths.Add(c, Preview.Font?.MeasureText(c.ToString(), Preview.Paint.TextSize).X ?? 0);
+            width += charWidths[c];
+            _substringWidths.Add(i, width);
         }
+
+        _substringWidths = _substringWidths.OrderByDescending(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
     }
 
     protected override void OnFocus() {
@@ -314,11 +322,13 @@ public class TextBox : InputElement {
         float relativeX = ToLocalSpace(position).X - Preview.Position.X;
         int index = 0;
 
-        for (int i = _substringWidths.Count - 1; i >= 0; i--)
-            if (relativeX >= _substringWidths[i] - Preview.Paint.TextSize / 4) {
-                index = i;
-                break;
-            }
+        lock (_substringWidths)
+            foreach ((int i, float width) in _substringWidths)
+                if (relativeX >= width - Preview.Paint.TextSize / 4) {
+                    index = i;
+                    Console.WriteLine($"Index: {index} Width: {width} RelativeX: {relativeX}");
+                    break;
+                }
 
         CaretIndex = relativeX < 0 ? 0 : index + 1;
         SelectionStart = SelectionEnd = CaretIndex;
@@ -362,6 +372,8 @@ public class TextBox : InputElement {
     }
 
     private void updateCaretPosition(float animationDuration = 0.1f, bool resetPos = false) {
+        calculateSubstringWidths();
+
         float caretX = Preview.Font?.MeasureText(Text[..CaretIndex], Preview.Paint.TextSize).X ?? 0;
         Caret.StopTransformSequences(nameof(Caret.Position));
         if (animationDuration > 0)
@@ -377,6 +389,8 @@ public class TextBox : InputElement {
         }
 
         float width = Background.DrawSize.X - Preview.Margin.X * 2;
+        float textWidth = Preview.DrawSize.X;
+
         float offset = _targetPos.X;
 
         float relativeX = caretX + offset;
@@ -387,6 +401,12 @@ public class TextBox : InputElement {
         } else if (relativeX < 0) {
             Preview.StopTransformSequences(nameof(Preview.Position));
             _targetPos = new Vector2(-caretX, 0);
+            Preview.MoveTo(_targetPos, animationDuration, Ease.ExponentialOut);
+        }
+
+        if (textWidth < width - Preview.Margin.X * 2) {
+            Preview.StopTransformSequences(nameof(Preview.Position));
+            _targetPos = new Vector2(0, 0);
             Preview.MoveTo(_targetPos, animationDuration, Ease.ExponentialOut);
         }
     }
@@ -538,6 +558,40 @@ public class TextBox : InputElement {
                 }
 
                 break;
+            case Key.C:
+                if (mods.HasFlag(KeyMods.Control))
+                    if (SelectionStart != SelectionEnd)
+                        App.Platform.Clipboard = Text[Math.Min(SelectionStart, SelectionEnd)..Math.Max(SelectionStart, SelectionEnd)];
+
+                break;
+            case Key.V:
+                if (mods.HasFlag(KeyMods.Control)) {
+                    string clipboard = App.Platform.Clipboard;
+                    if (SelectionStart != SelectionEnd) {
+                        int start = Math.Min(SelectionStart, SelectionEnd);
+                        int end = Math.Max(SelectionStart, SelectionEnd);
+                        int len = end - start;
+
+                        if (Text.Length - len + clipboard.Length > Limit) {
+                            flashCaret();
+                            break;
+                        }
+
+                        Text = Text.Remove(start, end);
+                        CaretIndex = Math.Min(SelectionStart, SelectionEnd);
+                    }
+
+                    if (Text.Length + clipboard.Length > Limit) {
+                        flashCaret();
+                        break;
+                    }
+
+                    Text = Text.Insert(CaretIndex, clipboard);
+                    CaretIndex += clipboard.Length;
+                    ClearSelection();
+                }
+
+                break;
             default:
                 return false;
         }
@@ -568,7 +622,7 @@ public class MyApp : Application {
             Position = new Vector2(0, -20)
         };
 
-        Element test;
+        TextBox test;
 
         Add(test = new TextBox {
             RelativeSizeAxes = Axes.X,
@@ -579,6 +633,8 @@ public class MyApp : Application {
             ContentParent = Root,
             Index = 3
         });
+
+        test.Preview.Font = ResourceLoader.LoadResourceFont("Resources/FiraCode-Regular.ttf");
     }
 
     protected override void OnRender() {

@@ -1,7 +1,7 @@
 using Natsu.Graphics;
 using Natsu.Input;
 using Natsu.Mathematics;
-using Natsu.Platforms.Skia;
+using Natsu.Native.Skia;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
@@ -11,7 +11,7 @@ using SkiaSharp;
 
 using MouseButton = Natsu.Input.MouseButton;
 
-namespace Natsu.Platforms.Desktop;
+namespace Natsu.Native.Desktop;
 
 public class DesktopWindow {
 

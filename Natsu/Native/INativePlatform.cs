@@ -1,7 +1,7 @@
 using Natsu.Input;
 using Natsu.Mathematics;
 
-namespace Natsu.Platforms;
+namespace Natsu.Native;
 
 public interface INativePlatform {
     string Title { get; set; }
@@ -9,6 +9,7 @@ public interface INativePlatform {
     CursorStyle Cursor { get; set; }
     CursorMode CursorMode { get; set; }
     bool KeyboardVisible { get; set; }
+    string Clipboard { get; set; }
     bool VSync { get; set; }
     float UpdateFrequency { get; set; }
     void Exit();

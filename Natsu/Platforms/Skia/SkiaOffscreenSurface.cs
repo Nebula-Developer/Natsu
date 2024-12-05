@@ -2,7 +2,7 @@ using Natsu.Graphics;
 
 using SkiaSharp;
 
-namespace Natsu.Platforms.Skia;
+namespace Natsu.Native.Skia;
 
 public class SkiaOffscreenSurface : IOffscreenSurface {
     public SkiaOffscreenSurface(int width, int height) {
