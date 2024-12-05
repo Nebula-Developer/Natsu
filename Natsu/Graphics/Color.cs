@@ -24,10 +24,10 @@ public class Color {
         (R, G, B, A) = (0, 0, 0, 255);
     }
 
-    public byte R { get; set; }
-    public byte G { get; set; }
-    public byte B { get; set; }
-    public byte A { get; set; }
+    public virtual byte R { get; set; }
+    public virtual byte G { get; set; }
+    public virtual byte B { get; set; }
+    public virtual byte A { get; set; }
 
     public static Color operator +(Color a, Color b) => new((byte)Math.Clamp(a.R + b.R, 0, 255), (byte)Math.Clamp(a.G + b.G, 0, 255), (byte)Math.Clamp(a.B + b.B, 0, 255), (byte)Math.Clamp(a.A + b.A, 0, 255));
 

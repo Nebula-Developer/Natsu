@@ -9,7 +9,14 @@ public class InputElement : Element {
     public bool HoverCursor { get; set; } = true;
     public CursorStyle Cursor { get; set; } = CursorStyle.Pointer;
 
-    public Dictionary<MouseButton, bool> MouseButtons { get; } = new();
+    public Dictionary<MouseButton, bool> MouseButtons { get; } = new() {
+        { MouseButton.Left, false },
+        { MouseButton.Right, false },
+        { MouseButton.Middle, false },
+        { MouseButton.X1, false },
+        { MouseButton.X2, false }
+    };
+
     public Dictionary<Key, bool> Keys { get; } = new();
     public bool IsMouseOver { get; private set; }
     public bool IsFocused { get; private set; }
@@ -25,8 +32,9 @@ public class InputElement : Element {
     protected virtual void OnMouseMove(Vector2 position) { }
     protected virtual void OnMouseWheel(Vector2 delta) { }
 
-    protected virtual bool OnKeyDown(Key key) => GrabFallback;
-    protected virtual bool OnKeyUp(Key key) => GrabFallback;
+    protected virtual bool OnKeyDown(Key key, KeyMods mods) => GrabFallback;
+    protected virtual bool OnKeyUp(Key key, KeyMods mods) => GrabFallback;
+    protected virtual void OnTextInput(string text) { }
 
     protected virtual void OnFocus() { }
     protected virtual void OnBlur() { }
@@ -42,8 +50,9 @@ public class InputElement : Element {
     public event Action<Vector2>? DoMouseMove;
     public event Action<Vector2>? DoMouseWheel;
 
-    public event Action<Key>? DoKeyDown;
-    public event Action<Key>? DoKeyUp;
+    public event Action<Key, KeyMods>? DoKeyDown;
+    public event Action<Key, KeyMods>? DoKeyUp;
+    public event Action<string>? DoTextInput;
 
     public event Action? DoFocus;
     public event Action? DoBlur;
@@ -92,16 +101,21 @@ public class InputElement : Element {
         OnMouseWheel(delta);
     }
 
-    public bool KeyDown(Key key) {
+    public bool KeyDown(Key key, KeyMods mods) {
         Keys[key] = true;
-        DoKeyDown?.Invoke(key);
-        return OnKeyDown(key);
+        DoKeyDown?.Invoke(key, mods);
+        return OnKeyDown(key, mods);
     }
 
-    public void KeyUp(Key key) {
+    public void KeyUp(Key key, KeyMods mods) {
         Keys[key] = false;
-        DoKeyUp?.Invoke(key);
-        OnKeyUp(key);
+        DoKeyUp?.Invoke(key, mods);
+        OnKeyUp(key, mods);
+    }
+
+    public void TextInput(string text) {
+        DoTextInput?.Invoke(text);
+        OnTextInput(text);
     }
 
     public void Focus() {

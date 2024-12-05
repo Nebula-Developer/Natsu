@@ -5,8 +5,11 @@ using Natsu.Platforms.Skia;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using SkiaSharp;
+
+using MouseButton = Natsu.Input.MouseButton;
 
 namespace Natsu.Platforms.Desktop;
 
@@ -72,8 +75,21 @@ public class DesktopWindow {
 
     public void Dispose() => App.Dispose();
 
-    public void KeyDown(KeyboardKeyEventArgs e) => App.KeyDown((Key)e.Key);
-    public void KeyUp(KeyboardKeyEventArgs e) => App.KeyUp((Key)e.Key);
+    public KeyMods TranslateKeyMods(KeyModifiers mods) {
+        KeyMods keyMods = KeyMods.None;
+
+        if ((mods & KeyModifiers.Shift) != 0) keyMods |= KeyMods.Shift;
+        if ((mods & KeyModifiers.Control) != 0) keyMods |= KeyMods.Control;
+        if ((mods & KeyModifiers.Alt) != 0) keyMods |= KeyMods.Alt;
+        if ((mods & KeyModifiers.Super) != 0) keyMods |= KeyMods.Super;
+
+        return keyMods;
+    }
+
+
+    public void KeyDown(KeyboardKeyEventArgs e) => App.KeyDown((Key)e.Key, TranslateKeyMods(e.Modifiers));
+    public void KeyUp(KeyboardKeyEventArgs e) => App.KeyUp((Key)e.Key, TranslateKeyMods(e.Modifiers));
+    public void TextInput(TextInputEventArgs e) => App.TextInput(e.AsString);
 
     public void MouseDown(MouseButtonEventArgs e) => App.MouseDown((MouseButton)e.Button, new Vector2(Window.MouseState.X, Window.MouseState.Y));
     public void MouseUp(MouseButtonEventArgs e) => App.MouseUp((MouseButton)e.Button, new Vector2(Window.MouseState.X, Window.MouseState.Y));

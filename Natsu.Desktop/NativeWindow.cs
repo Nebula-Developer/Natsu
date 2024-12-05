@@ -55,6 +55,11 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
         if (signal == "ping") Console.WriteLine("pong");
     }
 
+    public bool KeyboardVisible {
+        get => false;
+        set { }
+    }
+
     protected override void OnLoad() => Bridge.Load();
     protected override void OnResize(ResizeEventArgs e) => Bridge.Resize(e.Width, e.Height);
 
@@ -68,6 +73,7 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e) => Bridge.KeyDown(e);
     protected override void OnKeyUp(KeyboardKeyEventArgs e) => Bridge.KeyUp(e);
+    protected override void OnTextInput(TextInputEventArgs e) => Bridge.TextInput(e);
 
     protected override void OnMouseDown(MouseButtonEventArgs e) => Bridge.MouseDown(e);
     protected override void OnMouseUp(MouseButtonEventArgs e) => Bridge.MouseUp(e);

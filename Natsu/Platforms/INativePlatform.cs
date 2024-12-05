@@ -8,6 +8,7 @@ public interface INativePlatform {
     Vector2 Size { get; }
     CursorStyle Cursor { get; set; }
     CursorMode CursorMode { get; set; }
+    bool KeyboardVisible { get; set; }
     bool VSync { get; set; }
     float UpdateFrequency { get; set; }
     void Exit();

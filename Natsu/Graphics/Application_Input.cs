@@ -82,15 +82,17 @@ public partial class Application {
     protected virtual void OnMouseUp(MouseButton button, Vector2 position) { }
     protected virtual void OnMouseMove(Vector2 position) { }
     protected virtual void OnMouseWheel(Vector2 delta) { }
-    protected virtual void OnKeyDown(Key key) { }
-    protected virtual void OnKeyUp(Key key) { }
+    protected virtual void OnKeyDown(Key key, KeyMods mods) { }
+    protected virtual void OnKeyUp(Key key, KeyMods mods) { }
+    protected virtual void OnTextInput(string text) { }
 
     public event Action<MouseButton, Vector2> DoMouseDown;
     public event Action<MouseButton, Vector2> DoMouseUp;
     public event Action<Vector2> DoMouseMove;
     public event Action<Vector2> DoMouseWheel;
-    public event Action<Key> DoKeyDown;
-    public event Action<Key> DoKeyUp;
+    public event Action<Key, KeyMods> DoKeyDown;
+    public event Action<Key, KeyMods> DoKeyUp;
+    public event Action<string> DoTextInput;
 
     public bool MouseDown(MouseButton button, Vector2 position) {
         MouseMove(position);
@@ -206,27 +208,37 @@ public partial class Application {
             elm.MouseWheel(delta);
     }
 
-    public void KeyDown(Key key) {
+    public void KeyDown(Key key, KeyMods mods) {
         Keys[key] = true;
 
-        DoKeyDown?.Invoke(key);
-        OnKeyDown(key);
+        DoKeyDown?.Invoke(key, mods);
+        OnKeyDown(key, mods);
 
         foreach (GlobalInputElement elm in NonPositionalInputList)
-            elm.KeyDown(key);
+            elm.KeyDown(key, mods);
 
-        _focusedElement?.KeyDown(key);
+        _focusedElement?.KeyDown(key, mods);
     }
 
-    public void KeyUp(Key key) {
+    public void KeyUp(Key key, KeyMods mods) {
         Keys[key] = false;
 
-        DoKeyUp?.Invoke(key);
-        OnKeyUp(key);
+        DoKeyUp?.Invoke(key, mods);
+        OnKeyUp(key, mods);
 
         foreach (GlobalInputElement elm in NonPositionalInputList)
-            elm.KeyUp(key);
+            elm.KeyUp(key, mods);
 
-        _focusedElement?.KeyUp(key);
+        _focusedElement?.KeyUp(key, mods);
+    }
+
+    public void TextInput(string text) {
+        DoTextInput?.Invoke(text);
+        OnTextInput(text);
+
+        foreach (GlobalInputElement elm in NonPositionalInputList)
+            elm.TextInput(text);
+
+        _focusedElement?.TextInput(text);
     }
 }
