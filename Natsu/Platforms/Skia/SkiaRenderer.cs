@@ -2,7 +2,7 @@ using Natsu.Graphics;
 
 using SkiaSharp;
 
-namespace Natsu.Native.Skia;
+namespace Natsu.Platforms.Skia;
 
 public class SkiaRenderer : IRenderer {
     public SkiaRenderer(SKSurface surface) {
