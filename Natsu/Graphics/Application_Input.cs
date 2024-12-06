@@ -299,13 +299,20 @@ public partial class Application {
         _focusedElement?.KeyUp(key, mods);
     }
 
-    public void TextInput(string text) {
+    public void TextInput(string text, int location, int replaced) {
         DoTextInput?.Invoke(text);
         OnTextInput(text);
 
         foreach (GlobalInputElement elm in NonPositionalInputList)
-            elm.TextInput(text);
+            elm.TextInput(text, location, replaced);
 
-        _focusedElement?.TextInput(text);
+        _focusedElement?.TextInput(text, location, replaced);
+    }
+
+    public void CaretMove(int start, int end) {
+        foreach (GlobalInputElement elm in NonPositionalInputList)
+            elm.CaretMove(start, end);
+
+        _focusedElement?.CaretMove(start, end);
     }
 }

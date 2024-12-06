@@ -37,7 +37,9 @@ public class InputElement : Element {
 
     protected virtual bool OnKeyDown(Key key, KeyMods mods) => GrabFallback;
     protected virtual bool OnKeyUp(Key key, KeyMods mods) => GrabFallback;
-    protected virtual void OnTextInput(string text) { }
+
+    protected virtual void OnTextInput(string text, int location, int replaced) { }
+    protected virtual void OnCaretMove(int start, int end) { }
 
     protected virtual void OnFocus() { }
     protected virtual void OnBlur() { }
@@ -63,7 +65,9 @@ public class InputElement : Element {
 
     public event Action<Key, KeyMods>? DoKeyDown;
     public event Action<Key, KeyMods>? DoKeyUp;
-    public event Action<string>? DoTextInput;
+
+    public event Action<string, int, int>? DoTextInput;
+    public event Action<int, int>? DoCaretMove;
 
     public event Action? DoFocus;
     public event Action? DoBlur;
@@ -149,9 +153,14 @@ public class InputElement : Element {
         OnKeyUp(key, mods);
     }
 
-    public void TextInput(string text) {
-        DoTextInput?.Invoke(text);
-        OnTextInput(text);
+    public void TextInput(string text, int location, int replaced) {
+        DoTextInput?.Invoke(text, location, replaced);
+        OnTextInput(text, location, replaced);
+    }
+
+    public void CaretMove(int start, int end) {
+        DoCaretMove?.Invoke(start, end);
+        OnCaretMove(start, end);
     }
 
     public void Focus() {

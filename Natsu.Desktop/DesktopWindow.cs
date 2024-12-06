@@ -1,7 +1,7 @@
 using Natsu.Graphics;
 using Natsu.Input;
 using Natsu.Mathematics;
-using Natsu.Native.Skia;
+using Natsu.Platforms.Skia;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
@@ -91,7 +91,8 @@ public class DesktopWindow {
 
     public void KeyDown(KeyboardKeyEventArgs e) => App.KeyDown((Key)e.Key, TranslateKeyMods(e.Modifiers));
     public void KeyUp(KeyboardKeyEventArgs e) => App.KeyUp((Key)e.Key, TranslateKeyMods(e.Modifiers));
-    public void TextInput(TextInputEventArgs e) => App.TextInput(e.AsString);
+
+    public void TextInput(string change, int location, int replaced) => App.TextInput(change, location, replaced);
 
     public void MouseDown(MouseButtonEventArgs e) => App.MouseDown((MouseButton)e.Button, new Vector2(Window.MouseState.X, Window.MouseState.Y));
     public void MouseUp(MouseButtonEventArgs e) => App.MouseUp((MouseButton)e.Button, new Vector2(Window.MouseState.X, Window.MouseState.Y));

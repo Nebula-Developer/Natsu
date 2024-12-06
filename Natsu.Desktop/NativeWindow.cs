@@ -12,10 +12,17 @@ using static OpenTK.Windowing.Common.Input.MouseCursor;
 namespace Natsu.Native.Desktop;
 
 public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) : GameWindow(settings.GameWindowSettings, settings.NativeWindowSettings), INativePlatform {
+    private RangeI _textCaret;
     public DesktopWindow Bridge { get; } = bridge;
     public MouseCursor TargetCursor { get; set; } = Hand;
 
     public void Exit() => Close();
+
+    public new string TextInput { get; set; } = "";
+    public RangeI TextCaret {
+        get => _textCaret;
+        set => _textCaret = new Range(Math.Clamp(value.Start, 0, TextInput.Length), Math.Clamp(value.End, 0, TextInput.Length));
+    }
 
     public new CursorStyle Cursor {
         get => base.Cursor.Shape switch {
@@ -80,7 +87,22 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e) => Bridge.KeyDown(e);
     protected override void OnKeyUp(KeyboardKeyEventArgs e) => Bridge.KeyUp(e);
-    protected override void OnTextInput(TextInputEventArgs e) => Bridge.TextInput(e);
+
+    protected override void OnTextInput(TextInputEventArgs e) {
+        int changed = Math.Abs(TextCaret.Length);
+        if (changed > 0) {
+            int start = Math.Min(TextCaret.Start, TextCaret.End);
+            int end = Math.Max(TextCaret.Start, TextCaret.End);
+            TextInput = TextInput.Remove(start, end - start);
+            TextCaret = new RangeI(start, start);
+        }
+
+        TextInput = TextInput.Insert(TextCaret.Start, e.AsString);
+        int pos = TextCaret.Start;
+        TextCaret = new RangeI(TextCaret.Start + e.AsString.Length, TextCaret.Start + e.AsString.Length);
+
+        Bridge.TextInput(e.AsString, pos, changed);
+    }
 
     protected override void OnMouseDown(MouseButtonEventArgs e) => Bridge.MouseDown(e);
     protected override void OnMouseUp(MouseButtonEventArgs e) => Bridge.MouseUp(e);
