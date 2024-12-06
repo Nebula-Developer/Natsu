@@ -1,5 +1,6 @@
 using Natsu.Input;
 using Natsu.Mathematics;
+using Natsu.Native;
 
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
@@ -9,7 +10,7 @@ using TextCopy;
 
 using static OpenTK.Windowing.Common.Input.MouseCursor;
 
-namespace Natsu.Native.Desktop;
+namespace Natsu.Platforms.Desktop;
 
 public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) : GameWindow(settings.GameWindowSettings, settings.NativeWindowSettings), INativePlatform {
     private RangeI _textCaret;

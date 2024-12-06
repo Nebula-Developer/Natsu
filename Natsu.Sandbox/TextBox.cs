@@ -68,7 +68,8 @@ public class TextBox : InputElement {
                                                 },
                                                 AnchorPosition = new Vector2(0, 0.6f),
                                                 OffsetPosition = new Vector2(0, 0.6f),
-                                                Index = 10
+                                                Index = 10,
+                                                RoundedCorners = new Vector2(1)
                                             },
                                             Selection = new RectElement {
                                                 ContentParent = this,
@@ -179,7 +180,7 @@ public class TextBox : InputElement {
 
         lock (_substringWidths)
             foreach ((int i, float width) in _substringWidths)
-                if (relativeX >= width - Preview.Paint.TextSize / 2) {
+                if (relativeX >= width - Preview.Paint.TextSize / 4) {
                     index = i;
                     break;
                 }
@@ -226,7 +227,7 @@ public class TextBox : InputElement {
         int index = 0;
 
         for (int i = _substringWidths.Count - 1; i >= 0; i--)
-            if (relativeX >= _substringWidths[i] - Preview.Paint.TextSize / 2) {
+            if (relativeX >= _substringWidths[i] - Preview.Paint.TextSize / 4) {
                 index = i;
                 break;
             }

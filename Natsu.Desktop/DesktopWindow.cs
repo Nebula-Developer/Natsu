@@ -1,6 +1,7 @@
 using Natsu.Graphics;
 using Natsu.Input;
 using Natsu.Mathematics;
+using Natsu.Native;
 using Natsu.Platforms.Skia;
 
 using OpenTK.Graphics.OpenGL4;
@@ -11,7 +12,7 @@ using SkiaSharp;
 
 using MouseButton = Natsu.Input.MouseButton;
 
-namespace Natsu.Native.Desktop;
+namespace Natsu.Platforms.Desktop;
 
 public class DesktopWindow {
 
@@ -26,6 +27,7 @@ public class DesktopWindow {
     public Application App { get; }
     public NativeWindow Window { get; }
     public INativePlatform Platform => Window;
+    private Vector2 _scale;
 
     public void CreateSurface(Vector2 size) {
         size = size.Max(Vector2.One);
@@ -41,7 +43,15 @@ public class DesktopWindow {
                 _context = GRContext.CreateGl(_interface);
             }
 
-            _target = new GRBackendRenderTarget((int)size.X, (int)size.Y, 0, 8, new GRGlFramebufferInfo(0, (uint)SizedInternalFormat.Rgba8));
+            Vector2 scale = Vector2.One;
+            if (Window.TryGetCurrentMonitorScale(out float horiz, out float vert)) scale = new Vector2(horiz, vert);
+            _scale = scale;
+            Console.WriteLine($"Scale: {scale}");
+
+            int width = (int)(size.X * scale.X);
+            int height = (int)(size.Y * scale.Y);
+
+            _target = new GRBackendRenderTarget(width, height, 0, 8, new GRGlFramebufferInfo(0, (uint)SizedInternalFormat.Rgba8));
             _surface = SKSurface.Create(_context, _target, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
 
             SkiaRenderer renderer = new(_surface);
@@ -51,7 +61,8 @@ public class DesktopWindow {
                 App.Renderer = renderer;
             }
 
-            App.Resize((int)size.X, (int)size.Y);
+
+            App.Resize(width, height);
         }
     }
 
@@ -94,9 +105,11 @@ public class DesktopWindow {
 
     public void TextInput(string change, int location, int replaced) => App.TextInput(change, location, replaced);
 
-    public void MouseDown(MouseButtonEventArgs e) => App.MouseDown((MouseButton)e.Button, new Vector2(Window.MouseState.X, Window.MouseState.Y));
-    public void MouseUp(MouseButtonEventArgs e) => App.MouseUp((MouseButton)e.Button, new Vector2(Window.MouseState.X, Window.MouseState.Y));
-    public void MouseMove(MouseMoveEventArgs e) => App.MouseMove(new Vector2(e.X, e.Y));
+    public Vector2 MapPosition(Vector2 pos) => pos * _scale;
+
+    public void MouseDown(MouseButtonEventArgs e) => App.MouseDown((MouseButton)e.Button, MapPosition(new(Window.MouseState.X, Window.MouseState.Y)));
+    public void MouseUp(MouseButtonEventArgs e) => App.MouseUp((MouseButton)e.Button, MapPosition(new(Window.MouseState.X, Window.MouseState.Y)));
+    public void MouseMove(MouseMoveEventArgs e) => App.MouseMove(MapPosition(new(e.X, e.Y)));
     public void MouseWheel(MouseWheelEventArgs e) => App.MouseWheel(new Vector2(e.Offset.X, e.Offset.Y));
 
     public void Run() => Window.Run();
