@@ -15,6 +15,8 @@ namespace Natsu.Native.Desktop;
 
 public class DesktopWindow {
 
+    private readonly HashSet<int> _touchIds = new();
+
     public DesktopWindow(Application app, DesktopWindowSettings? settings = null) {
         if (settings == null) settings = new DesktopWindowSettings();
         App = app;

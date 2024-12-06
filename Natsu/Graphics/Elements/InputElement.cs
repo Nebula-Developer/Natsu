@@ -18,8 +18,16 @@ public class InputElement : Element {
 
     protected virtual bool OnMouseDown(MouseButton button, Vector2 position) => GrabFallback;
     protected virtual void OnMouseUp(MouseButton button, Vector2 position) { }
+
     protected virtual void OnMousePress(MouseButton button, Vector2 position) { }
     protected virtual void OnMousePressDodge(MouseButton button, Vector2 position) { }
+
+    protected virtual bool OnTouchDown(int id, Vector2 position) => GrabFallback;
+    protected virtual void OnTouchUp(int id, Vector2 position) { }
+
+    protected virtual void OnTouchMove(int id, Vector2 position) { }
+    protected virtual void OnTouchPress(int id, Vector2 position) { }
+    protected virtual void OnTouchPressDodge(int id, Vector2 position) { }
 
     protected virtual bool OnMouseEnter(Vector2 position) => GrabFallback;
     protected virtual void OnMouseLeave(Vector2 position) { }
@@ -36,8 +44,16 @@ public class InputElement : Element {
 
     public event Action<MouseButton, Vector2>? DoMouseDown;
     public event Action<MouseButton, Vector2>? DoMouseUp;
+
     public event Action<MouseButton, Vector2>? DoMousePress;
     public event Action<MouseButton, Vector2>? DoMousePressDodge;
+
+    public event Action<int, Vector2>? DoTouchDown;
+    public event Action<int, Vector2>? DoTouchUp;
+
+    public event Action<int, Vector2>? DoTouchMove;
+    public event Action<int, Vector2>? DoTouchPress;
+    public event Action<int, Vector2>? DoTouchPressDodge;
 
     public event Action<Vector2>? DoMouseEnter;
     public event Action<Vector2>? DoMouseLeave;
@@ -72,6 +88,31 @@ public class InputElement : Element {
     public void MousePressDodge(MouseButton button, Vector2 position) {
         DoMousePressDodge?.Invoke(button, position);
         OnMousePressDodge(button, position);
+    }
+
+    public bool TouchDown(int id, Vector2 position) {
+        DoTouchDown?.Invoke(id, position);
+        return OnTouchDown(id, position);
+    }
+
+    public void TouchUp(int id, Vector2 position) {
+        DoTouchUp?.Invoke(id, position);
+        OnTouchUp(id, position);
+    }
+
+    public void TouchMove(int id, Vector2 position) {
+        DoTouchMove?.Invoke(id, position);
+        OnTouchMove(id, position);
+    }
+
+    public void TouchPress(int id, Vector2 position) {
+        DoTouchPress?.Invoke(id, position);
+        OnTouchPress(id, position);
+    }
+
+    public void TouchPressDodge(int id, Vector2 position) {
+        DoTouchPressDodge?.Invoke(id, position);
+        OnTouchPressDodge(id, position);
     }
 
     public bool MouseEnter(Vector2 position) {

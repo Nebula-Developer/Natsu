@@ -17,9 +17,13 @@ public partial class Application {
         OverBlock = Over | Blocking
     }
 
+    private readonly FallbackDictionary<MouseButton, List<GlobalInputElement>> _globalPressedInputs = new(new List<GlobalInputElement>());
+    private readonly FallbackDictionary<int, List<GlobalInputElement>> _globalPressedTouchInputs = new(new List<GlobalInputElement>());
+
     private readonly Dictionary<MouseButton, HashSet<InputElement>> _mouseDownCache = new();
 
     private readonly Dictionary<InputElement, MouseEnterCacheState> _mouseEnterCache = new();
+    private readonly Dictionary<int, HashSet<InputElement>> _touchDownCache = new();
 
     private InputElement _rawFocusedElement;
     public FallbackDictionary<Key, bool> Keys = new(false);
@@ -109,9 +113,13 @@ public partial class Application {
         if (!_mouseDownCache.ContainsKey(button))
             _mouseDownCache.Add(button, new HashSet<InputElement>());
 
-        foreach (GlobalInputElement elm in NonPositionalInputList)
+        _globalPressedInputs[button].Clear();
+
+        foreach (GlobalInputElement elm in NonPositionalInputList) {
+            _globalPressedInputs[button].Add(elm);
             if (elm.MouseDown(button, position))
                 return true;
+        }
 
         foreach (InputElement elm in elms) {
             _mouseDownCache[button].Add(elm);
@@ -138,7 +146,7 @@ public partial class Application {
         if (!_mouseDownCache.ContainsKey(button))
             return;
 
-        foreach (GlobalInputElement elm in NonPositionalInputList)
+        foreach (GlobalInputElement elm in _globalPressedInputs[button])
             elm.MouseUp(button, position);
 
         foreach (InputElement elm in _mouseDownCache[button]) {
@@ -148,6 +156,61 @@ public partial class Application {
         }
 
         _mouseDownCache[button].Clear();
+    }
+
+    public bool TouchDown(int id, Vector2 position) {
+        TouchState[id] = true;
+        TouchPositions[id] = position;
+
+        List<InputElement> elms = GetInputCandidates(position);
+        Platform.Cursor = CursorStyle.Default;
+
+        foreach (GlobalInputElement elm in NonPositionalInputList) {
+            _globalPressedTouchInputs[id].Add(elm);
+            if (elm.TouchDown(id, position))
+                return true;
+        }
+
+        if (!_touchDownCache.ContainsKey(id))
+            _touchDownCache.Add(id, new HashSet<InputElement>());
+
+        foreach (InputElement elm in elms) {
+            _touchDownCache[id].Add(elm);
+            if (elm.TouchDown(id, position)) {
+                _focusedElement = elm;
+                return true;
+            }
+        }
+
+        _focusedElement = null;
+
+        return false;
+    }
+
+    public void TouchUp(int id, Vector2 position) {
+        TouchState[id] = false;
+        TouchPositions[id] = position;
+
+        foreach (GlobalInputElement elm in _globalPressedTouchInputs[id])
+            elm.TouchUp(id, position);
+
+        foreach (InputElement elm in _touchDownCache[id]) {
+            elm.TouchUp(id, position);
+            if (elm.PointInside(position)) elm.TouchPress(id, position);
+            else elm.TouchPressDodge(id, position);
+        }
+
+        _touchDownCache[id].Clear();
+    }
+
+    public void TouchMove(int id, Vector2 position) {
+        TouchPositions[id] = position;
+
+        foreach (GlobalInputElement elm in _globalPressedTouchInputs[id])
+            elm.TouchMove(id, position);
+
+        foreach (InputElement elm in _touchDownCache[id])
+            elm.TouchMove(id, position);
     }
 
     public void MouseMove(Vector2 position) {
@@ -193,7 +256,7 @@ public partial class Application {
             } else if (state.HasFlag(MouseEnterCacheState.Over)) elm.MouseMove(position);
         }
 
-        if (_focusedElement != null /* && !elms.Contains(_focusedElement) */)
+        if (_focusedElement != null)
             _focusedElement.MouseMove(position);
 
         List<InputElement> interacting = InteractingElements;

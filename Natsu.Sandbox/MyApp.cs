@@ -101,9 +101,7 @@ public class Slider : Element {
             };
         };
 
-        ThumbInput.DoMouseDown += (button, position) => {
-            if (button != MouseButton.Left) return;
-
+        void press(Vector2 position) {
             pressed = true;
             updatePos(position);
 
@@ -120,11 +118,9 @@ public class Slider : Element {
 
             ThumbContainer.StopTransformSequences();
             ThumbContainer.MarginTo(new Vector2(10, 0), 0.2f, Ease.ExponentialOut);
-        };
+        }
 
-        ThumbInput.DoMouseUp += (button, position) => {
-            if (button != MouseButton.Left) return;
-
+        void release(Vector2 position) {
             pressed = false;
 
             Thumb.StopTransformSequences(nameof(Thumb.Scale), nameof(Thumb.Paint.Color));
@@ -140,10 +136,40 @@ public class Slider : Element {
 
             ThumbContainer.StopTransformSequences();
             ThumbContainer.MarginTo(new Vector2(5, 0), 0.2f, Ease.ExponentialOut);
+        }
+
+        ThumbInput.DoMouseDown += (button, position) => {
+            if (button != MouseButton.Left) return;
+
+            press(position);
+        };
+
+        ThumbInput.DoMouseUp += (button, position) => {
+            if (button != MouseButton.Left) return;
+
+            release(position);
+        };
+
+        ThumbInput.DoTouchDown += (id, position) => {
+            if (id != 0) return;
+
+            press(position);
+        };
+
+        ThumbInput.DoTouchUp += (id, position) => {
+            if (id != 0) return;
+
+            release(position);
         };
 
         ThumbInput.DoMouseMove += position => {
             if (!pressed) return;
+
+            updatePos(position);
+        };
+
+        ThumbInput.DoTouchMove += (id, position) => {
+            if (id != 0 || !pressed) return;
 
             updatePos(position);
         };
@@ -313,9 +339,7 @@ public class TextBox : InputElement {
         Caret.ColorTo(Colors.WhiteTransparent, 0.2f, Ease.ExponentialOut);
     }
 
-    protected override bool OnMouseDown(MouseButton button, Vector2 position) {
-        if (button != MouseButton.Left) return false;
-
+    public bool Press(Vector2 position) {
         _clickPos = position;
         if (_substringWidths.Count == 0) return true;
 
@@ -324,21 +348,20 @@ public class TextBox : InputElement {
 
         lock (_substringWidths)
             foreach ((int i, float width) in _substringWidths)
-                if (relativeX >= width - Preview.Paint.TextSize / 4) {
+                if (relativeX >= width - Preview.Paint.TextSize / 2) {
                     index = i;
-                    Console.WriteLine($"Index: {index} Width: {width} RelativeX: {relativeX}");
                     break;
                 }
 
-        CaretIndex = relativeX < 0 ? 0 : index + 1;
+        CaretIndex = relativeX < 0 ? 0 : index;
         SelectionStart = SelectionEnd = CaretIndex;
 
-        if ((DateTime.Now - _secondLastClick).TotalMilliseconds < 600) {
+        if ((DateTime.Now - _secondLastClick).TotalMilliseconds < 400) {
             SelectionStart = 0;
             SelectionEnd = Text.Length;
             CaretIndex = Text.Length;
             _secondLastClick = DateTime.Now;
-        } else if ((DateTime.Now - _lastClick).TotalMilliseconds < 300) {
+        } else if ((DateTime.Now - _lastClick).TotalMilliseconds < 200) {
             int start = CaretIndex;
             while (start > 0 && !char.IsWhiteSpace(Text[start - 1])) start--;
             int end = CaretIndex;
@@ -354,8 +377,15 @@ public class TextBox : InputElement {
         return true;
     }
 
-    protected override void OnMouseMove(Vector2 position) {
-        if (!MouseButtons[MouseButton.Left] || Vector2.Distance(_clickPos, position) < 5 && (DateTime.Now - _lastClick).TotalMilliseconds < 300) return;
+    protected override bool OnMouseDown(MouseButton button, Vector2 position) {
+        if (button != MouseButton.Left) return false;
+
+        return Press(position);
+    }
+
+    protected override bool OnTouchDown(int id, Vector2 position) => Press(position);
+
+    public void TouchSelection(Vector2 position) {
         if (_substringWidths.Count == 0) return;
 
         float relativeX = ToLocalSpace(position).X - Preview.Position.X;
@@ -367,8 +397,20 @@ public class TextBox : InputElement {
                 break;
             }
 
-        SelectionEnd = relativeX < 0 ? 0 : index + 1;
+        SelectionEnd = relativeX < 0 ? 0 : index;
         CaretIndex = SelectionEnd;
+    }
+
+    protected override void OnMouseMove(Vector2 position) {
+        if (!MouseButtons[MouseButton.Left] || Vector2.Distance(_clickPos, position) < 5 && (DateTime.Now - _lastClick).TotalMilliseconds < 300) return;
+
+        TouchSelection(position);
+    }
+
+    protected override void OnTouchMove(int id, Vector2 position) {
+        if (id != 0) return;
+
+        TouchSelection(position);
     }
 
     private void updateCaretPosition(float animationDuration = 0.1f, bool resetPos = false) {
