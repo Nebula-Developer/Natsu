@@ -17,6 +17,7 @@ public interface ICanvas {
 
     public void DrawImage(IImage image, Vector2 position, Paint paint);
     public void DrawImage(IImage image, Rect rect, Paint paint);
+    public void DrawAtlas(IImage image, Rect[] regions, RotationScaleMatrix[] targets, Paint paint);
 
     public void DrawOffscreenSurface(IOffscreenSurface surface, Vector2 position);
 

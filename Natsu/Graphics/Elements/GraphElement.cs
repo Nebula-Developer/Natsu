@@ -1,4 +1,5 @@
 using Natsu.Graphics.Elements;
+using Natsu.Mathematics;
 
 namespace Natsu.Graphics;
 

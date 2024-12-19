@@ -1,8 +1,6 @@
-using Natsu.Mathematics;
-
 using SkiaSharp;
 
-namespace Natsu.Graphics;
+namespace Natsu.Mathematics;
 
 public class VectorPath {
 

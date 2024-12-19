@@ -149,4 +149,6 @@ public partial class Element : IDisposable {
 
         return true;
     }
+
+    public override string ToString() => $"{Name} ({GetType().Name})";
 }

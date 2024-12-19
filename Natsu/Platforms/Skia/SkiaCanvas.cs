@@ -24,6 +24,8 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
 
     public void DrawImage(IImage image, Rect rect, Paint paint) => Canvas.DrawImage(TryImage(image), rect, UsePaint(paint));
 
+    public void DrawAtlas(IImage image, Rect[] regions, RotationScaleMatrix[] targets, Paint paint) => Canvas.DrawAtlas(TryImage(image), regions.Select(r => (SKRect)r).ToArray(), targets.Select(t => (SKRotationScaleMatrix)t).ToArray(), UsePaint(paint));
+
     public void DrawOval(Rect rect, Paint paint) => Canvas.DrawOval(rect, UsePaint(paint));
 
     public void DrawRoundRect(Rect rect, Vector2 radius, Paint paint) => Canvas.DrawRoundRect(rect, radius.X, radius.Y, UsePaint(paint));

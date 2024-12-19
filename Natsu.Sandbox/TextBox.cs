@@ -287,7 +287,6 @@ public class TextBox : InputElement {
             _targetPos = new Vector2(-caretX, 0);
             Preview.MoveTo(_targetPos, animationDuration, Ease.ExponentialOut);
         }
-
     }
 
     public void ClearSelection() {
