@@ -171,7 +171,7 @@ public class TextBox : InputElement {
         Caret.ColorTo(Colors.WhiteTransparent, 0.2f, Ease.ExponentialOut);
     }
 
-    public bool Press(Vector2 position) {
+    public bool HandlePress(Vector2 position) {
         _clickPos = position;
         if (_substringWidths.Count == 0) return true;
 
@@ -215,10 +215,10 @@ public class TextBox : InputElement {
     protected override bool OnMouseDown(MouseButton button, Vector2 position) {
         if (button != MouseButton.Left) return false;
 
-        return Press(position);
+        return HandlePress(position);
     }
 
-    protected override bool OnTouchDown(int id, Vector2 position) => Press(position);
+    protected override bool OnTouchDown(int id, Vector2 position) => HandlePress(position);
 
     public void TouchSelection(Vector2 position) {
         if (_substringWidths.Count == 0) return;

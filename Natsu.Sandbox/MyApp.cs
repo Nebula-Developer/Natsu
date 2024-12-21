@@ -5,9 +5,9 @@ using Natsu.Mathematics;
 namespace Natsu.Sandbox;
 
 public class MyApp : Application {
-    #nullable disable
+#nullable disable
     public RectElement Child, Child2, Child3;
-    #nullable enable
+#nullable enable
 
     protected override void OnLoad() {
         Child = new RectElement {
