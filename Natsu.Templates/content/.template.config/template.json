@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "NebulaDev",
+    "classifications": [
+        "Game Development",
+        "2D",
+        "Framework",
+        "Crossplatform"
+    ],
+    "name": "Natsu Framework App",
+    "description": "A template for creating a new blank Natsu Framework App",
+    "shortName": "natsu",
+    "sourceName": "NatsuApp",
+    "identity": "Natsu App",
+    "defaultName": "NatsuApp",
+    "preferNameDirectory": false,
+    "preferDefaultName": false,
+    "tags": {
+        "language": "C#",
+        "type": "project"
+    }
+}

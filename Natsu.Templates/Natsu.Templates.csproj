@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Title>Natsu.Templates</Title>
+        <RootNamespace>Natsu</RootNamespace>
+        <PackageId>Natsu.Templates</PackageId>
+        <PackageType>Template</PackageType>
+
+        <LocalizeTemplates>false</LocalizeTemplates>
+        <IncludeContentInPack>true</IncludeContentInPack>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <ContentTargetFolders>content</ContentTargetFolders>
+        <NoDefaultExcludes>true</NoDefaultExcludes>
+
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Natsu\Natsu.csproj" />
+        <ProjectReference Include="..\Natsu.Desktop\Natsu.Desktop.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="content\**\*" Exclude="content\**\bin\**;content\**\obj\**" />
+        <Compile Remove="**\*" />
+    </ItemGroup>
+
+</Project>

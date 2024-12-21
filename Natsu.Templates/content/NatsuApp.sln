@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NatsuApp.Desktop", "NatsuApp.Desktop\NatsuApp.Desktop.csproj", "{1B9A8DA7-79A7-4458-B916-68148257B1AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NatsuApp.App", "NatsuApp.App\NatsuApp.App.csproj", "{08F4F934-7BB3-492A-A49F-4726085D9517}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B9A8DA7-79A7-4458-B916-68148257B1AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B9A8DA7-79A7-4458-B916-68148257B1AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B9A8DA7-79A7-4458-B916-68148257B1AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B9A8DA7-79A7-4458-B916-68148257B1AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08F4F934-7BB3-492A-A49F-4726085D9517}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08F4F934-7BB3-492A-A49F-4726085D9517}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08F4F934-7BB3-492A-A49F-4726085D9517}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08F4F934-7BB3-492A-A49F-4726085D9517}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

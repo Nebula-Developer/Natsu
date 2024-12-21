@@ -5,6 +5,7 @@ namespace Natsu.Graphics.Elements;
 public class ImageElement : PaintableElement {
     public ImageElement(IImage image) {
         Image = image;
+        Size = (Vector2)image.Size;
     }
 
     public IImage Image { get; }
