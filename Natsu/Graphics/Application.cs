@@ -24,9 +24,9 @@ public partial class Application : IDisposable {
 
     public RootElement Root { get; }
 
-    public Vector2 Size {
+    public Vector2i Size {
         get => _size;
-        set => Resize((int)value.X, (int)value.Y);
+        set => Resize(value);
     }
 
     public void Dispose() {
@@ -42,13 +42,13 @@ public partial class Application : IDisposable {
     protected virtual void OnDispose() { }
     protected virtual void OnUpdate() { }
     protected virtual void OnRender() { }
-    protected virtual void OnResize(int width, int height) { }
+    protected virtual void OnResize(Vector2i size) { }
 
     public event Action DoLoad;
     public event Action DoDispose;
     public event Action DoUpdate;
     public event Action DoRender;
-    public event Action<int, int> DoResize;
+    public event Action<Vector2i> DoResize;
 
 
     public void Load() {
@@ -77,13 +77,13 @@ public partial class Application : IDisposable {
         Renderer.Flush();
     }
 
-    public void Resize(int width, int height) {
-        _size = new Vector2(width, height);
-        Root.Size = new Vector2(width, height);
+    public void Resize(Vector2i size) {
+        _size = (Vector2)size;
+        Root.Size = (Vector2)size;
 
-        Renderer.Resize(width, height);
-        OnResize(width, height);
-        DoResize?.Invoke(width, height);
+        Renderer.Resize(size.X, size.Y);
+        OnResize(size);
+        DoResize?.Invoke(size);
     }
 
     public void Add(params Element[] elements) => Root.Add(elements);

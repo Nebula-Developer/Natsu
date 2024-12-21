@@ -58,7 +58,7 @@ public class DesktopWindow {
                 App.Renderer = renderer;
             }
 
-            App.Resize(width, height);
+            App.Resize(new Vector2i(width, height));
         }
     }
 

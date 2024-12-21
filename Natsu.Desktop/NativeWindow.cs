@@ -79,12 +79,14 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
     }
 
     public PlatformType Type { get; } = PlatformType.Desktop;
+
     public PlatformFamily Family { get; } = Environment.OSVersion.Platform switch {
         PlatformID.Win32NT => PlatformFamily.Windows,
         PlatformID.Unix => PlatformFamily.Linux,
         PlatformID.MacOSX => PlatformFamily.MacOS,
         _ => PlatformFamily.Other
     };
+
     public PlatformArchitecture Architecture { get; } = Environment.Is64BitOperatingSystem ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
 
     public string OSVersion { get; } = Environment.OSVersion.VersionString;

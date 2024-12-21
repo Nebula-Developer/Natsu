@@ -2,8 +2,6 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
-using Vector2 = Natsu.Mathematics.Vector2;
-
 namespace Natsu.Platforms.Desktop;
 
 public class DesktopWindowSettings {
@@ -25,8 +23,8 @@ public class DesktopWindowSettings {
         set => NativeWindowSettings.Title = value;
     }
 
-    public Vector2 BaseSize {
+    public Mathematics.Vector2i BaseSize {
         get => new(NativeWindowSettings.ClientSize.X, NativeWindowSettings.ClientSize.Y);
-        set => NativeWindowSettings.ClientSize = new Vector2i((int)value.X, (int)value.Y);
+        set => NativeWindowSettings.ClientSize = new Vector2i(value.X, value.Y);
     }
 }

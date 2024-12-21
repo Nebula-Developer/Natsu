@@ -21,11 +21,14 @@ public interface INativePlatform {
     void SendSignal(string signal, object? data = null);
 
     #region Platform Details
+
     PlatformType Type { get; }
     PlatformFamily Family { get; }
     PlatformArchitecture Architecture { get; }
 
     string OSVersion { get; }
     string OSName { get; }
+
     #endregion
+
 }

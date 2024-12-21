@@ -96,7 +96,7 @@ public class Slider : Element {
         }
 
         DoAppChange += old => {
-            App.DoResize += (w, h) => {
+            App.DoResize += _ => {
                 updateRoot(true);
             };
         };
@@ -138,29 +138,8 @@ public class Slider : Element {
             ThumbContainer.MarginTo(new Vector2(5, 0), 0.2f, Ease.ExponentialOut);
         }
 
-        ThumbInput.DoMouseDown += (button, position) => {
-            if (button != MouseButton.Left) return;
-
-            press(position);
-        };
-
-        ThumbInput.DoMouseUp += (button, position) => {
-            if (button != MouseButton.Left) return;
-
-            release(position);
-        };
-
-        ThumbInput.DoTouchDown += (id, position) => {
-            if (id != 0) return;
-
-            press(position);
-        };
-
-        ThumbInput.DoTouchUp += (id, position) => {
-            if (id != 0) return;
-
-            release(position);
-        };
+        ThumbInput.DoPress += position => press(position);
+        ThumbInput.DoPressUp += position => release(position);
 
         ThumbInput.DoMouseMove += position => {
             if (!pressed) return;
