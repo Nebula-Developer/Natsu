@@ -311,8 +311,8 @@ public partial class Application {
 
     public void CaretMove(int start, int end) {
         foreach (GlobalInputElement elm in NonPositionalInputList)
-            elm.CaretMove(start, end);
+            elm.TextCaretMove(start, end);
 
-        _focusedElement?.CaretMove(start, end);
+        _focusedElement?.TextCaretMove(start, end);
     }
 }

@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 using Natsu.Input;
 using Natsu.Mathematics;
 using Natsu.Native;
@@ -50,6 +52,7 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
     }
 
     public new Vector2 Size => new(FramebufferSize.X, FramebufferSize.Y);
+    public Vector2 DisplayScale => TryGetCurrentMonitorScale(out float x, out float y) ? new Vector2(x, y) : Vector2.One;
 
     public new bool VSync {
         get => base.VSync == VSyncMode.On;
@@ -74,6 +77,18 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
         get => ClipboardService.GetText() ?? "";
         set => ClipboardService.SetText(value);
     }
+
+    public PlatformType Type { get; } = PlatformType.Desktop;
+    public PlatformFamily Family { get; } = Environment.OSVersion.Platform switch {
+        PlatformID.Win32NT => PlatformFamily.Windows,
+        PlatformID.Unix => PlatformFamily.Linux,
+        PlatformID.MacOSX => PlatformFamily.MacOS,
+        _ => PlatformFamily.Other
+    };
+    public PlatformArchitecture Architecture { get; } = Environment.Is64BitOperatingSystem ? PlatformArchitecture.x64 : PlatformArchitecture.x86;
+
+    public string OSVersion { get; } = Environment.OSVersion.VersionString;
+    public string OSName { get; } = RuntimeInformation.OSDescription;
 
     protected override void OnLoad() => Bridge.Load();
     protected override void OnResize(ResizeEventArgs e) => Bridge.Resize(e.Width, e.Height);

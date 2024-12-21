@@ -71,8 +71,8 @@ public class TransformSequence {
     public List<Transform> Sequence { get; } = new();
     public double BaseTime { get; set; }
     public double EndTime => Math.Max(BaseTime, Sequence.Max(t => t.EndTime));
-    public double Time { get; set; }
-    public double DeltaTime { get; set; }
+    public double Time { get; protected set; }
+    public double DeltaTime { get; protected set; }
 
     public string Name { get; set; } = "";
 
