@@ -7,6 +7,9 @@ public struct Bounds : IEquatable<Bounds> {
         BottomRight = bottomRight;
         BottomLeft = bottomLeft;
         Points = new[] { TopLeft, TopRight, BottomRight, BottomLeft };
+
+        Min = new Vector2(MathF.Min(TopLeft.X, MathF.Min(TopRight.X, MathF.Min(BottomRight.X, BottomLeft.X))), MathF.Min(TopLeft.Y, MathF.Min(TopRight.Y, MathF.Min(BottomRight.Y, BottomLeft.Y))));
+        Max = new Vector2(MathF.Max(TopLeft.X, MathF.Max(TopRight.X, MathF.Max(BottomRight.X, BottomLeft.X))), MathF.Max(TopLeft.Y, MathF.Max(TopRight.Y, MathF.Max(BottomRight.Y, BottomLeft.Y))));
     }
 
     public Vector2 TopLeft { get; }
@@ -14,6 +17,9 @@ public struct Bounds : IEquatable<Bounds> {
     public Vector2 BottomRight { get; }
     public Vector2 BottomLeft { get; }
     public Vector2[] Points { get; }
+
+    public Vector2 Min { get; }
+    public Vector2 Max { get; }
 
     public float Width => Vector2.Distance(TopLeft, TopRight);
     public float Height => Vector2.Distance(TopLeft, BottomLeft);

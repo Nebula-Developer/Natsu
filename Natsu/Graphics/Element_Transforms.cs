@@ -58,6 +58,8 @@ public partial class Element {
 
             _rotation = value % 360;
             Invalidate(Invalidation.Geometry);
+
+            if (Parent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(Invalidation.DrawSize);
         }
     }
 
@@ -67,7 +69,7 @@ public partial class Element {
             if (_relativeSizeAxes == value) return;
 
             _relativeSizeAxes = value;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(Invalidation.DrawSize);
         }
     }
 
@@ -77,7 +79,7 @@ public partial class Element {
             if (_childRelativeSizeAxes == value) return;
 
             _childRelativeSizeAxes = value;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(Invalidation.DrawSize);
         }
     }
 
@@ -87,7 +89,7 @@ public partial class Element {
             if (_margin == value) return;
 
             _margin = value;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(Invalidation.DrawSize);
         }
     }
 
@@ -110,7 +112,6 @@ public partial class Element {
             if (_size == value) return;
 
             _size = value;
-            DoSizeChange?.Invoke(_size);
 
             Invalidate(Invalidation.DrawSize);
             PropogateChildrenSizeChange();
@@ -154,6 +155,8 @@ public partial class Element {
 
             _position = value;
             Invalidate(Invalidation.Geometry);
+
+            if (Parent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(Invalidation.DrawSize);
         }
     }
 
@@ -181,7 +184,7 @@ public partial class Element {
             if (_scaleAffectsDrawSize == value) return;
 
             _scaleAffectsDrawSize = value;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(Invalidation.DrawSize);
         }
     }
 
@@ -189,8 +192,6 @@ public partial class Element {
     public Vector2 ToScreenSpace(Vector2 localSpace) => Matrix.MapPoint(localSpace);
 
     public void UpdateMatrix() {
-        UpdateDrawSize();
-
         Matrix matrix = Parent?.ChildAccessMatrix.Copy() ?? new Matrix();
         Vector2 offset = RelativeSize * OffsetPosition;
 
@@ -204,7 +205,13 @@ public partial class Element {
 
         _worldScale = matrix.MapPoint(Vector2.One) - matrix.MapPoint(Vector2.Zero);
 
-        _worldPosition = matrix.MapPoint(Vector2.Zero);
+        Vector2 nWorldPosition = matrix.MapPoint(Vector2.Zero);
+        if (_worldPosition != nWorldPosition) {
+            _worldPosition = nWorldPosition;
+            DoWorldPositionChange?.Invoke(_worldPosition);
+            OnWorldPositionChange(_worldPosition);
+        }
+
         DirtyMatrix.Validate(matrix);
 
         CalculateBounds();
@@ -222,57 +229,40 @@ public partial class Element {
         if (invalidation == Invalidation.None) return;
 
         if (invalidation.HasFlag(Invalidation.Geometry)) DirtyMatrix.Invalidate();
-        if (invalidation.HasFlag(Invalidation.DrawSize)) DirtyDrawSize.Invalidate();
+        if (invalidation.HasFlag(Invalidation.DrawSize)) {
+            DirtyDrawSize.Invalidate();
+            if (ChildRelativeSizeAxes != Axes.None) InvalidateChildren(Invalidation.DrawSize);
+        }
 
         if (propagate) InvalidateChildren(invalidation, deep);
     }
 
     public void InvalidateParent(Invalidation invalidation) => Parent?.Invalidate(invalidation, false);
 
-    public event Action<Vector2>? DoSizeChange;
+    public event Action<Vector2>? DoDrawSizeChange;
+    protected virtual void OnDrawSizeChange(Vector2 size) { }
 
-    public Bounds GetChildBounds() {
-        Bounds bounds = Bounds.Empty;
+    public event Action<Vector2>? DoWorldPositionChange;
+    protected virtual void OnWorldPositionChange(Vector2 position) { }
+
+    public Vector2 GetChildSpan() {
+        float spanX = 0, spanY = 0;
 
         ForChildren(child => {
-            if (child == null) return;
+            Vector2 size = child.DirtyDrawSize.Value * child.Scale;
+            Vector2 offset = child.AnchorPosition * DirtyDrawSize.Value + child.OffsetPosition * size + child.Position;
 
-            bounds = bounds.Union(child.Bounds);
+            float realX = child.RelativeSizeAxes.HasFlag(Axes.X) ? 0 : offset.X + size.X;
+            float realY = child.RelativeSizeAxes.HasFlag(Axes.Y) ? 0 : offset.Y + size.Y;
+
+            spanX = Math.Max(spanX, realX);
+            spanY = Math.Max(spanY, realY);
         });
 
-        return bounds;
+        return new Vector2(spanX, spanY);
     }
 
-    public Vector2 GetDistantChildrenPosition() => Vector2.Zero; /* {
-        // TODO: Implement this
-
-        float maxX = 0, maxY = 0;
-
-        ForChildren(child => {
-            if (child == null || child.RelativeSizeAxes == Axes.Both) return;
-
-            float rx = child.RelativeSizeAxes.HasFlag(Axes.X) ? 0 : child.DrawSize.X;
-            float ry = child.RelativeSizeAxes.HasFlag(Axes.Y) ? 0 : child.DrawSize.Y;
-
-            Vector2[] points = [
-                new(rx, 0),
-                new(rx, ry),
-                new(0, ry)
-            ];
-
-            float x = points.Max(p => p.X);
-            float y = points.Max(p => p.Y);
-
-            if (x > maxX) maxX = x;
-            if (y > maxY) maxY = y;
-        });
-
-        return new Vector2(maxX, maxY);
-    } */
-
     private void PropogateChildrenSizeChange() => ForChildren(child => {
-        if (child == null) return;
-
         Invalidation inv = Invalidation.None;
 
         if (child.RelativeSizeAxes != Axes.None)
@@ -281,14 +271,16 @@ public partial class Element {
             inv |= Invalidation.Geometry;
 
         child.Invalidate(inv, false);
-        child.PropogateChildrenSizeChange();
+
+        if (inv != Invalidation.None)
+            child.PropogateChildrenSizeChange();
     });
 
     private Vector2 ReplaceRelativeAxes(Vector2 orig) {
         float newX = orig.X;
         float newY = orig.Y;
 
-        Vector2 distPos = ChildRelativeSizeAxes != Axes.None ? GetDistantChildrenPosition() : Vector2.Zero;
+        Vector2 distPos = ChildRelativeSizeAxes != Axes.None ? GetChildSpan() : Vector2.Zero;
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.X)) newX = distPos.X;
         else if (RelativeSizeAxes.HasFlag(Axes.X) && Parent != null) newX = Parent.DrawSize.X;
@@ -317,6 +309,9 @@ public partial class Element {
         PropogateChildrenSizeChange();
 
         if (!DirtyMatrix.IsDirty) CalculateBounds();
+
+        DoDrawSizeChange?.Invoke(drawSize);
+        OnDrawSizeChange(drawSize);
     }
 
     public void CalculateBounds() => Bounds = Matrix.MapBounds(new Bounds(new Vector2(0, 0), new Vector2(DrawSize.X, 0), new Vector2(DrawSize.X, DrawSize.Y), new Vector2(0, DrawSize.Y)));

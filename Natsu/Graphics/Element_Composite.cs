@@ -100,7 +100,8 @@ public partial class Element {
     public void ForChildren(Action<Element> action) {
         lock (_children)
             for (int i = 0; i < _children.Count; i++)
-                action(_children[i]);
+                if (_children[i] != null)
+                    action(_children[i]);
     }
 
     public void SortChild(Element element) {
