@@ -2,9 +2,11 @@
 
 <Project>
     <PropertyGroup>
+        <!-- All version control is managed by the GitHub Actions workflow -->
+
         <!-- PACKAGE VERSION CONTROL -->
         <!-- /////////////////////// -->
-        <Version>0.2.1-beta</Version>
+        <!-- <Version>0.2.1-beta</Version> -->
         <!-- /////////////////////// -->
 
         <TargetFramework>net8.0</TargetFramework>
@@ -21,6 +23,7 @@
 
         <PackageProjectUrl>https://github.com/nebula-developer/natsu</PackageProjectUrl>
         <RepositoryUrl>https://github.com/nebula-developer/natsu</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
     <ItemGroup>

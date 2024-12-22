@@ -10,6 +10,8 @@
         <SelfContained>true</SelfContained>
         <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
         <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+        <IsPackable>false</IsPackable>
+        <BuildProjectReferences>false</BuildProjectReferences>
     </PropertyGroup>
 
     <ItemGroup>
