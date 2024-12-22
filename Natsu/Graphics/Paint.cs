@@ -56,5 +56,9 @@ public class Paint {
         }
     }
 
+    public StrokeCap StrokeCap { get; set; } = StrokeCap.Butt;
+
+    public StrokeJoin StrokeJoin { get; set; } = StrokeJoin.Miter;
+
     public event Action? DoChange;
 }

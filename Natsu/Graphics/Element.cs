@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 using Natsu.Mathematics;
 using Natsu.Native;
 
@@ -117,6 +119,67 @@ public partial class Element : IDisposable {
     public event Action? DoRender;
 
     public event Action<Application>? DoAppChange;
+
+    #region Invalidation
+    public InvalidationState InvalidationState { get; private set; } = new();
+    public Invalidation Invalidated => InvalidationState.State;
+
+    public virtual bool OnInvalidate(Invalidation invalidation, InvalidationPropagation propagation) => false;
+    public virtual bool OnValidate(Invalidation invalidation, InvalidationPropagation propagation) => false;
+
+    public bool Invalidate(Invalidation invalidation, InvalidationPropagation propagation = InvalidationPropagation.None) {
+        if (invalidation == Invalidation.None)
+            return false;
+
+        if (OnInvalidate(invalidation, propagation))
+            return true;
+
+        InvalidationState.Invalidate(invalidation);
+
+        if (propagation.HasFlag(InvalidationPropagation.Parent))
+            InvalidateParent(invalidation, true);
+
+        if (propagation.HasFlag(InvalidationPropagation.Children))
+            InvalidateChildren(invalidation, true);
+        
+        return true;
+    }
+
+    public bool Validate(Invalidation invalidation, InvalidationPropagation propagation = InvalidationPropagation.None) {
+        if (invalidation == Invalidation.None)
+            return false;
+
+        if (OnValidate(invalidation, propagation))
+            return true;
+
+        InvalidationState.Validate(invalidation);
+
+        if (propagation.HasFlag(InvalidationPropagation.Parent))
+            ValidateParent(invalidation, true);
+
+        if (propagation.HasFlag(InvalidationPropagation.Children))
+            ValidateChildren(invalidation, true);
+
+        return true;
+    }
+
+    public bool InvalidateParent(Invalidation invalidation, bool propagate = false) => Parent?.Invalidate(invalidation, propagate ? InvalidationPropagation.Parent : InvalidationPropagation.None) ?? false;
+
+    public bool ValidateParent(Invalidation invalidation, bool propagate = false) => Parent?.Validate(invalidation, propagate ? InvalidationPropagation.Parent : InvalidationPropagation.None) ?? false;
+
+    public bool InvalidateChildren(Invalidation invalidation, bool propagate = false) {
+        bool result = false;
+        ForChildren(child => result |= child.Invalidate(invalidation, propagate ? InvalidationPropagation.Children : InvalidationPropagation.None));
+        return result;
+    }
+
+    public bool ValidateChildren(Invalidation invalidation, bool propagate = false) {
+        bool result = false;
+        ForChildren(child => result |= child.Validate(invalidation, propagate ? InvalidationPropagation.Children : InvalidationPropagation.None));
+        return result;
+    }
+    #endregion
+
 #nullable disable
     public Application App {
         get {

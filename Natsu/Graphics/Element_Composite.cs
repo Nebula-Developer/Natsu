@@ -88,6 +88,8 @@ public partial class Element {
         }
     }
 
+    public void AddContent(params Element[] elements) => ContentContainer.Add(elements);
+
     public void Clear(bool dispose = false) {
         lock (_children) {
             if (dispose) ForChildren(child => child.Dispose());

@@ -13,10 +13,7 @@ public class MyApp : Application {
         AnchorPosition = new(0.5f)
     };
 
-    protected override void OnLoad() {
-        Add(Spinner);
-        Console.WriteLine("Loaded!");
-    }
+    protected override void OnLoad() => Add(Spinner);
 
     protected override void OnUpdate() => Spinner.Rotation += (float)UpdateTime.DeltaTime * 100f;
 }

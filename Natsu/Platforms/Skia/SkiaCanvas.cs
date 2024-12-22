@@ -63,6 +63,8 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
         Paint.IsStroke = paint.IsStroke;
         Paint.StrokeWidth = paint.StrokeWidth;
         Paint.IsAntialias = paint.IsAntialias;
+        Paint.TextSize = paint.TextSize;
+        
         Paint.FilterQuality = paint.FilterQuality switch {
             FilterQuality.None => SKFilterQuality.None,
             FilterQuality.Low => SKFilterQuality.Low,
@@ -70,7 +72,20 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
             FilterQuality.High => SKFilterQuality.High,
             _ => SKFilterQuality.None
         };
-        Paint.TextSize = paint.TextSize;
+
+        Paint.StrokeJoin = paint.StrokeJoin switch {
+            StrokeJoin.Miter => SKStrokeJoin.Miter,
+            StrokeJoin.Round => SKStrokeJoin.Round,
+            StrokeJoin.Bevel => SKStrokeJoin.Bevel,
+            _ => SKStrokeJoin.Miter
+        };
+
+        Paint.StrokeCap = paint.StrokeCap switch {
+            StrokeCap.Butt => SKStrokeCap.Butt,
+            StrokeCap.Round => SKStrokeCap.Round,
+            StrokeCap.Square => SKStrokeCap.Square,
+            _ => SKStrokeCap.Butt
+        };
 
         if (font is SkiaFont skiaFont) Paint.Typeface = skiaFont.Typeface;
 
