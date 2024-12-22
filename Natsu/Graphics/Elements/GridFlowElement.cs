@@ -1,4 +1,3 @@
-
 using Natsu.Mathematics;
 using Natsu.Utils;
 
@@ -10,9 +9,11 @@ public enum GridOverflowDirection {
 }
 
 public class GridElement : Element {
-    private Vector2 _spacing = 0f;
     private int _columns = 1;
     private int _rows = 1;
+    private Vector2 _spacing = 0f;
+
+    public Dirty Layout = new();
 
 
     public Vector2 Spacing {
@@ -39,24 +40,16 @@ public class GridElement : Element {
         }
     }
 
-    public Dirty Layout = new();
-
     public void ComputeLayout() {
-        var size = DrawSize;
-        var cellSize = new Vector2(
-            (size.X - Spacing.X * (Columns - 1)) / Columns,
-            (size.Y - Spacing.Y * (Rows - 1)) / Rows
-        );
+        Vector2 size = DrawSize;
+        Vector2 cellSize = new((size.X - Spacing.X * (Columns - 1)) / Columns, (size.Y - Spacing.Y * (Rows - 1)) / Rows);
 
-        for (var i = 0; i < Children.Count; i++) {
-            var child = Children[i];
-            var x = i % Columns;
-            var y = i / Columns;
+        for (int i = 0; i < Children.Count; i++) {
+            Element child = Children[i];
+            int x = i % Columns;
+            int y = i / Columns;
 
-            child.Position = new Vector2(
-                x * (cellSize.X + Spacing.X),
-                y * (cellSize.Y + Spacing.Y)
-            );
+            child.Position = new Vector2(x * (cellSize.X + Spacing.X), y * (cellSize.Y + Spacing.Y));
 
             child.Size = cellSize;
         }
@@ -80,8 +73,10 @@ public class GridElement : Element {
 }
 
 public class GridFlowElement : Element {
-    private Vector2 _spacing = 0f;
     private GridOverflowDirection _overflowDirection = GridOverflowDirection.Horizontal;
+    private Vector2 _spacing = 0f;
+
+    public Dirty Layout = new();
 
     public Vector2 Spacing {
         get => _spacing;
@@ -99,19 +94,17 @@ public class GridFlowElement : Element {
         }
     }
 
-    public Dirty Layout = new();
-
     public void ComputeLayout() {
-        var size = DrawSize;
-        
+        Vector2 size = DrawSize;
+
         float x = 0;
         float y = 0;
         float rowHeight = 0;
         float columnWidth = 0;
 
-        for (var i = 0; i < Children.Count; i++) {
-            var child = Children[i];
-            var childSize = child.DrawSize;
+        for (int i = 0; i < Children.Count; i++) {
+            Element child = Children[i];
+            Vector2 childSize = child.DrawSize;
 
             if (OverflowDirection == GridOverflowDirection.Horizontal) {
                 if (x + childSize.X > size.X) {

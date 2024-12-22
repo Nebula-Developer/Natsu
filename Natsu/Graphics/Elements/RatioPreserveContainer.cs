@@ -1,4 +1,3 @@
-
 using Natsu.Mathematics;
 
 namespace Natsu.Graphics.Elements;
@@ -11,14 +10,24 @@ public enum RatioPreserveMode {
 }
 
 public class RatioPreserveContainer : Element {
-    private float _ratio = 16f / 9f;
-    private RatioPreserveMode _mode = RatioPreserveMode.Fit;
 
     public readonly Element ContentWrapper = new() {
-        AnchorPosition = new(0.5f),
-        OffsetPosition = new(0.5f),
+        AnchorPosition = new Vector2(0.5f),
+        OffsetPosition = new Vector2(0.5f),
         Clip = true
     };
+
+    private RatioPreserveMode _mode = RatioPreserveMode.Fit;
+    private float _ratio = 16f / 9f;
+
+    public RatioPreserveContainer(float ratio, RatioPreserveMode mode = RatioPreserveMode.Fit) {
+        Add(ContentWrapper);
+
+        _ratio = ratio;
+        _mode = mode;
+
+        Fit();
+    }
 
     public override Element ContentContainer => ContentWrapper;
 
@@ -39,8 +48,8 @@ public class RatioPreserveContainer : Element {
     }
 
     public void Fit() {
-        var size = DrawSize;
-        var ratio = size.X / size.Y;
+        Vector2 size = DrawSize;
+        float ratio = size.X / size.Y;
 
         switch (Mode) {
             case RatioPreserveMode.Width:
@@ -50,31 +59,18 @@ public class RatioPreserveContainer : Element {
                 ContentWrapper.Size = new Vector2(size.Y * Ratio, size.Y);
                 break;
             case RatioPreserveMode.Fit:
-                if (ratio > Ratio) {
+                if (ratio > Ratio)
                     ContentWrapper.Size = new Vector2(size.Y * Ratio, size.Y);
-                } else {
+                else
                     ContentWrapper.Size = new Vector2(size.X, size.X / Ratio);
-                }
                 break;
             case RatioPreserveMode.Cover:
-                if (ratio > Ratio) {
+                if (ratio > Ratio)
                     ContentWrapper.Size = new Vector2(size.X, size.X / Ratio);
-                } else {
+                else
                     ContentWrapper.Size = new Vector2(size.Y * Ratio, size.Y);
-                }
                 break;
         }
-
-        Console.WriteLine($"Fitting to {ContentWrapper.Size} with mode {Mode}");
-    }
-
-    public RatioPreserveContainer(float ratio, RatioPreserveMode mode = RatioPreserveMode.Fit) {
-        Add(ContentWrapper);
-
-        _ratio = ratio;
-        _mode = mode;
-
-        Fit();
     }
 
     protected override void OnLoad() => Fit();

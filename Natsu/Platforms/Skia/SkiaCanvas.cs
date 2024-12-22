@@ -64,7 +64,7 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
         Paint.StrokeWidth = paint.StrokeWidth;
         Paint.IsAntialias = paint.IsAntialias;
         Paint.TextSize = paint.TextSize;
-        
+
         Paint.FilterQuality = paint.FilterQuality switch {
             FilterQuality.None => SKFilterQuality.None,
             FilterQuality.Low => SKFilterQuality.Low,

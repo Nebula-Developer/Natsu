@@ -21,11 +21,12 @@ public enum InvalidationPropagation {
 }
 
 public class InvalidationState {
-    public Invalidation State { get; private set; }
 
     public InvalidationState(Invalidation invalidation = Invalidation.All) {
         State = invalidation;
     }
+
+    public Invalidation State { get; private set; }
 
     public void Invalidate(Invalidation invalidation) => State |= invalidation;
     public void Validate(Invalidation invalidation) => State &= ~invalidation;

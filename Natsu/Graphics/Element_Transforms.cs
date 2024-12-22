@@ -1,5 +1,4 @@
 using Natsu.Mathematics;
-using Natsu.Utils;
 
 namespace Natsu.Graphics;
 
@@ -7,7 +6,11 @@ public partial class Element {
     private Vector2 _anchorPosition;
     private Bounds _bounds = Bounds.Empty;
     private Axes _childRelativeSizeAxes = Axes.None;
+
+    private Vector2 _drawSize;
     private Vector2 _margin;
+
+    private Matrix _matrix = new();
     private Vector2 _offsetPosition;
     private Vector2 _position;
     private Vector2 _relativeSize;
@@ -18,8 +21,6 @@ public partial class Element {
     private Vector2 _size;
     private Vector2 _worldPosition;
     private Vector2 _worldScale = Vector2.One;
-
-    private Matrix _matrix = new();
 
     public Matrix Matrix {
         get {
@@ -92,8 +93,6 @@ public partial class Element {
         }
     }
 
-    private Vector2 _drawSize;
-
     public Vector2 DrawSize {
         get {
             if (Invalidated.HasFlag(Invalidation.Size))
@@ -113,6 +112,7 @@ public partial class Element {
             _size = value;
 
             Invalidate(Invalidation.Size);
+            HandleSizeAffectsMatrix();
             PropogateChildrenSizeChange();
         }
     }
@@ -188,10 +188,24 @@ public partial class Element {
         }
     }
 
+    public bool SizeAffectsMatrix => RelativeSizeAxes != Axes.None || ChildRelativeSizeAxes != Axes.None || OffsetPosition != Vector2.Zero || AnchorPosition != Vector2.Zero || Margin != Vector2.Zero || Rotation != 0 || Scale != Vector2.One;
+
+    public bool HandleSizeAffectsMatrix() {
+        if (SizeAffectsMatrix) {
+            Invalidate(Invalidation.Geometry);
+            return true;
+        }
+
+        return false;
+    }
+
     public Vector2 ToLocalSpace(Vector2 screenSpace) => Matrix.Invert().MapPoint(screenSpace);
     public Vector2 ToScreenSpace(Vector2 localSpace) => Matrix.MapPoint(localSpace);
 
     public void UpdateMatrix() {
+        if (Invalidated.HasFlag(Invalidation.Size))
+            UpdateDrawSize();
+
         Matrix matrix = Parent?.ChildAccessMatrix.Copy() ?? new Matrix();
         Vector2 offset = RelativeSize * OffsetPosition;
 
@@ -248,13 +262,10 @@ public partial class Element {
 
         if (child.RelativeSizeAxes != Axes.None)
             inv |= Invalidation.DrawSize;
-        else if (child.AnchorPosition != Vector2.Zero)
+        if (child.AnchorPosition != Vector2.Zero)
             inv |= Invalidation.Geometry;
 
         child.Invalidate(inv);
-
-        if (inv != Invalidation.None)
-            child.PropogateChildrenSizeChange();
     });
 
     private Vector2 ReplaceRelativeAxes(Vector2 orig) {
@@ -289,24 +300,15 @@ public partial class Element {
         if (drawSize == oldValue) return;
 
         if (Parent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(Invalidation.DrawSize);
+
+        HandleSizeAffectsMatrix();
+
         PropogateChildrenSizeChange();
-
-        if (SizeAffectsMatrix)
-            Invalidate(Invalidation.Geometry);
-
         CalculateBounds();
 
         DoDrawSizeChange?.Invoke(drawSize);
         OnDrawSizeChange(drawSize);
     }
-
-    public bool SizeAffectsMatrix => RelativeSizeAxes != Axes.None ||
-                                     ChildRelativeSizeAxes != Axes.None ||
-                                     OffsetPosition != Vector2.Zero ||
-                                     AnchorPosition != Vector2.Zero ||
-                                     Margin != Vector2.Zero ||
-                                     Rotation != 0 ||
-                                     Scale != Vector2.One;
 
     public void CalculateBounds() => Bounds = Matrix.MapBounds(new Bounds(new Vector2(0, 0), new Vector2(DrawSize.X, 0), new Vector2(DrawSize.X, DrawSize.Y), new Vector2(0, DrawSize.Y)));
 

@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 using Natsu.Mathematics;
 using Natsu.Native;
 
@@ -121,7 +119,8 @@ public partial class Element : IDisposable {
     public event Action<Application>? DoAppChange;
 
     #region Invalidation
-    public InvalidationState InvalidationState { get; private set; } = new();
+
+    public InvalidationState InvalidationState { get; } = new();
     public Invalidation Invalidated => InvalidationState.State;
 
     public virtual bool OnInvalidate(Invalidation invalidation, InvalidationPropagation propagation) => false;
@@ -141,7 +140,7 @@ public partial class Element : IDisposable {
 
         if (propagation.HasFlag(InvalidationPropagation.Children))
             InvalidateChildren(invalidation, true);
-        
+
         return true;
     }
 
@@ -178,6 +177,7 @@ public partial class Element : IDisposable {
         ForChildren(child => result |= child.Validate(invalidation, propagate ? InvalidationPropagation.Children : InvalidationPropagation.None));
         return result;
     }
+
     #endregion
 
 #nullable disable
