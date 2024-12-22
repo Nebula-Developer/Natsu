@@ -22,7 +22,7 @@ Natsu, successor to [Yoru Engine](https://github.com/nebula-developer/yoru-engin
 
 Natsu was rewritten from scratch to break past the limitations of Yoru Engine. Here are some of the key improvements:
 
-- **Skia-reliant**: Yoru Engine was completely reliant on SkiaSharp for rendering, which made it difficult to port to other platforms. Natsu, on the other hand, primarily uses SkiaSharp for rendering and logic, but abstracts it away through interfaces making it easier to port to other platforms.
+- **Non-Skia reliant**: Yoru Engine was completely reliant on SkiaSharp for rendering, which made it difficult to port to other platforms. Natsu, on the other hand, primarily uses SkiaSharp for rendering and logic, but abstracts it away through interfaces making it easier to port to other platforms.
 
 - **Transforms**: Yoru Engine made it difficult to work with custom transforms, which belonged to an assigned `Transform` class. Natsu simplifies this by placing all `Element` transformations directly in the `Element` class, and makes it easier to work with animations and custom transforms.
 
