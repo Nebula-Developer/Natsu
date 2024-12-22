@@ -163,7 +163,6 @@ public partial class Application {
         TouchPositions[id] = position;
 
         List<InputElement> elms = GetInputCandidates(position);
-        Platform.Cursor = CursorStyle.Default;
 
         foreach (GlobalInputElement elm in NonPositionalInputList) {
             _globalPressedTouchInputs[id].Add(elm);
@@ -213,16 +212,21 @@ public partial class Application {
             elm.TouchMove(id, position);
     }
 
-    public void MouseMove(Vector2 position) {
+    public virtual void HandleCursorChange(CursorStyle style) => Platform.Cursor = style;
+
+    public void MouseMove(Vector2? pos = null, bool noMoveEvent = false) {
+        Vector2 position = pos ?? MousePosition;
+
         MousePosition = position;
 
-        DoMouseMove?.Invoke(position);
-        OnMouseMove(position);
+        if (!noMoveEvent) {
+            DoMouseMove?.Invoke(position);
+            OnMouseMove(position);
+            foreach (GlobalInputElement elm in NonPositionalInputList)
+                elm.MouseMove(position);
+        }
 
         List<InputElement> elms = GetInputCandidates(position);
-
-        foreach (GlobalInputElement elm in NonPositionalInputList)
-            elm.MouseMove(position);
 
         foreach (InputElement elm in _mouseEnterCache.Keys.ToList())
             if (!elms.Contains(elm)) {
@@ -253,18 +257,18 @@ public partial class Application {
                     blocked = true;
 
                 _mouseEnterCache[elm] = blocked ? MouseEnterCacheState.OverBlock : MouseEnterCacheState.Over;
-            } else if (state.HasFlag(MouseEnterCacheState.Over)) elm.MouseMove(position);
+            } else if (state.HasFlag(MouseEnterCacheState.Over) && !noMoveEvent) elm.MouseMove(position);
         }
 
-        if (_focusedElement != null)
+        if (_focusedElement != null && !noMoveEvent)
             _focusedElement.MouseMove(position);
 
         List<InputElement> interacting = InteractingElements;
         if (interacting.Count > 0) {
             InputElement top = interacting[0];
             if (top.HoverCursor)
-                Platform.Cursor = top.Cursor;
-        } else Platform.Cursor = CursorStyle.Default;
+                HandleCursorChange(top.Cursor);
+        } else HandleCursorChange(CursorStyle.Default);
     }
 
     public void MouseWheel(Vector2 delta) {

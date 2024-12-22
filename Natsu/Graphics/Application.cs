@@ -63,6 +63,8 @@ public partial class Application : IDisposable {
         Root.Update();
         OnUpdate();
         DoUpdate?.Invoke();
+        
+        MouseMove();
     }
 
     public void Render() {
