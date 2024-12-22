@@ -6,7 +6,6 @@ public class TextElement : PaintableElement {
     private bool _autoSize = true;
 
     private IFont? _font;
-    private bool _sizeValid;
     private string _text = string.Empty;
     private Vector2 _textSize;
 
@@ -25,7 +24,7 @@ public class TextElement : PaintableElement {
         get => _text;
         set {
             _text = value;
-            InvalidateAutoSize();
+            Invalidate(Invalidation.DrawSize | Invalidation.Layout);
         }
     }
     public IFont? Font {
@@ -36,7 +35,7 @@ public class TextElement : PaintableElement {
         }
         set {
             _font = value;
-            InvalidateAutoSize();
+            Invalidate(Invalidation.DrawSize | Invalidation.Layout);
         }
     }
 
@@ -44,7 +43,7 @@ public class TextElement : PaintableElement {
         get {
             if (!AutoSize) return base.Size;
 
-            if (!_sizeValid) CalculateSize();
+            if (Invalidated.HasFlag(Invalidation.Layout)) CalculateSize();
             return _textSize;
         }
         set => base.Size = value;
@@ -54,24 +53,24 @@ public class TextElement : PaintableElement {
         get => _autoSize;
         set {
             _autoSize = value;
-            Invalidate(Invalidation.DrawSize);
+            Invalidate(Invalidation.DrawSize | Invalidation.Layout);
         }
-    }
-
-    private void InvalidateAutoSize() {
-        Invalidate(Invalidation.Geometry);
-        _sizeValid = false;
     }
 
     public void CalculateSize() {
         if (Font == null) return;
 
         _textSize = Font.MeasureText(Text, Paint.TextSize);
+        
+        Validate(Invalidation.Layout);
+        Invalidate(Invalidation.DrawSize);
+
+        HandleParentSizeChange();
     }
 
     private void AssignPaintEvent() {
-        Paint.DoChange += () => InvalidateAutoSize();
-        InvalidateAutoSize();
+        Paint.DoChange += () => Invalidate(Invalidation.DrawSize | Invalidation.Layout);
+        Invalidate(Invalidation.DrawSize | Invalidation.Layout);
     }
 
     protected override void OnPaintChanged() => AssignPaintEvent();

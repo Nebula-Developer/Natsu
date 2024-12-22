@@ -123,7 +123,13 @@ public partial class Element : IDisposable {
     public InvalidationState InvalidationState { get; } = new();
     public Invalidation Invalidated => InvalidationState.State;
 
-    public virtual bool OnInvalidate(Invalidation invalidation, InvalidationPropagation propagation) => false;
+    public virtual bool OnInvalidate(Invalidation invalidation, InvalidationPropagation propagation) {
+        if (invalidation.HasFlag(Invalidation.DrawSize) && Parent?.ChildRelativeSizeAxes != Axes.None)
+            InvalidateParent(Invalidation.DrawSize);
+        
+        return false;
+    }
+    
     public virtual bool OnValidate(Invalidation invalidation, InvalidationPropagation propagation) => false;
 
     public bool Invalidate(Invalidation invalidation, InvalidationPropagation propagation = InvalidationPropagation.None) {

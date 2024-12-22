@@ -157,7 +157,7 @@ public partial class Element {
             _position = value;
             Invalidate(Invalidation.Geometry);
 
-            PropagateParentSizeDependencies();
+            HandleParentSizeChange();
         }
     }
 
@@ -322,7 +322,7 @@ public partial class Element {
 
         HandleSizeAffectsMatrix();
 
-        PropagateParentSizeDependencies();
+        HandleParentSizeChange();
         PropagateChildrenSizeChange();
 
         CalculateBounds();
@@ -334,8 +334,13 @@ public partial class Element {
     private void PropagateParentSizeDependencies() {
         if (Parent?.ChildRelativeSizeAxes != Axes.None) {
             InvalidateParent(Invalidation.DrawSize);
-            Parent?.PropagateParentSizeDependencies();
+            Parent?.HandleParentSizeChange();
         }
+    }
+
+    protected void HandleParentSizeChange() {
+        InvalidateParent(Invalidation.Layout);
+        PropagateParentSizeDependencies();
     }
 
     public void CalculateBounds() => Bounds = Matrix.MapBounds(new Bounds(new Vector2(0, 0), new Vector2(DrawSize.X, 0), new Vector2(DrawSize.X, DrawSize.Y), new Vector2(0, DrawSize.Y)));
