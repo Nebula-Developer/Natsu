@@ -140,7 +140,6 @@ public class InputElement : Element {
     public void TouchMove(int id, Vector2 position) {
         DoTouchMove?.Invoke(id, position);
         OnTouchMove(id, position);
-        if (id == 0) Press(position);
     }
 
     public void TouchPress(int id, Vector2 position) {
