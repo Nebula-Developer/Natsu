@@ -51,7 +51,7 @@ public struct Vector4 : IEquatable<Vector4> {
 
     public Vector4 Normalize() {
         float length = Magnitude;
-        return length > 0 ? new Vector4(X / length, Y / length, Z / length, W / length) : new Vector4(0, 0, 0, 0);
+        return length > 0 ? new(X / length, Y / length, Z / length, W / length) : new Vector4(0, 0, 0, 0);
     }
 
     public static float Dot(Vector4 a, Vector4 b) => a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;

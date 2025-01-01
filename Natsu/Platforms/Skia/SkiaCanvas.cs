@@ -1,6 +1,5 @@
 using Natsu.Graphics;
 using Natsu.Mathematics;
-
 using SkiaSharp;
 
 namespace Natsu.Platforms.Skia;
@@ -38,10 +37,12 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
                 if (skiaSurface.Image == null) throw new ArgumentException("SkiaOffscreenSurface not flushed before rendering");
 
                 Canvas.DrawImage(skiaSurface.Image, position);
-            } else
+            } else {
                 Canvas.DrawSurface(skiaSurface.Surface, position);
-        } else
+            }
+        } else {
             throw new ArgumentException("Non-SkiaOffscreenSurface provided to SkiaCanvas");
+        }
     }
 
     public void ResetMatrix() => Canvas.ResetMatrix();
@@ -54,7 +55,7 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
 
     public void ClipRect(Rect rect, bool difference = false, bool antialias = false) => Canvas.ClipRect(rect, difference ? SKClipOperation.Difference : SKClipOperation.Intersect, antialias);
 
-    public void ClipRoundRect(Rect rect, Vector2 radius, bool difference = false, bool antialias = false) => Canvas.ClipRoundRect(new SKRoundRect(rect, radius.X, radius.Y), difference ? SKClipOperation.Difference : SKClipOperation.Intersect, antialias);
+    public void ClipRoundRect(Rect rect, Vector2 radius, bool difference = false, bool antialias = false) => Canvas.ClipRoundRect(new(rect, radius.X, radius.Y), difference ? SKClipOperation.Difference : SKClipOperation.Intersect, antialias);
 
     public void ClipPath(VectorPath path, bool difference = false, bool antialias = false) => Canvas.ClipPath(path.SkiaPath, difference ? SKClipOperation.Difference : SKClipOperation.Intersect, antialias);
 

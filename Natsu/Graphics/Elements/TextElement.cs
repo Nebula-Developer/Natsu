@@ -11,9 +11,7 @@ public class TextElement : PaintableElement {
 
     public TextElement() { }
 
-    public TextElement(string text) {
-        Text = text;
-    }
+    public TextElement(string text) => Text = text;
 
     public TextElement(string text, IFont font) {
         Text = text;
@@ -27,10 +25,11 @@ public class TextElement : PaintableElement {
             Invalidate(Invalidation.DrawSize | Invalidation.Layout);
         }
     }
+
     public IFont? Font {
         get {
-            if (_font == null && App != null)
-                _font = ResourceLoader.DefaultFont;
+            if (_font == null && App != null) _font = ResourceLoader.DefaultFont;
+
             return _font;
         }
         set {
@@ -44,6 +43,7 @@ public class TextElement : PaintableElement {
             if (!AutoSize) return base.Size;
 
             if (Invalidated.HasFlag(Invalidation.Layout)) CalculateSize();
+
             return _textSize;
         }
         set => base.Size = value;
@@ -61,24 +61,20 @@ public class TextElement : PaintableElement {
         if (Font == null) return;
 
         _textSize = Font.MeasureText(Text, Paint.TextSize);
-        
+
         Validate(Invalidation.Layout);
         Invalidate(Invalidation.DrawSize);
 
         HandleParentSizeChange();
     }
 
-    private void AssignPaintEvent() {
-        Paint.DoChange += () => Invalidate(Invalidation.DrawSize | Invalidation.Layout);
-        Invalidate(Invalidation.DrawSize | Invalidation.Layout);
-    }
+    protected override void OnPaintValueChange() => Invalidate(Invalidation.DrawSize | Invalidation.Layout);
 
-    protected override void OnPaintChanged() => AssignPaintEvent();
-    protected override void OnLoad() => AssignPaintEvent();
+    protected override void OnLoad() => Invalidate(Invalidation.DrawSize | Invalidation.Layout);
 
     protected override void OnRender(ICanvas canvas) {
         if (Font == null) return;
 
-        canvas.DrawText(Text, new Vector2(0, 0), Font, Paint);
+        canvas.DrawText(Text, new(0, 0), Font, Paint);
     }
 }

@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Text;
-
 using Natsu.Graphics;
 using Natsu.Utils;
 
@@ -16,6 +15,7 @@ public abstract class ResourceLoader : IDisposable {
     public NamedStorage<IImage> ImageData { get; } = new();
 
     public virtual Assembly ProjectAssembly { get; } = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
+
     public virtual Assembly FrameworkAssembly { get; } = Assembly.GetExecutingAssembly();
 
     public virtual IFont DefaultFont => LoadFrameworkResourceFont("Resources/Fonts/Roboto/Roboto-Regular.ttf");
@@ -31,7 +31,6 @@ public abstract class ResourceLoader : IDisposable {
     protected virtual void OnDispose() { }
 
     #region Project Assembly Resource Loading
-
     public byte[] LoadResource(string path, string? name = null) => LoadData(path, name, () => ProjectAssembly.GetManifestResourceStream(path.FormatResourcePath(ProjectAssembly)));
 
     public string LoadResourceString(string path, string? name = null) => Encoding.UTF8.GetString(LoadResource(path, name));
@@ -39,11 +38,9 @@ public abstract class ResourceLoader : IDisposable {
     public IImage LoadResourceImage(string path, string? name = null) => LoadImageData(path, name);
 
     public IFont LoadResourceFont(string path, string? name = null) => LoadFontData(path, name);
-
     #endregion
 
     #region Framework Assembly Resource Loading
-
     public byte[] LoadFrameworkResource(string path, string? name = null) => LoadData(path, name, () => FrameworkAssembly.GetManifestResourceStream(path.FormatResourcePath(FrameworkAssembly)));
 
     public string LoadFrameworkResourceString(string path, string? name = null) => Encoding.UTF8.GetString(LoadFrameworkResource(path, name));
@@ -51,11 +48,9 @@ public abstract class ResourceLoader : IDisposable {
     public IImage LoadFrameworkResourceImage(string path, string? name = null) => LoadFrameworkImageData(path, name);
 
     public IFont LoadFrameworkResourceFont(string path, string? name = null) => LoadFrameworkFontData(path, name);
-
     #endregion
 
     #region File Loading (from external files)
-
     public byte[] LoadFile(string path, string? name = null) => LoadData(path, name, () => new FileStream(path, FileMode.Open, FileAccess.Read));
 
     public string LoadFileString(string path, string? name = null) => Encoding.UTF8.GetString(LoadFile(path, name));
@@ -63,7 +58,7 @@ public abstract class ResourceLoader : IDisposable {
     public IImage LoadFileImage(string path, string? name = null) {
         if (ImageData[name ?? path] is IImage image) return image;
 
-        byte[] data = LoadFile(path, name);
+        byte[]? data = LoadFile(path, name);
         image = LoadImage(data, name ?? path);
         ImageData[name ?? path] = image;
         return image;
@@ -72,16 +67,14 @@ public abstract class ResourceLoader : IDisposable {
     public IFont LoadFileFont(string path, string? name = null) {
         if (FontData[name ?? path] is IFont font) return font;
 
-        byte[] data = LoadFile(path, name);
+        byte[]? data = LoadFile(path, name);
         font = LoadFont(data, name ?? path);
         FontData[name ?? path] = font;
         return font;
     }
-
     #endregion
 
     #region Helper Methods
-
     private byte[] LoadData(string path, string? name, Func<Stream?> openStreamFunc) {
         if (Data[name ?? path] is byte[] data) return data;
 
@@ -97,7 +90,7 @@ public abstract class ResourceLoader : IDisposable {
     private IFont LoadFontData(string path, string? name) {
         if (FontData[name ?? path] is IFont font) return font;
 
-        byte[] data = LoadResource(path, name);
+        byte[]? data = LoadResource(path, name);
         font = LoadFont(data, name ?? path);
         FontData[name ?? path] = font;
         return font;
@@ -106,7 +99,7 @@ public abstract class ResourceLoader : IDisposable {
     private IImage LoadImageData(string path, string? name) {
         if (ImageData[name ?? path] is IImage image) return image;
 
-        byte[] data = LoadResource(path, name);
+        byte[]? data = LoadResource(path, name);
         image = LoadImage(data, name ?? path);
         ImageData[name ?? path] = image;
         return image;
@@ -115,7 +108,7 @@ public abstract class ResourceLoader : IDisposable {
     private IFont LoadFrameworkFontData(string path, string? name) {
         if (FontData[name ?? path] is IFont font) return font;
 
-        byte[] data = LoadFrameworkResource(path, name);
+        byte[]? data = LoadFrameworkResource(path, name);
         font = LoadFont(data, name ?? path);
         FontData[name ?? path] = font;
         return font;
@@ -124,12 +117,10 @@ public abstract class ResourceLoader : IDisposable {
     private IImage LoadFrameworkImageData(string path, string? name) {
         if (ImageData[name ?? path] is IImage image) return image;
 
-        byte[] data = LoadFrameworkResource(path, name);
+        byte[]? data = LoadFrameworkResource(path, name);
         image = LoadImage(data, name ?? path);
         ImageData[name ?? path] = image;
         return image;
     }
-
     #endregion
-
 }

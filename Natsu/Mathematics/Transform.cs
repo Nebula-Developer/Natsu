@@ -25,10 +25,11 @@ We also keep track of the total end time of the sequence, so we can know when th
 */
 
 public class Transform {
-
     public Transform(Action<double> setter, double duration, double startTime = 0) {
         if (setter == null) throw new ArgumentNullException(nameof(setter));
+
         if (duration < 0) throw new ArgumentOutOfRangeException(nameof(duration), "Transform duration cannot be negative.");
+
         if (startTime < 0) throw new ArgumentOutOfRangeException(nameof(startTime), "Transform start time cannot be negative.");
 
         Setter = setter;
@@ -38,6 +39,7 @@ public class Transform {
 
     public double StartTime { get; set; }
     public double EndTime { get; set; }
+
     public double Duration {
         get => EndTime - StartTime;
         set => EndTime = StartTime + value;
@@ -61,12 +63,9 @@ public class Transform {
 }
 
 public class TransformSequence {
-
     private readonly List<Transform> _affectedElements = new();
 
-    public TransformSequence(string name) {
-        Name = name;
-    }
+    public TransformSequence(string name) => Name = name;
 
     public List<Transform> Sequence { get; } = new();
     public double BaseTime { get; set; }
@@ -80,21 +79,20 @@ public class TransformSequence {
 
     public bool Stopped { get; set; }
 
-    public Dictionary<int, double> LoopPoints { get; } = new() {
-        { 0, 0 }
-    };
+    public Dictionary<int, double> LoopPoints { get; } = new() { { 0, 0 } };
 
     public void Update(double dt) {
         Time += dt;
         DeltaTime = dt;
         if (Time > EndTime) Time = EndTime;
+
         Update();
     }
 
     public void Stop() => Stopped = true;
 
     public void Update() {
-        foreach (Transform transform in Sequence) {
+        foreach (Transform? transform in Sequence) {
             if (transform.Duration == 0 && Time >= transform.StartTime) {
                 if (transform.Performed) continue;
 
@@ -104,14 +102,13 @@ public class TransformSequence {
             }
 
             if (Time >= transform.StartTime && (Time <= transform.EndTime || !transform.Performed)) {
-                if (!_affectedElements.Contains(transform))
-                    _affectedElements.Add(transform);
+                if (!_affectedElements.Contains(transform)) _affectedElements.Add(transform);
 
                 double progress = (Time - transform.StartTime) / transform.Duration;
 
-                if (progress <= 0)
+                if (progress <= 0) {
                     progress = 0;
-                else if (progress >= 1) {
+                } else if (progress >= 1) {
                     progress = 1;
                     _affectedElements.Remove(transform);
                 }
@@ -126,7 +123,7 @@ public class TransformSequence {
     }
 
     public void Reset() {
-        foreach (Transform transform in Sequence) {
+        foreach (Transform? transform in Sequence) {
             transform.Performed = false;
             if (transform.Duration > 0) transform.Reset(this);
         }
@@ -135,18 +132,16 @@ public class TransformSequence {
     }
 
     public void ResetTo(int point) {
-        foreach (Transform transform in Sequence)
+        foreach (Transform? transform in Sequence)
             if (transform.StartTime > LoopPoints[point])
                 transform.Reset(this);
+
         Time = LoopPoints[point] + Precision.Epsilon;
     }
 }
 
 public class TransformSequence<T> : TransformSequence where T : class {
-
-    public TransformSequence(T target, string name) : base(name) {
-        Target = target;
-    }
+    public TransformSequence(T target, string name) : base(name) => Target = target;
 
     public T Target { get; set; }
 
@@ -157,7 +152,6 @@ public class TransformSequence<T> : TransformSequence where T : class {
     so we can use it in the next transform.
     */
     public Dictionary<string, object> FutureData { get; } = new();
-
 
     public TransformSequence<T> Then(float delay = 0) {
         BaseTime = EndTime + delay;
@@ -171,10 +165,8 @@ public class TransformSequence<T> : TransformSequence where T : class {
         return this;
     }
 
-
-    public TransformSequence<T> Loop(double delay, int times = -1, int point = 0) {
-        if (!LoopPoints.ContainsKey(point))
-            throw new ArgumentOutOfRangeException(nameof(point), "Loop point does not exist.");
+    public TransformSequence<T> Loop(double delay = 0, int times = -1, int point = 0) {
+        if (!LoopPoints.ContainsKey(point)) throw new ArgumentOutOfRangeException(nameof(point), "Loop point does not exist.");
 
         LoopTransform t = new(EndTime + delay, times, point);
         BaseTime = EndTime + delay;
@@ -190,7 +182,6 @@ public class TransformSequence<T> : TransformSequence where T : class {
 }
 
 public class LoopTransform : Transform {
-
     public LoopTransform(double startTime, int times = -1, int point = 0) : base(_ => { }, 0) {
         StartTime = startTime;
         Times = times;
@@ -204,15 +195,13 @@ public class LoopTransform : Transform {
     public void Loop(TransformSequence? sequence) {
         if (sequence == null) return;
 
-        if (Times == -1 || Count++ < Times)
-            sequence.ResetTo(Point);
+        if (Times == -1 || Count++ < Times) sequence.ResetTo(Point);
     }
 
     protected override void OnSetProgress(double progress, TransformSequence? sequence) => Loop(sequence);
 
     public override void Reset(TransformSequence? sequence = null) {
         base.Reset(sequence);
-        if (sequence?.Time > StartTime + sequence?.DeltaTime)
-            Count = 0;
+        if (sequence?.Time > StartTime + sequence?.DeltaTime) Count = 0;
     }
 }

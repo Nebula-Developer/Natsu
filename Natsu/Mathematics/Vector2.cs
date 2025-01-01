@@ -50,16 +50,18 @@ public struct Vector2 : IEquatable<Vector2> {
     public Vector2 Lerp(Vector2 other, float t) => Lerp(this, other, t);
 
     public Vector2 Max(Vector2 other) => new(MathF.Max(X, other.X), MathF.Max(Y, other.Y));
+
     public Vector2 Min(Vector2 other) => new(MathF.Min(X, other.X), MathF.Min(Y, other.Y));
 
     public static Vector2 Max(Vector2 a, Vector2 b) => a.Max(b);
+
     public static Vector2 Min(Vector2 a, Vector2 b) => a.Min(b);
 
     public Vector2 Rotate(float degrees, Vector2 point) {
         float radians = MathF.PI * degrees / 180;
         float x = MathF.Cos(radians) * (X - point.X) - MathF.Sin(radians) * (Y - point.Y) + point.X;
         float y = MathF.Sin(radians) * (X - point.X) + MathF.Cos(radians) * (Y - point.Y) + point.Y;
-        return new Vector2(x, y);
+        return new(x, y);
     }
 
     public static float Distance(Vector2 a, Vector2 b) => MathF.Sqrt(MathF.Pow(b.X - a.X, 2) + MathF.Pow(b.Y - a.Y, 2));
@@ -68,7 +70,7 @@ public struct Vector2 : IEquatable<Vector2> {
 
     public Vector2 Normalize() {
         float length = Magnitude;
-        return length > 0 ? new Vector2(X / length, Y / length) : new Vector2(0, 0);
+        return length > 0 ? new(X / length, Y / length) : new Vector2(0, 0);
     }
 
     public static float Dot(Vector2 a, Vector2 b) => a.X * b.X + a.Y * b.Y;

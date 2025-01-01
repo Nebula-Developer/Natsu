@@ -8,9 +8,88 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a111921e-bb12-441d-8a1f-3c4f5c401376" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.config/dotnet-tools.json" beforeDir="false" afterPath="$PROJECT_DIR$/.config/dotnet-tools.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.editorconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Natsu/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Natsu/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Natsu/Natsu.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Natsu.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Desktop/DesktopWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Desktop/DesktopWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Desktop/DesktopWindowSettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Desktop/DesktopWindowSettings.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Desktop/NativeWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Desktop/NativeWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Sandbox/MyApp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Sandbox/MyApp.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Sandbox/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Sandbox/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Sandbox/Slider.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Sandbox/Slider.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Sandbox/TextBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Sandbox/TextBox.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Templates/content/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Templates/content/.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Templates/content/NatsuApp.App/MyApp.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Templates/content/NatsuApp.App/MyApp.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Templates/content/NatsuApp.App/NatsuApp.App.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Templates/content/NatsuApp.App/NatsuApp.App.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Templates/content/NatsuApp.Desktop/NatsuApp.Desktop.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Templates/content/NatsuApp.Desktop/NatsuApp.Desktop.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu.Templates/content/NatsuApp.Desktop/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu.Templates/content/NatsuApp.Desktop/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Application.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Application.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Application_Input.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Application_Input.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Color.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Color.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Colors.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Colors.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Element.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Element.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Element_Composite.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Element_Composite.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Element_TransformSequence.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Element_TransformSequence.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Element_Transforms.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Element_Transforms.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/GlobalInputElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/GlobalInputElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/GraphElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/GraphElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/GridFlowElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/GridFlowElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/ImageElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/ImageElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/InputElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/InputElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/OffscreenSurfaceElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/OffscreenSurfaceElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/PaintableElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/PaintableElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/RatioPreserveContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/RatioPreserveContainer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/RectElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/RectElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/RootElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/RootElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Elements/TextElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Elements/TextElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/FilterQuality.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/FilterQuality.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/ICanvas.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/ICanvas.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/IFont.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/IFont.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/IImage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/IImage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/IOffscreenSurface.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/IOffscreenSurface.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/IRenderer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/IRenderer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Invalidation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Invalidation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/Paint.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/Paint.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/StrokeCap.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/StrokeCap.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Graphics/StrokeJoin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Graphics/StrokeJoin.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Input/CursorMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Input/CursorMode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Input/CursorStyle.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Input/CursorStyle.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Input/Key.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Input/Key.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Input/KeyMods.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Input/KeyMods.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Input/MouseButton.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Input/MouseButton.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Axes.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Axes.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Bounds.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Bounds.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Easing.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Easing.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/FrameClock.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/FrameClock.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Matrix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Matrix.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Precision.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Precision.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Rand.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Rand.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/RangeI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/RangeI.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Rect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Rect.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/RotationScaleMatrix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/RotationScaleMatrix.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/SkiaMatrix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/SkiaMatrix.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Transform.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Transform.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Vector2.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Vector2.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Vector2i.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Vector2i.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Vector3.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Vector3.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/Vector4.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/Vector4.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Mathematics/VectorPath.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Mathematics/VectorPath.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Native/INativePlatform.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Native/INativePlatform.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Native/PlatformArchitecture.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Native/PlatformArchitecture.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Native/PlatformOS.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Native/PlatformOS.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Native/PlatformType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Native/PlatformType.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Native/ResourceLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Native/ResourceLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaCanvas.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaCanvas.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaFont.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaFont.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaImage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaImage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaOffscreenSurface.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaOffscreenSurface.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaRenderer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaRenderer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaResourceLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Platforms/Skia/SkiaResourceLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Utils/Dirty.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Utils/Dirty.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Utils/DirtyStruct.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Utils/DirtyStruct.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Utils/DirtyValue.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Utils/DirtyValue.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Utils/FallbackDictionary.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Utils/FallbackDictionary.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Natsu/Utils/NamedStorage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Natsu/Utils/NamedStorage.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +110,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -76,6 +156,7 @@
       <workItem from="1731309850883" duration="1214000" />
       <workItem from="1731311801713" duration="336000" />
       <workItem from="1731894463350" duration="1035000" />
+      <workItem from="1735713913215" duration="1786000" />
     </task>
     <servers />
   </component>

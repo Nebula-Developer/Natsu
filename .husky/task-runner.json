@@ -1,0 +1,18 @@
+{
+   "$schema": "https://alirezanet.github.io/Husky.Net/schema.json",
+   "tasks": [
+      {
+         "name": "Run ReGitLint",
+         "command": "dotnet",
+         "args": [
+            "regitlint",
+            "-f",
+            "staged",
+            "--fail-on-diff"
+         ],
+         "include": [
+            "**/*.cs"
+         ]
+      }
+   ]
+}

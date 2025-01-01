@@ -16,8 +16,8 @@ public class FrameClock {
     public void Stop() => _stopwatch.Stop();
 
     public void Update() {
-        if (!_stopwatch.IsRunning)
-            _stopwatch.Start();
+        if (!_stopwatch.IsRunning) _stopwatch.Start();
+
         DeltaTime = _stopwatch.Elapsed.TotalSeconds;
         TotalTime += DeltaTime;
         Frames++;

@@ -1,10 +1,10 @@
 namespace Natsu.Graphics;
 
 public interface IOffscreenSurface : IDisposable {
-    public ICanvas Canvas { get; }
-    public int Width { get; }
-    public int Height { get; }
-    public void Flush();
+    ICanvas Canvas { get; }
+    int Width { get; }
+    int Height { get; }
+    void Flush();
 
-    public IImage Snapshot();
+    IImage Snapshot();
 }

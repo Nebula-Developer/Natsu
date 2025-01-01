@@ -10,78 +10,72 @@ public class TextBox : InputElement {
     private Vector2 _clickPos;
 
     private DateTime _lastClick, _secondLastClick = DateTime.Now;
+
     private int _selectionEnd;
 
     private int _selectionStart;
     private Dictionary<int, float> _substringWidths = new();
 
     private Vector2 _targetPos;
+
     public RectElement Background, Caret, Selection;
 
     public TextElement Preview;
     public Element PreviewContent;
 
-    public TextBox() {
+    public TextBox() =>
         Children = [
-            Background = new RectElement {
+            Background = new() {
                 ContentParent = this,
                 RelativeSizeAxes = Axes.Both,
-                Paint = new Paint {
-                    Color = new Color(100, 110, 130),
-                    IsAntialias = true,
-                    FilterQuality = FilterQuality.Medium
-                },
-                RoundedCorners = new Vector2(10),
+                Color = new(100, 110, 130),
+                IsAntialias = true,
+                FilterQuality = FilterQuality.Medium,
+                RoundedCorners = new(10),
                 Clip = true,
                 Content = [
-                    new Element {
+                    new() {
                         RelativeSizeAxes = Axes.Both,
-                        Position = new Vector2(0, -3),
+                        Position = new(0, -3),
                         Content = [
-                            Preview = new TextElement {
+                            Preview = new() {
                                 ContentParent = this,
                                 Text = "",
-                                Margin = new Vector2(20, 0),
-                                AnchorPosition = new Vector2(0, 0.5f),
-                                OffsetPosition = new Vector2(0, 0.5f),
+                                Margin = new(20, 0),
+                                AnchorPosition = new(0, 0.5f),
+                                OffsetPosition = new(0, 0.5f),
                                 Index = 10,
-                                Paint = new Paint {
-                                    Color = Colors.White,
-                                    IsAntialias = true,
-                                    FilterQuality = FilterQuality.High,
-                                    TextSize = 40
-                                },
+                                Color = Colors.White,
+                                IsAntialias = true,
+                                FilterQuality = FilterQuality.High,
+                                TextSize = 40,
                                 Content = [
-                                    PreviewContent = new Element {
+                                    PreviewContent = new() {
                                         RelativeSizeAxes = Axes.Y,
-                                        Margin = new Vector2(0, -3),
-                                        Position = new Vector2(0, 3),
+                                        Margin = new(0, -3),
+                                        Position = new(0, 3),
                                         Content = [
-                                            Caret = new RectElement {
+                                            Caret = new() {
                                                 ContentParent = this,
-                                                Size = new Vector2(2, 40),
+                                                Size = new(2, 40),
                                                 RelativeSizeAxes = Axes.Y,
-                                                Paint = new Paint {
-                                                    Color = Colors.WhiteTransparent,
-                                                    IsAntialias = true,
-                                                    FilterQuality = FilterQuality.Medium
-                                                },
-                                                AnchorPosition = new Vector2(0, 0.6f),
-                                                OffsetPosition = new Vector2(0, 0.6f),
+                                                Color = Colors.WhiteTransparent,
+                                                IsAntialias = true,
+                                                FilterQuality = FilterQuality.Medium,
+                                                AnchorPosition = new(0, 0.6f),
+                                                OffsetPosition = new(0, 0.6f),
                                                 Index = 10,
-                                                RoundedCorners = new Vector2(1)
+                                                RoundedCorners = new(1)
                                             },
-                                            Selection = new RectElement {
+                                            Selection = new() {
                                                 ContentParent = this,
                                                 RelativeSizeAxes = Axes.Y,
-                                                Paint = new Paint {
-                                                    Color = new Color(200, 230, 255, 100),
-                                                    IsAntialias = true,
-                                                    FilterQuality = FilterQuality.Medium
-                                                },
-                                                RoundedCorners = new Vector2(4),
-                                                AnchorPosition = new Vector2(0, 0.5f),
-                                                OffsetPosition = new Vector2(0, 0.5f),
+                                                Color = new(200, 230, 255, 100),
+                                                IsAntialias = true,
+                                                FilterQuality = FilterQuality.Medium,
+                                                RoundedCorners = new(4),
+                                                AnchorPosition = new(0, 0.5f),
+                                                OffsetPosition = new(0, 0.5f),
                                                 Index = 5
                                             }
                                         ]
@@ -93,7 +87,6 @@ public class TextBox : InputElement {
                 ]
             }
         ];
-    }
 
     public int CaretIndex {
         get => _caretIndex;
@@ -135,8 +128,8 @@ public class TextBox : InputElement {
 
         for (int i = 0; i < Text.Length; i++) {
             char c = Text[i];
-            if (!charWidths.ContainsKey(c))
-                charWidths.Add(c, Preview.Font?.MeasureText(c.ToString(), Preview.Paint.TextSize).X ?? 0);
+            if (!charWidths.ContainsKey(c)) charWidths.Add(c, Preview.Font?.MeasureText(c.ToString(), Preview.Paint.TextSize).X ?? 0);
+
             width += charWidths[c];
             _substringWidths.Add(i, width);
         }
@@ -147,7 +140,7 @@ public class TextBox : InputElement {
     protected override void OnFocus() {
         if (App != null) {
             App.Platform.KeyboardVisible = true;
-            App.Platform.TextCaret = new RangeI(CaretIndex, CaretIndex);
+            App.Platform.TextCaret = new(CaretIndex, CaretIndex);
             App.Platform.TextInput = Text;
         }
 
@@ -155,8 +148,8 @@ public class TextBox : InputElement {
     }
 
     protected override void OnBlur() {
-        if (App != null)
-            App.Platform.KeyboardVisible = false;
+        if (App != null) App.Platform.KeyboardVisible = false;
+
         HideCaret();
         ClearSelection();
     }
@@ -178,14 +171,16 @@ public class TextBox : InputElement {
         float relativeX = ToLocalSpace(position).X - Preview.Position.X;
         int index = 0;
 
-        lock (_substringWidths)
+        lock (_substringWidths) {
             foreach ((int i, float width) in _substringWidths)
                 if (relativeX >= width - Preview.Paint.TextSize / 4) {
                     index = i;
                     break;
                 }
+        }
 
         if (relativeX < 0) index = 0;
+
         if (relativeX > _substringWidths.First().Value) index = Text.Length;
 
         CaretIndex = index;
@@ -199,8 +194,10 @@ public class TextBox : InputElement {
         } else if ((DateTime.Now - _lastClick).TotalMilliseconds < 200) {
             int start = CaretIndex;
             while (start > 0 && !char.IsWhiteSpace(Text[start - 1])) start--;
+
             int end = CaretIndex;
             while (end < Text.Length && !char.IsWhiteSpace(Text[end])) end++;
+
             SelectionStart = start;
             SelectionEnd = end;
             CaretIndex = end;
@@ -233,6 +230,7 @@ public class TextBox : InputElement {
             }
 
         if (relativeX < 0) index = 0;
+
         if (relativeX > _substringWidths.First().Value) index = Text.Length;
 
         SelectionEnd = index;
@@ -240,7 +238,7 @@ public class TextBox : InputElement {
     }
 
     protected override void OnMouseMove(Vector2 position) {
-        if (!MouseButtons[MouseButton.Left] || Vector2.Distance(_clickPos, position) < 5 && (DateTime.Now - _lastClick).TotalMilliseconds < 300) return;
+        if (!MouseButtons[MouseButton.Left] || (Vector2.Distance(_clickPos, position) < 5 && (DateTime.Now - _lastClick).TotalMilliseconds < 300)) return;
 
         TouchSelection(position);
     }
@@ -257,13 +255,13 @@ public class TextBox : InputElement {
         float caretX = Preview.Font?.MeasureText(Text[..CaretIndex], Preview.Paint.TextSize).X ?? 0;
         Caret.StopTransformSequences(nameof(Caret.Position));
         if (animationDuration > 0)
-            Caret.MoveTo(new Vector2(caretX, 0), animationDuration, Ease.ExponentialOut);
+            Caret.MoveTo(new(caretX, 0), animationDuration, Ease.ExponentialOut);
         else
-            Caret.Position = new Vector2(caretX, 0);
+            Caret.Position = new(caretX, 0);
 
         if (Text.Length == 0 || resetPos) {
             Preview.StopTransformSequences(nameof(Preview.Position));
-            _targetPos = new Vector2(0, 0);
+            _targetPos = new(0, 0);
             Preview.MoveTo(_targetPos, animationDuration, Ease.ExponentialOut);
             return;
         }
@@ -276,15 +274,15 @@ public class TextBox : InputElement {
         float relativeX = caretX + offset;
         if (textWidth < width - Preview.Margin.X * 2) {
             Preview.StopTransformSequences(nameof(Preview.Position));
-            _targetPos = new Vector2(0, 0);
+            _targetPos = new(0, 0);
             Preview.MoveTo(_targetPos, animationDuration, Ease.ExponentialOut);
         } else if (relativeX > width) {
             Preview.StopTransformSequences(nameof(Preview.Position));
-            _targetPos = new Vector2(-caretX + width, 0);
+            _targetPos = new(-caretX + width, 0);
             Preview.MoveTo(_targetPos, animationDuration, Ease.ExponentialOut);
         } else if (relativeX < 0) {
             Preview.StopTransformSequences(nameof(Preview.Position));
-            _targetPos = new Vector2(-caretX, 0);
+            _targetPos = new(-caretX, 0);
             Preview.MoveTo(_targetPos, animationDuration, Ease.ExponentialOut);
         }
     }
@@ -295,14 +293,13 @@ public class TextBox : InputElement {
     }
 
     private void updateSelection() {
-        if (Platform != null)
-            Platform.TextCaret = new RangeI(_selectionStart, _selectionEnd);
+        if (Platform != null) Platform.TextCaret = new(_selectionStart, _selectionEnd);
 
         if (SelectionStart == SelectionEnd) {
             Selection.StopTransformSequences(nameof(Selection.Size), nameof(Selection.Position));
-            Selection.SizeTo(new Vector2(0, 20), 0.15f, Ease.ExponentialOut);
+            Selection.SizeTo(new(0, 20), 0.15f, Ease.ExponentialOut);
             float x = Preview.Font?.MeasureText(Text[..CaretIndex], Preview.Paint.TextSize).X ?? 0;
-            Selection.MoveTo(new Vector2(x, 0), 0.15f, Ease.ExponentialOut);
+            Selection.MoveTo(new(x, 0), 0.15f, Ease.ExponentialOut);
             return;
         }
 
@@ -311,20 +308,19 @@ public class TextBox : InputElement {
 
         if (start < 0 || end < 0 || start >= Text.Length + 1 || end >= Text.Length + 1) {
             Selection.StopTransformSequences(nameof(Selection.Size), nameof(Selection.Position));
-            Selection.SizeTo(new Vector2(0, 20), 0.15f, Ease.ExponentialOut);
+            Selection.SizeTo(new(0, 20), 0.15f, Ease.ExponentialOut);
             return;
         }
 
         float selectionStartX = Preview.Font?.MeasureText((Text + " ")[..start], Preview.Paint.TextSize).X ?? 0;
         float selectionEndX = Preview.Font?.MeasureText((Text + " ")[..end], Preview.Paint.TextSize).X ?? 0;
         Selection.StopTransformSequences(nameof(Selection.Size), nameof(Selection.Position));
-        Selection.SizeTo(new Vector2(selectionEndX - selectionStartX, 20), 0.15f, Ease.ExponentialOut);
-        Selection.MoveTo(new Vector2(selectionStartX, 0), 0.15f, Ease.ExponentialOut);
+        Selection.SizeTo(new(selectionEndX - selectionStartX, 20), 0.15f, Ease.ExponentialOut);
+        Selection.MoveTo(new(selectionStartX, 0), 0.15f, Ease.ExponentialOut);
     }
 
     protected override void OnTextInput(string text, int pos, int removed) {
-        if (removed > 0)
-            Text = Text.Remove(pos, removed);
+        if (removed > 0) Text = Text.Remove(pos, removed);
 
         Text = Text.Insert(pos, text);
         CaretIndex = pos + text.Length;
@@ -342,11 +338,14 @@ public class TextBox : InputElement {
                     CaretIndex = Math.Max(0, CaretIndex - 1);
                     if (mods.HasFlag(KeyMods.Control)) {
                         while (CaretIndex > 0 && char.IsWhiteSpace(Text[CaretIndex - 1])) CaretIndex--;
+
                         while (CaretIndex > 0 && !char.IsWhiteSpace(Text[CaretIndex - 1])) CaretIndex--;
                     }
 
-                    if (mods.HasFlag(KeyMods.Shift)) SelectionEnd = CaretIndex;
-                    else ClearSelection();
+                    if (mods.HasFlag(KeyMods.Shift))
+                        SelectionEnd = CaretIndex;
+                    else
+                        ClearSelection();
                 }
 
                 break;
@@ -358,11 +357,14 @@ public class TextBox : InputElement {
                     CaretIndex = Math.Min(Text.Length, CaretIndex + 1);
                     if (mods.HasFlag(KeyMods.Control)) {
                         while (CaretIndex < Text.Length && char.IsWhiteSpace(Text[CaretIndex])) CaretIndex++;
+
                         while (CaretIndex < Text.Length && !char.IsWhiteSpace(Text[CaretIndex])) CaretIndex++;
                     }
 
-                    if (mods.HasFlag(KeyMods.Shift)) SelectionEnd = CaretIndex;
-                    else ClearSelection();
+                    if (mods.HasFlag(KeyMods.Shift))
+                        SelectionEnd = CaretIndex;
+                    else
+                        ClearSelection();
                 }
 
                 break;
@@ -404,9 +406,11 @@ public class TextBox : InputElement {
                     if (CaretIndex < Text.Length) {
                         if (mods.HasFlag(KeyMods.Control)) {
                             while (CaretIndex < Text.Length && char.IsWhiteSpace(Text[CaretIndex])) Text = Text.Remove(CaretIndex, 1);
+
                             while (CaretIndex < Text.Length && !char.IsWhiteSpace(Text[CaretIndex])) Text = Text.Remove(CaretIndex, 1);
-                        } else
+                        } else {
                             Text = Text.Remove(CaretIndex, 1);
+                        }
 
                         ClearSelection();
                         Platform.TextInput = Text;
@@ -416,13 +420,19 @@ public class TextBox : InputElement {
                 break;
             case Key.Home:
                 CaretIndex = 0;
-                if (mods.HasFlag(KeyMods.Shift)) SelectionEnd = CaretIndex;
-                else ClearSelection();
+                if (mods.HasFlag(KeyMods.Shift))
+                    SelectionEnd = CaretIndex;
+                else
+                    ClearSelection();
+
                 break;
             case Key.End:
                 CaretIndex = Text.Length;
-                if (mods.HasFlag(KeyMods.Shift)) SelectionEnd = CaretIndex;
-                else ClearSelection();
+                if (mods.HasFlag(KeyMods.Shift))
+                    SelectionEnd = CaretIndex;
+                else
+                    ClearSelection();
+
                 break;
             case Key.A:
                 if (mods.HasFlag(KeyMods.Control)) {
@@ -440,7 +450,7 @@ public class TextBox : InputElement {
                 break;
             case Key.V:
                 if (mods.HasFlag(KeyMods.Control)) {
-                    string clipboard = App.Platform.Clipboard;
+                    string? clipboard = App.Platform.Clipboard;
                     if (SelectionStart != SelectionEnd) {
                         int start = Math.Min(SelectionStart, SelectionEnd);
                         int end = Math.Max(SelectionStart, SelectionEnd);

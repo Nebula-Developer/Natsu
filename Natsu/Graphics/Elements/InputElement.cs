@@ -17,36 +17,49 @@ public class InputElement : Element {
     public bool IsFocused { get; private set; }
 
     protected virtual bool OnMouseDown(MouseButton button, Vector2 position) => GrabFallback;
+
     protected virtual void OnMouseUp(MouseButton button, Vector2 position) { }
 
     protected virtual void OnMousePress(MouseButton button, Vector2 position) { }
+
     protected virtual void OnMousePressDodge(MouseButton button, Vector2 position) { }
 
     protected virtual bool OnTouchDown(int id, Vector2 position) => GrabFallback;
+
     protected virtual void OnTouchUp(int id, Vector2 position) { }
 
     protected virtual void OnTouchMove(int id, Vector2 position) { }
+
     protected virtual void OnTouchPress(int id, Vector2 position) { }
+
     protected virtual void OnTouchPressDodge(int id, Vector2 position) { }
 
     protected virtual void OnPressDown(Vector2 position) { }
+
     protected virtual void OnPressUp(Vector2 position) { }
+
     protected virtual void OnPress(Vector2 position) { }
+
     protected virtual void OnPressDodge(Vector2 position) { }
 
     protected virtual bool OnMouseEnter(Vector2 position) => GrabFallback;
+
     protected virtual void OnMouseLeave(Vector2 position) { }
 
     protected virtual void OnMouseMove(Vector2 position) { }
+
     protected virtual void OnMouseWheel(Vector2 delta) { }
 
     protected virtual bool OnKeyDown(Key key, KeyMods mods) => GrabFallback;
+
     protected virtual bool OnKeyUp(Key key, KeyMods mods) => GrabFallback;
 
     protected virtual void OnTextInput(string text, int location, int replaced) { }
+
     protected virtual void OnTextCaretMove(int start, int end) { }
 
     protected virtual void OnFocus() { }
+
     protected virtual void OnBlur() { }
 
     public event Action<MouseButton, Vector2>? DoMouseDown;
@@ -87,6 +100,7 @@ public class InputElement : Element {
         DoMouseDown?.Invoke(button, position);
         bool r = OnMouseDown(button, position);
         if (button == MouseButton.Left) PressDown(position);
+
         return r;
     }
 
@@ -113,6 +127,7 @@ public class InputElement : Element {
         DoTouchDown?.Invoke(id, position);
         bool r = OnTouchDown(id, position);
         if (id == 0) PressDown(position);
+
         return r;
     }
 

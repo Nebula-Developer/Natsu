@@ -39,7 +39,7 @@ public struct Rect : IEquatable<Rect> {
         float width = MathF.Min(X + Width, other.X + other.Width) - x;
         float height = MathF.Min(Y + Height, other.Y + other.Height) - y;
 
-        return new Rect(x, y, width, height);
+        return new(x, y, width, height);
     }
 
     public override bool Equals(object obj) => obj is Rect other && this == other;

@@ -3,16 +3,25 @@
   "isRoot": true,
   "tools": {
     "jetbrains.resharper.globaltools": {
-      "version": "2024.2.7",
+      "version": "2024.3.3",
       "commands": [
         "jb"
-      ]
+      ],
+      "rollForward": false
     },
     "regitlint": {
       "version": "6.3.13",
       "commands": [
         "regitlint"
-      ]
+      ],
+      "rollForward": false
+    },
+    "husky": {
+      "version": "0.7.2",
+      "commands": [
+        "husky"
+      ],
+      "rollForward": false
     }
   }
 }

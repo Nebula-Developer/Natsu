@@ -40,19 +40,19 @@ public partial class Element {
 
     private void updateParent(Element? value, bool parentCheck = true) {
         if (_parent != value && Parent?.HasChild(this) == true) Parent.Remove(this);
+
         if (parentCheck && value?.HasChild(this) == false) value.Add(this);
 
         _parent = value;
 
-        if (ContentParent?._app != null && ContentParent._app != App)
-            App = ContentParent.App;
+        if (ContentParent?._app != null && ContentParent._app != App) App = ContentParent.App;
 
         Invalidate(Invalidation.All);
     }
 
     public void Remove(params Element[] elements) {
         lock (_children) {
-            foreach (Element element in elements) {
+            foreach (Element? element in elements) {
                 _children.Remove(element);
                 if (element.ContentParent == this) element._parent = null;
             }
@@ -78,9 +78,10 @@ public partial class Element {
 
     public void Add(params Element[] elements) {
         lock (_children) {
-            foreach (Element element in elements) {
+            foreach (Element? element in elements) {
                 addChild(element);
                 if (element.ContentParent != this) element.updateParent(this, false);
+
                 if (!element.Loaded && Loaded) element.Load();
             }
 
@@ -100,10 +101,11 @@ public partial class Element {
     }
 
     public void ForChildren(Action<Element> action) {
-        lock (_children)
+        lock (_children) {
             for (int i = 0; i < _children.Count; i++)
                 if (_children[i] != null)
                     action(_children[i]);
+        }
     }
 
     public void SortChild(Element element) {
@@ -116,11 +118,12 @@ public partial class Element {
     public bool HasChild(Element element) => _children.Contains(element);
 
     protected virtual void OnChildrenChange() { }
+
     public event Action? DoChildrenChange;
 
     public void CildrenChanged() {
-        if (ChildRelativeSizeAxes != Axes.None)
-            Invalidate(Invalidation.Geometry);
+        if (ChildRelativeSizeAxes != Axes.None) Invalidate(Invalidation.Geometry);
+
         OnChildrenChange();
         DoChildrenChange?.Invoke();
     }

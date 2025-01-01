@@ -1,19 +1,21 @@
-﻿using Natsu;
-using Natsu.Graphics;
+﻿using Natsu.Graphics;
 using Natsu.Graphics.Elements;
+using Natsu.Mathematics;
 
 namespace NatsuApp;
 
 public class MyApp : Application {
     public RectElement Spinner = new() {
-        Size = new(100),
-        RoundedCorners = new(10),
+        Size = new Vector2(100),
+        RoundedCorners = new Vector2(10),
         Color = Colors.Red,
-        OffsetPosition = new(0.5f),
-        AnchorPosition = new(0.5f)
+        IsAntialias = true,
+        OffsetPosition = new Vector2(0.5f),
+        AnchorPosition = new Vector2(0.5f)
     };
 
-    protected override void OnLoad() => Add(Spinner);
-
-    protected override void OnUpdate() => Spinner.Rotation += (float)UpdateTime.DeltaTime * 100f;
+    protected override void OnLoad() {
+        Add(Spinner);
+        Spinner.RotateTo(360, 2, Ease.QuinticOut).Loop();
+    }
 }

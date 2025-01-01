@@ -6,6 +6,7 @@ namespace Natsu.Platforms.Desktop;
 
 public class DesktopWindowSettings {
     public GameWindowSettings GameWindowSettings { get; set; } = new() { UpdateFrequency = 300 };
+
     public NativeWindowSettings NativeWindowSettings { get; set; } = new() { Vsync = VSyncMode.On, MinimumClientSize = new Vector2i(75, 75) };
 
     public double UpdateFrequency {
@@ -25,6 +26,6 @@ public class DesktopWindowSettings {
 
     public Mathematics.Vector2i BaseSize {
         get => new(NativeWindowSettings.ClientSize.X, NativeWindowSettings.ClientSize.Y);
-        set => NativeWindowSettings.ClientSize = new Vector2i(value.X, value.Y);
+        set => NativeWindowSettings.ClientSize = new(value.X, value.Y);
     }
 }

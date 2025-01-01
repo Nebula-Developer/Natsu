@@ -1,9 +1,7 @@
 using System.Reflection;
-
 using Natsu.Graphics;
 using Natsu.Native;
 using Natsu.Utils;
-
 using SkiaSharp;
 
 namespace Natsu.Platforms.Skia;

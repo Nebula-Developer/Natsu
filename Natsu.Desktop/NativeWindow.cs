@@ -1,15 +1,11 @@
 using System.Runtime.InteropServices;
-
 using Natsu.Input;
 using Natsu.Mathematics;
 using Natsu.Native;
-
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
-
 using TextCopy;
-
 using static OpenTK.Windowing.Common.Input.MouseCursor;
 
 namespace Natsu.Platforms.Desktop;
@@ -22,28 +18,31 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
     public void Exit() => Close();
 
     public new string TextInput { get; set; } = "";
+
     public RangeI TextCaret {
         get => _textCaret;
         set => _textCaret = new Range(Math.Clamp(value.Start, 0, TextInput.Length), Math.Clamp(value.End, 0, TextInput.Length));
     }
 
     public new CursorStyle Cursor {
-        get => base.Cursor.Shape switch {
-            StandardShape.Arrow => CursorStyle.Pointer,
-            StandardShape.Crosshair => CursorStyle.Crosshair,
-            StandardShape.HResize => CursorStyle.ResizeHorizontal,
-            StandardShape.VResize => CursorStyle.ResizeVertical,
-            StandardShape.IBeam => CursorStyle.Text,
-            _ => CursorStyle.Default
-        };
-        set => TargetCursor = value switch {
-            CursorStyle.Pointer => Hand,
-            CursorStyle.Crosshair => Crosshair,
-            CursorStyle.ResizeHorizontal => HResize,
-            CursorStyle.ResizeVertical => VResize,
-            CursorStyle.Text => IBeam,
-            _ => Default
-        };
+        get =>
+            base.Cursor.Shape switch {
+                StandardShape.Arrow => CursorStyle.Pointer,
+                StandardShape.Crosshair => CursorStyle.Crosshair,
+                StandardShape.HResize => CursorStyle.ResizeHorizontal,
+                StandardShape.VResize => CursorStyle.ResizeVertical,
+                StandardShape.IBeam => CursorStyle.Text,
+                _ => CursorStyle.Default
+            };
+        set =>
+            TargetCursor = value switch {
+                CursorStyle.Pointer => Hand,
+                CursorStyle.Crosshair => Crosshair,
+                CursorStyle.ResizeHorizontal => HResize,
+                CursorStyle.ResizeVertical => VResize,
+                CursorStyle.Text => IBeam,
+                _ => Default
+            };
     }
 
     public CursorMode CursorMode {
@@ -52,7 +51,8 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
     }
 
     public new Vector2 Size => new(FramebufferSize.X, FramebufferSize.Y);
-    public Vector2 DisplayScale => TryGetCurrentMonitorScale(out float x, out float y) ? new Vector2(x, y) : Vector2.One;
+
+    public Vector2 DisplayScale => TryGetCurrentMonitorScale(out float x, out float y) ? new(x, y) : Vector2.One;
 
     public new bool VSync {
         get => base.VSync == VSyncMode.On;
@@ -93,6 +93,7 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
     public string OSName { get; } = RuntimeInformation.OSDescription;
 
     protected override void OnLoad() => Bridge.Load();
+
     protected override void OnResize(ResizeEventArgs e) => Bridge.Resize(e.Width, e.Height);
 
     protected override void OnUpdateFrame(FrameEventArgs e) {
@@ -101,9 +102,11 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
     }
 
     protected override void OnRenderFrame(FrameEventArgs e) => Bridge.Render();
+
     protected override void OnUnload() => Bridge.Dispose();
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e) => Bridge.KeyDown(e);
+
     protected override void OnKeyUp(KeyboardKeyEventArgs e) => Bridge.KeyUp(e);
 
     protected override void OnTextInput(TextInputEventArgs e) {
@@ -112,18 +115,21 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
             int start = Math.Min(TextCaret.Start, TextCaret.End);
             int end = Math.Max(TextCaret.Start, TextCaret.End);
             TextInput = TextInput.Remove(start, end - start);
-            TextCaret = new RangeI(start, start);
+            TextCaret = new(start, start);
         }
 
         TextInput = TextInput.Insert(TextCaret.Start, e.AsString);
         int pos = TextCaret.Start;
-        TextCaret = new RangeI(TextCaret.Start + e.AsString.Length, TextCaret.Start + e.AsString.Length);
+        TextCaret = new(TextCaret.Start + e.AsString.Length, TextCaret.Start + e.AsString.Length);
 
         Bridge.TextInput(e.AsString, pos, changed);
     }
 
     protected override void OnMouseDown(MouseButtonEventArgs e) => Bridge.MouseDown(e);
+
     protected override void OnMouseUp(MouseButtonEventArgs e) => Bridge.MouseUp(e);
+
     protected override void OnMouseMove(MouseMoveEventArgs e) => Bridge.MouseMove(e);
+
     protected override void OnMouseWheel(MouseWheelEventArgs e) => Bridge.MouseWheel(e);
 }

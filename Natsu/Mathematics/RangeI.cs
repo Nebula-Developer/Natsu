@@ -10,6 +10,7 @@ public struct RangeI {
     }
 
     public static implicit operator RangeI(Range range) => new(range.Start.Value, range.End.Value);
+
     public static implicit operator Range(RangeI range) => new(range.Start, range.End);
 
     public int Length => End - Start;

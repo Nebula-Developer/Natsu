@@ -27,8 +27,7 @@ public partial class Element : IDisposable {
     public int Index {
         get => _index;
         set {
-            if (_index == value)
-                return;
+            if (_index == value) return;
 
             _index = value;
             ContentParent?.SortChild(this);
@@ -44,13 +43,11 @@ public partial class Element : IDisposable {
         OnDispose();
         DoDispose?.Invoke();
         ContentParent?.Remove(this);
-        if (DisposeChildren)
-            Clear(true);
+        if (DisposeChildren) Clear(true);
     }
 
     public bool Load() {
-        if (Loaded)
-            return false;
+        if (Loaded) return false;
 
         OnLoad();
         DoLoad?.Invoke();
@@ -63,16 +60,15 @@ public partial class Element : IDisposable {
 
     public virtual void ClipCanvas(ICanvas canvas) {
         if (ClipRadius == Vector2.Zero) {
-            canvas.ClipRect(new Rect(0, 0, MathF.Round(DrawSize.X), MathF.Round(DrawSize.Y)), ClipDifference, ClipAntiAlias);
+            canvas.ClipRect(new(0, 0, MathF.Round(DrawSize.X), MathF.Round(DrawSize.Y)), ClipDifference, ClipAntiAlias);
             return;
         }
 
-        canvas.ClipRoundRect(new Rect(0, 0, MathF.Round(DrawSize.X), MathF.Round(DrawSize.Y)), ClipRadius, ClipDifference, ClipAntiAlias);
+        canvas.ClipRoundRect(new(0, 0, MathF.Round(DrawSize.X), MathF.Round(DrawSize.Y)), ClipRadius, ClipDifference, ClipAntiAlias);
     }
 
     public void Render(ICanvas canvas) {
-        if (!Visible)
-            return;
+        if (!Visible) return;
 
         canvas.SetMatrix(Matrix);
         int save = canvas.Save();
@@ -89,8 +85,7 @@ public partial class Element : IDisposable {
     }
 
     public void Update() {
-        if (!Active)
-            return;
+        if (!Active) return;
 
         UpdateTransformSequences();
 
@@ -100,12 +95,15 @@ public partial class Element : IDisposable {
     }
 
     protected virtual void OnLoad() { }
+
     protected virtual void OnDispose() { }
 
     protected virtual void OnUpdate() { }
+
     protected virtual void OnUpdateChildren() => ForChildren(child => child.Update());
 
     protected virtual void OnRender(ICanvas canvas) { }
+
     protected virtual void OnRenderChildren(ICanvas canvas) => ForChildren(child => child.Render(canvas));
 
     protected virtual void OnAppChange(Application? old) { }
@@ -119,51 +117,41 @@ public partial class Element : IDisposable {
     public event Action<Application>? DoAppChange;
 
     #region Invalidation
-
     public InvalidationState InvalidationState { get; } = new();
     public Invalidation Invalidated => InvalidationState.State;
 
     public virtual bool OnInvalidate(Invalidation invalidation, InvalidationPropagation propagation) {
-        if (invalidation.HasFlag(Invalidation.DrawSize) && Parent?.ChildRelativeSizeAxes != Axes.None)
-            InvalidateParent(Invalidation.DrawSize);
-        
+        if (invalidation.HasFlag(Invalidation.DrawSize) && Parent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(Invalidation.DrawSize);
+
         return false;
     }
-    
+
     public virtual bool OnValidate(Invalidation invalidation, InvalidationPropagation propagation) => false;
 
     public bool Invalidate(Invalidation invalidation, InvalidationPropagation propagation = InvalidationPropagation.None) {
-        if (invalidation == Invalidation.None)
-            return false;
+        if (invalidation == Invalidation.None) return false;
 
-        if (OnInvalidate(invalidation, propagation))
-            return true;
+        if (OnInvalidate(invalidation, propagation)) return true;
 
         InvalidationState.Invalidate(invalidation);
 
-        if (propagation.HasFlag(InvalidationPropagation.Parent))
-            InvalidateParent(invalidation, true);
+        if (propagation.HasFlag(InvalidationPropagation.Parent)) InvalidateParent(invalidation, true);
 
-        if (propagation.HasFlag(InvalidationPropagation.Children))
-            InvalidateChildren(invalidation, true);
+        if (propagation.HasFlag(InvalidationPropagation.Children)) InvalidateChildren(invalidation, true);
 
         return true;
     }
 
     public bool Validate(Invalidation invalidation, InvalidationPropagation propagation = InvalidationPropagation.None) {
-        if (invalidation == Invalidation.None)
-            return false;
+        if (invalidation == Invalidation.None) return false;
 
-        if (OnValidate(invalidation, propagation))
-            return true;
+        if (OnValidate(invalidation, propagation)) return true;
 
         InvalidationState.Validate(invalidation);
 
-        if (propagation.HasFlag(InvalidationPropagation.Parent))
-            ValidateParent(invalidation, true);
+        if (propagation.HasFlag(InvalidationPropagation.Parent)) ValidateParent(invalidation, true);
 
-        if (propagation.HasFlag(InvalidationPropagation.Children))
-            ValidateChildren(invalidation, true);
+        if (propagation.HasFlag(InvalidationPropagation.Children)) ValidateChildren(invalidation, true);
 
         return true;
     }
@@ -183,14 +171,12 @@ public partial class Element : IDisposable {
         ForChildren(child => result |= child.Validate(invalidation, propagate ? InvalidationPropagation.Children : InvalidationPropagation.None));
         return result;
     }
-
     #endregion
 
 #nullable disable
     public Application App {
         get {
-            if (_app != null)
-                return _app;
+            if (_app != null) return _app;
 
             if (ContentParent != null) {
                 App = ContentParent.App;
@@ -203,8 +189,7 @@ public partial class Element : IDisposable {
     }
 
     private bool setApp(Application app, bool constructInputLists = false) {
-        if (_app == app)
-            return false;
+        if (_app == app) return false;
 
         _app?.RemoveInputCandidate(this);
 

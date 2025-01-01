@@ -13,9 +13,7 @@ public partial class Application : IDisposable {
     public IRenderer Renderer;
     public ResourceLoader ResourceLoader;
 
-    public Application() {
-        Root = new RootElement(this);
-    }
+    public Application() => Root = new(this);
 
     public ICanvas Canvas => Renderer.Canvas;
 
@@ -39,9 +37,13 @@ public partial class Application : IDisposable {
     }
 
     protected virtual void OnLoad() { }
+
     protected virtual void OnDispose() { }
+
     protected virtual void OnUpdate() { }
+
     protected virtual void OnRender() { }
+
     protected virtual void OnResize(Vector2i size) { }
 
     public event Action DoLoad;
@@ -49,7 +51,6 @@ public partial class Application : IDisposable {
     public event Action DoUpdate;
     public event Action DoRender;
     public event Action<Vector2i> DoResize;
-
 
     public void Load() {
         Root.Load();
@@ -63,7 +64,7 @@ public partial class Application : IDisposable {
         Root.Update();
         OnUpdate();
         DoUpdate?.Invoke();
-        
+
         MouseMove();
     }
 
@@ -89,6 +90,7 @@ public partial class Application : IDisposable {
     }
 
     public void Add(params Element[] elements) => Root.Add(elements);
+
     public void Remove(params Element[] elements) => Root.Remove(elements);
 
     public static implicit operator Element(Application app) => app.Root;

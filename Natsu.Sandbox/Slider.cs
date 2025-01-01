@@ -7,59 +7,54 @@ namespace Natsu.Sandbox;
 
 public class Slider : Element {
     public RectElement Background, Bar, Thumb;
+
     public Element ThumbContainer;
     public InputElement ThumbInput;
 
     public Slider() {
         Children = [
-            Background = new RectElement {
+            Background = new() {
                 ContentParent = this,
                 RelativeSizeAxes = Axes.Both,
-                Paint = new Paint {
-                    Color = new Color(100, 110, 130),
-                    IsAntialias = true,
-                    FilterQuality = FilterQuality.Medium
-                },
-                RoundedCorners = new Vector2(10),
+                Color = new(100, 110, 130),
+                IsAntialias = true,
+                FilterQuality = FilterQuality.Medium,
+                RoundedCorners = new(10),
                 Content = [
-                    Bar = new RectElement {
+                    Bar = new() {
                         ContentParent = this,
                         RelativeSizeAxes = Axes.Both,
-                        Paint = new Paint {
-                            Color = new Color(170, 190, 200),
-                            IsAntialias = true,
-                            FilterQuality = FilterQuality.Medium
-                        },
-                        RoundedCorners = new Vector2(7.5f),
-                        Margin = new Vector2(5),
+                        Color = new(170, 190, 200),
+                        IsAntialias = true,
+                        FilterQuality = FilterQuality.Medium,
+                        RoundedCorners = new(7.5f),
+                        Margin = new(5),
                         Content = [
-                            ThumbContainer = new Element {
-                                Margin = new Vector2(5, 0),
+                            ThumbContainer = new() {
+                                Margin = new(5, 0),
                                 RelativeSizeAxes = Axes.Both,
                                 Content = [
-                                    Thumb = new RectElement {
+                                    Thumb = new() {
                                         ContentParent = this,
-                                        Size = new Vector2(30),
+                                        Size = new(30),
                                         RelativeSizeAxes = Axes.Y,
-                                        Margin = new Vector2(0, 5),
-                                        Paint = new Paint {
-                                            Color = new Color(200, 230, 255),
-                                            IsAntialias = true,
-                                            FilterQuality = FilterQuality.Medium
-                                        },
-                                        RoundedCorners = new Vector2(3),
-                                        AnchorPosition = new Vector2(1f, 0.5f),
-                                        OffsetPosition = new Vector2(1f, 0.5f)
+                                        Margin = new(0, 5),
+                                        Color = new(200, 230, 255),
+                                        IsAntialias = true,
+                                        FilterQuality = FilterQuality.Medium,
+                                        RoundedCorners = new(3),
+                                        AnchorPosition = new(1f, 0.5f),
+                                        OffsetPosition = new(1f, 0.5f)
                                     }
                                 ]
                             }
                         ]
                     }
                 ],
-                AnchorPosition = new Vector2(0.5f),
-                OffsetPosition = new Vector2(0.5f)
+                AnchorPosition = new(0.5f),
+                OffsetPosition = new(0.5f)
             },
-            ThumbInput = new InputElement {
+            ThumbInput = new() {
                 ContentParent = this,
                 RelativeSizeAxes = Axes.Both,
                 GrabFallback = true,
@@ -78,8 +73,8 @@ public class Slider : Element {
             value = (coord - 25) / (DrawSize.X - Thumb.DrawSize.X - 20);
             value = Math.Clamp(value, 0, 1);
 
-            Thumb.AnchorTo(new Vector2(value, 0.5f), 0.3f, Ease.ExponentialOut);
-            Thumb.OffsetTo(new Vector2(value, 0.5f), 0.3f, Ease.ExponentialOut);
+            Thumb.AnchorTo(new(value, 0.5f), 0.3f, Ease.ExponentialOut);
+            Thumb.OffsetTo(new(value, 0.5f), 0.3f, Ease.ExponentialOut);
 
             updateRoot();
         }
@@ -87,55 +82,51 @@ public class Slider : Element {
         void updateRoot(bool force = false) {
             if (force) {
                 App.Root.StopTransformSequences(nameof(App.Root.Scale));
-                App.Root.Scale = new Vector2(1 + value * 5);
+                App.Root.Scale = new(1 + value * 5);
                 return;
             }
 
             App.Root.StopTransformSequences(nameof(App.Root.Scale));
-            App.Root.ScaleTo(new Vector2(1 + value * 5), 0.5f, Ease.ExponentialOut);
+            App.Root.ScaleTo(new(1 + value * 5), 0.5f, Ease.ExponentialOut);
         }
 
-        DoAppChange += old => {
-            App.DoResize += _ => {
-                updateRoot(true);
-            };
-        };
+        DoAppChange += old => { App.DoResize += _ => { updateRoot(true); }; };
 
         void press(Vector2 position) {
             pressed = true;
             updatePos(position);
 
             Thumb.StopTransformSequences(nameof(Thumb.Scale), nameof(Thumb.Paint.Color));
-            Thumb.ScaleTo(new Vector2(0.9f), 0.2f, Ease.ExponentialOut);
+            Thumb.ScaleTo(new(0.9f), 0.2f, Ease.ExponentialOut);
             Thumb.ColorTo(Colors.White, 0.2f, Ease.ExponentialOut);
 
             Background.StopTransformSequences();
-            Background.ScaleTo(new Vector2(1.02f), 0.2f, Ease.ExponentialOut);
+            Background.ScaleTo(new(1.02f), 0.2f, Ease.ExponentialOut);
             Background.ColorTo(Colors.White, 0.2f, Ease.ExponentialOut);
 
             Bar.StopTransformSequences();
-            Bar.MarginTo(new Vector2(3), 0.2f, Ease.ExponentialOut);
+            Bar.MarginTo(new(3), 0.2f, Ease.ExponentialOut);
 
             ThumbContainer.StopTransformSequences();
-            ThumbContainer.MarginTo(new Vector2(10, 0), 0.2f, Ease.ExponentialOut);
+            ThumbContainer.MarginTo(new(10, 0), 0.2f, Ease.ExponentialOut);
         }
 
         void release(Vector2 position) {
             pressed = false;
 
             Thumb.StopTransformSequences(nameof(Thumb.Scale), nameof(Thumb.Paint.Color));
-            Thumb.ScaleTo(new Vector2(1), 0.2f, Ease.ExponentialOut);
-            Thumb.ColorTo(new Color(200, 230, 255), 0.2f, Ease.ExponentialOut);
+            Thumb.ScaleTo(new(1), 0.2f, Ease.ExponentialOut);
+            Thumb.ColorTo(new(200, 230, 255), 0.2f, Ease.ExponentialOut);
 
             Background.StopTransformSequences();
-            Background.ScaleTo(new Vector2(1), 0.2f, Ease.ExponentialOut);
-            Background.ColorTo(new Color(100, 110, 130), 0.2f, Ease.ExponentialOut);
+            Background.ScaleTo(new(1), 0.2f, Ease.ExponentialOut);
+            Background.ColorTo(new(100, 110, 130), 0.2f, Ease.ExponentialOut);
 
             Bar.StopTransformSequences();
-            Bar.MarginTo(new Vector2(5), 0.2f, Ease.ExponentialOut);
+            Bar.MarginTo(new(5), 0.2f, Ease.ExponentialOut);
 
             ThumbContainer.StopTransformSequences();
-            ThumbContainer.MarginTo(new Vector2(5, 0), 0.2f, Ease.ExponentialOut);
+            ThumbContainer.MarginTo(new(5, 0), 0.2f, Ease.ExponentialOut);
         }
 
         ThumbInput.DoPress += position => press(position);

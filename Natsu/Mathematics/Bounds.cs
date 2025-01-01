@@ -8,8 +8,8 @@ public struct Bounds : IEquatable<Bounds> {
         BottomLeft = bottomLeft;
         Points = new[] { TopLeft, TopRight, BottomRight, BottomLeft };
 
-        Min = new Vector2(MathF.Min(TopLeft.X, MathF.Min(TopRight.X, MathF.Min(BottomRight.X, BottomLeft.X))), MathF.Min(TopLeft.Y, MathF.Min(TopRight.Y, MathF.Min(BottomRight.Y, BottomLeft.Y))));
-        Max = new Vector2(MathF.Max(TopLeft.X, MathF.Max(TopRight.X, MathF.Max(BottomRight.X, BottomLeft.X))), MathF.Max(TopLeft.Y, MathF.Max(TopRight.Y, MathF.Max(BottomRight.Y, BottomLeft.Y))));
+        Min = new(MathF.Min(TopLeft.X, MathF.Min(TopRight.X, MathF.Min(BottomRight.X, BottomLeft.X))), MathF.Min(TopLeft.Y, MathF.Min(TopRight.Y, MathF.Min(BottomRight.Y, BottomLeft.Y))));
+        Max = new(MathF.Max(TopLeft.X, MathF.Max(TopRight.X, MathF.Max(BottomRight.X, BottomLeft.X))), MathF.Max(TopLeft.Y, MathF.Max(TopRight.Y, MathF.Max(BottomRight.Y, BottomLeft.Y))));
     }
 
     public Vector2 TopLeft { get; }
@@ -52,7 +52,7 @@ public struct Bounds : IEquatable<Bounds> {
         Vector2 bottomRight = new(MathF.Max(BottomRight.X, bounds.BottomRight.X), MathF.Max(BottomRight.Y, bounds.BottomRight.Y));
         Vector2 bottomLeft = new(MathF.Min(BottomLeft.X, bounds.BottomLeft.X), MathF.Max(BottomLeft.Y, bounds.BottomLeft.Y));
 
-        return new Bounds(topLeft, topRight, bottomRight, bottomLeft);
+        return new(topLeft, topRight, bottomRight, bottomLeft);
     }
 
     public override bool Equals(object? obj) => obj is Bounds other && Equals(other);

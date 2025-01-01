@@ -41,6 +41,7 @@ public static class Easings {
 
     // Quadratic easing
     public static double QuadraticIn(double t) => t * t;
+
     public static double QuadraticOut(double t) => t * (2 - t);
 
     public static double QuadraticInOut(double t) {
@@ -96,7 +97,9 @@ public static class Easings {
 
     // Sine easing
     public static double SineIn(double t) => 1 - Math.Cos(t * Math.PI / 2);
+
     public static double SineOut(double t) => Math.Sin(t * Math.PI / 2);
+
     public static double SineInOut(double t) => 0.5 * (1 - Math.Cos(Math.PI * t));
 
     // Circular easing
@@ -116,10 +119,12 @@ public static class Easings {
 
     // Exponential easing
     public static double ExponentialIn(double t) => t == 0 ? 0 : Math.Pow(2, 10 * (t - 1));
+
     public static double ExponentialOut(double t) => t == 1 ? 1 : 1 - Math.Pow(2, -10 * t);
 
     public static double ExponentialInOut(double t) {
         if (t == 0 || t == 1) return t;
+
         if (t < 0.5) return 0.5 * Math.Pow(2, 20 * t - 10);
 
         return 0.5 * (2 - Math.Pow(2, -20 * t + 10));
@@ -140,6 +145,7 @@ public static class Easings {
 
     public static double ElasticInOut(double t) {
         if (t == 0 || t == 1) return t;
+
         if (t < 0.5) return -0.5 * Math.Pow(2, 20 * t - 10) * Math.Sin((20 * t - 11.125) * (2 * Math.PI / 4.5));
 
         return 0.5 * Math.Pow(2, -20 * t + 10) * Math.Sin((20 * t - 11.125) * (2 * Math.PI / 4.5)) + 1;
@@ -168,7 +174,9 @@ public static class Easings {
     // Bounce easing
     public static double BounceOut(double t) {
         if (t < 1 / 2.75) return 7.5625 * t * t;
+
         if (t < 2 / 2.75) return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+
         if (t < 2.5 / 2.75) return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
 
         return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
@@ -182,35 +190,36 @@ public static class Easings {
         return 0.5 * BounceOut(t * 2 - 1) + 0.5;
     }
 
-    public static Easing FromEase(Ease ease) => ease switch {
-        Ease.Linear => Linear,
-        Ease.QuadraticIn => QuadraticIn,
-        Ease.QuadraticOut => QuadraticOut,
-        Ease.QuadraticInOut => QuadraticInOut,
-        Ease.CubicIn => CubicIn,
-        Ease.CubicOut => CubicOut,
-        Ease.CubicInOut => CubicInOut,
-        Ease.QuarticIn => QuarticIn,
-        Ease.QuarticOut => QuarticOut,
-        Ease.QuarticInOut => QuarticInOut,
-        Ease.QuinticIn => QuinticIn,
-        Ease.QuinticOut => QuinticOut,
-        Ease.QuinticInOut => QuinticInOut,
-        Ease.SineIn => SineIn,
-        Ease.SineOut => SineOut,
-        Ease.SineInOut => SineInOut,
-        Ease.CircularIn => CircularIn,
-        Ease.CircularOut => CircularOut,
-        Ease.CircularInOut => CircularInOut,
-        Ease.ExponentialIn => ExponentialIn,
-        Ease.ExponentialOut => ExponentialOut,
-        Ease.ExponentialInOut => ExponentialInOut,
-        Ease.ElasticIn => ElasticIn,
-        Ease.ElasticOut => ElasticOut,
-        Ease.ElasticInOut => ElasticInOut,
-        Ease.BackIn => BackIn,
-        Ease.BackOut => BackOut,
-        Ease.BackInOut => BackInOut,
-        _ => Linear
-    };
+    public static Easing FromEase(Ease ease) =>
+        ease switch {
+            Ease.Linear => Linear,
+            Ease.QuadraticIn => QuadraticIn,
+            Ease.QuadraticOut => QuadraticOut,
+            Ease.QuadraticInOut => QuadraticInOut,
+            Ease.CubicIn => CubicIn,
+            Ease.CubicOut => CubicOut,
+            Ease.CubicInOut => CubicInOut,
+            Ease.QuarticIn => QuarticIn,
+            Ease.QuarticOut => QuarticOut,
+            Ease.QuarticInOut => QuarticInOut,
+            Ease.QuinticIn => QuinticIn,
+            Ease.QuinticOut => QuinticOut,
+            Ease.QuinticInOut => QuinticInOut,
+            Ease.SineIn => SineIn,
+            Ease.SineOut => SineOut,
+            Ease.SineInOut => SineInOut,
+            Ease.CircularIn => CircularIn,
+            Ease.CircularOut => CircularOut,
+            Ease.CircularInOut => CircularInOut,
+            Ease.ExponentialIn => ExponentialIn,
+            Ease.ExponentialOut => ExponentialOut,
+            Ease.ExponentialInOut => ExponentialInOut,
+            Ease.ElasticIn => ElasticIn,
+            Ease.ElasticOut => ElasticOut,
+            Ease.ElasticInOut => ElasticInOut,
+            Ease.BackIn => BackIn,
+            Ease.BackOut => BackOut,
+            Ease.BackInOut => BackInOut,
+            _ => Linear
+        };
 }

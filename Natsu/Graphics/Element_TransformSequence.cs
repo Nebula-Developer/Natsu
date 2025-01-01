@@ -7,7 +7,7 @@ public partial class Element {
     public List<TransformSequence> TransformSequences { get; } = new();
 
     public void UpdateTransformSequences() {
-        lock (TransformSequences)
+        lock (TransformSequences) {
             for (int i = 0; i < TransformSequences.Count; i++) {
                 TransformSequence? sequence = TransformSequences[i];
                 if (sequence == null) continue;
@@ -23,15 +23,17 @@ public partial class Element {
                 else
                     sequence.Update();
             }
+        }
     }
 
     public void AddTransformSequence(TransformSequence sequence) {
-        lock (TransformSequences)
+        lock (TransformSequences) {
             TransformSequences.Add(sequence);
+        }
     }
 
     public void StopTransformSequences() {
-        lock (TransformSequences)
+        lock (TransformSequences) {
             for (int i = 0; i < TransformSequences.Count; i++) {
                 TransformSequence? sequence = TransformSequences[i];
                 if (sequence == null) continue;
@@ -39,10 +41,11 @@ public partial class Element {
                 TransformSequences.RemoveAt(i);
                 i--;
             }
+        }
     }
 
     public void StopTransformSequences(params string[] properties) {
-        lock (TransformSequences)
+        lock (TransformSequences) {
             for (int i = 0; i < TransformSequences.Count; i++) {
                 TransformSequence? sequence = TransformSequences[i];
                 if (sequence == null || !properties.Contains(sequence.Name)) continue;
@@ -50,6 +53,7 @@ public partial class Element {
                 TransformSequences.RemoveAt(i);
                 i--;
             }
+        }
     }
 }
 
@@ -158,24 +162,22 @@ public static class ElementTransform {
     }
 
     public static TransformSequence<T> ColorTo<T>(this T element, Color color, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement {
-        Color currentColor = element.Paint.Color;
+        Color? currentColor = element.Paint.Color;
         TransformSequence<T> seq = element.TransformTo("Color", t => element.Paint.Color = Color.Lerp(currentColor, color, (float)t), duration, ease);
         seq.FutureData["Color"] = color;
         return seq;
     }
 
     public static TransformSequence<T> ColorTo<T>(this TransformSequence<T> sequence, Color color, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement {
-        Color currentColor = sequence.FutureData.ContainsKey("Color") ? (Color)sequence.FutureData["Color"] : sequence.Target.Paint.Color;
+        Color? currentColor = sequence.FutureData.ContainsKey("Color") ? (Color)sequence.FutureData["Color"] : sequence.Target.Paint.Color;
         sequence.FutureData["Color"] = color;
-        return sequence.TransformTo("Color", t => {
-            sequence.Target.Paint.Color = Color.Lerp(currentColor, color, (float)t);
-        }, duration, ease);
+        return sequence.TransformTo("Color", t => { sequence.Target.Paint.Color = Color.Lerp(currentColor, color, (float)t); }, duration, ease);
     }
 
     public static TransformSequence<T> AlphaTo<T>(this T element, float alpha, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement {
         float currentAlpha = element.Paint.Color.A;
         TransformSequence<T> seq = element.TransformTo("Alpha", t => {
-            Color color = element.Paint.Color;
+            Color? color = element.Paint.Color;
             color.A = (byte)Easings.Lerp(currentAlpha, alpha, (float)t);
             element.Paint.Color = color;
         }, duration, ease);
@@ -187,7 +189,7 @@ public static class ElementTransform {
         float currentAlpha = sequence.FutureData.ContainsKey("Alpha") ? (float)sequence.FutureData["Alpha"] : sequence.Target.Paint.Color.A;
         sequence.FutureData["Alpha"] = alpha;
         return sequence.TransformTo("Alpha", t => {
-            Color color = sequence.Target.Paint.Color;
+            Color? color = sequence.Target.Paint.Color;
             color.A = (byte)Easings.Lerp(currentAlpha, alpha, (float)t);
             sequence.Target.Paint.Color = color;
         }, duration, ease);

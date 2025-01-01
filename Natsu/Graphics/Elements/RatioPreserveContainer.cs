@@ -10,10 +10,9 @@ public enum RatioPreserveMode {
 }
 
 public class RatioPreserveContainer : Element {
-
     public readonly Element ContentWrapper = new() {
-        AnchorPosition = new Vector2(0.5f),
-        OffsetPosition = new Vector2(0.5f),
+        AnchorPosition = new(0.5f),
+        OffsetPosition = new(0.5f),
         Clip = true
     };
 
@@ -53,22 +52,24 @@ public class RatioPreserveContainer : Element {
 
         switch (Mode) {
             case RatioPreserveMode.Width:
-                ContentWrapper.Size = new Vector2(size.X, size.X / Ratio);
+                ContentWrapper.Size = new(size.X, size.X / Ratio);
                 break;
             case RatioPreserveMode.Height:
-                ContentWrapper.Size = new Vector2(size.Y * Ratio, size.Y);
+                ContentWrapper.Size = new(size.Y * Ratio, size.Y);
                 break;
             case RatioPreserveMode.Fit:
                 if (ratio > Ratio)
-                    ContentWrapper.Size = new Vector2(size.Y * Ratio, size.Y);
+                    ContentWrapper.Size = new(size.Y * Ratio, size.Y);
                 else
-                    ContentWrapper.Size = new Vector2(size.X, size.X / Ratio);
+                    ContentWrapper.Size = new(size.X, size.X / Ratio);
+
                 break;
             case RatioPreserveMode.Cover:
                 if (ratio > Ratio)
-                    ContentWrapper.Size = new Vector2(size.X, size.X / Ratio);
+                    ContentWrapper.Size = new(size.X, size.X / Ratio);
                 else
-                    ContentWrapper.Size = new Vector2(size.Y * Ratio, size.Y);
+                    ContentWrapper.Size = new(size.Y * Ratio, size.Y);
+
                 break;
         }
     }

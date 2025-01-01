@@ -3,12 +3,9 @@ using SkiaSharp;
 namespace Natsu.Mathematics;
 
 public class VectorPath {
-
     public VectorPath() { }
 
-    public VectorPath(SKPath path) {
-        SkiaPath = path;
-    }
+    public VectorPath(SKPath path) => SkiaPath = path;
 
     public SKPath SkiaPath { get; } = new();
 
@@ -37,6 +34,8 @@ public class VectorPath {
     public void AddPath(VectorPath path) => SkiaPath.AddPath(path.SkiaPath);
 
     public void AddPoly(Vector2[] points, bool close) => SkiaPath.AddPoly(points.Select(p => new SKPoint(p.X, p.Y)).ToArray(), close);
+
     public void Clear() => SkiaPath.Rewind();
+
     public void Reset() => SkiaPath.Reset();
 }

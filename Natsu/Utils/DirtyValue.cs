@@ -8,7 +8,6 @@ public class DirtyValue<T> where T : class {
         IsDirty = true;
         if (Value is IDisposable disposable) disposable.Dispose();
 
-
         Value = null;
     }
 

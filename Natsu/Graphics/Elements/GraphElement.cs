@@ -8,9 +8,7 @@ public class GraphElement : PaintableElement {
 
     public GraphElement() { }
 
-    public GraphElement(VectorPath path) {
-        Path = path;
-    }
+    public GraphElement(VectorPath path) => Path = path;
 
     protected override void OnRender(ICanvas canvas) {
         if (Path == null) return;

@@ -3,7 +3,6 @@ using SkiaSharp;
 namespace Natsu.Mathematics;
 
 public class RotationScaleMatrix {
-
     public RotationScaleMatrix(float rotation, float scale, Vector2 translation) {
         Cos = MathF.Cos(rotation) * scale;
         Sin = MathF.Sin(rotation) * scale;

@@ -1,6 +1,5 @@
 using Natsu.Graphics;
 using Natsu.Mathematics;
-
 using SkiaSharp;
 
 namespace Natsu.Platforms.Skia;
@@ -14,6 +13,6 @@ public record SkiaFont(SKTypeface Typeface) : IFont {
         };
 
         float w = paint.MeasureText(text);
-        return new Vector2(w, size);
+        return new(w, size);
     }
 }

@@ -49,7 +49,7 @@ public struct Vector3 : IEquatable<Vector3> {
 
     public Vector3 Normalize() {
         float length = Magnitude;
-        return length > 0 ? new Vector3(X / length, Y / length, Z / length) : new Vector3(0, 0, 0);
+        return length > 0 ? new(X / length, Y / length, Z / length) : new Vector3(0, 0, 0);
     }
 
     public static float Dot(Vector3 a, Vector3 b) => a.X * b.X + a.Y * b.Y + a.Z * b.Z;

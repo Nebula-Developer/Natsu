@@ -1,5 +1,4 @@
 using Natsu.Graphics;
-
 using SkiaSharp;
 
 namespace Natsu.Platforms.Skia;

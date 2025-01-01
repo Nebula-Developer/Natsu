@@ -1,7 +1,6 @@
 #nullable disable
 
 using Natsu.Mathematics;
-
 using SkiaSharp;
 
 namespace Natsu.Graphics;
@@ -20,9 +19,7 @@ public class Color {
 
     public Color(float r, float g, float b, float a) : this((byte)r, (byte)g, (byte)b, (byte)a) { }
 
-    public Color() {
-        (R, G, B, A) = (0, 0, 0, 255);
-    }
+    public Color() => (R, G, B, A) = (0, 0, 0, 255);
 
     public virtual byte R { get; set; }
     public virtual byte G { get; set; }
@@ -60,4 +57,12 @@ public class Color {
     public static implicit operator SKColor(Color color) => ToSKColor(color);
 
     public static implicit operator Color(SKColor color) => FromSKColor(color);
+
+    public Color Become(Color b) {
+        R = b.R;
+        G = b.G;
+        B = b.B;
+        A = b.A;
+        return this;
+    }
 }

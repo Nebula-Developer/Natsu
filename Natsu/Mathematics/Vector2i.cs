@@ -46,15 +46,17 @@ public struct Vector2i : IEquatable<Vector2i> {
     public static Vector2i Lerp(Vector2i a, Vector2i b, float t) {
         int x = (int)(a.X + (b.X - a.X) * t);
         int y = (int)(a.Y + (b.Y - a.Y) * t);
-        return new Vector2i(x, y);
+        return new(x, y);
     }
 
     public Vector2i Lerp(Vector2i other, float t) => Lerp(this, other, t);
 
     public Vector2i Max(Vector2i other) => new(Math.Max(X, other.X), Math.Max(Y, other.Y));
+
     public Vector2i Min(Vector2i other) => new(Math.Min(X, other.X), Math.Min(Y, other.Y));
 
     public static Vector2i Max(Vector2i a, Vector2i b) => a.Max(b);
+
     public static Vector2i Min(Vector2i a, Vector2i b) => a.Min(b);
 
     public static int Distance(Vector2i a, Vector2i b) => (int)Math.Sqrt(Math.Pow(b.X - a.X, 2) + Math.Pow(b.Y - a.Y, 2));
@@ -63,7 +65,7 @@ public struct Vector2i : IEquatable<Vector2i> {
 
     public Vector2i Normalize() {
         int length = Magnitude;
-        return length > 0 ? new Vector2i(X / length, Y / length) : new Vector2i(0, 0);
+        return length > 0 ? new(X / length, Y / length) : new Vector2i(0, 0);
     }
 
     public static int Dot(Vector2i a, Vector2i b) => a.X * b.X + a.Y * b.Y;

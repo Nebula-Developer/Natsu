@@ -38,9 +38,9 @@ public struct SkiaMatrix {
     public static implicit operator SkiaMatrix(SKMatrix matrix) => new() { Matrix = matrix };
 
     public Bounds MapBounds(Bounds bounds) {
-        SKPoint[] points = Matrix.MapPoints(new SKPoint[] { bounds.TopLeft, bounds.TopRight, bounds.BottomRight, bounds.BottomLeft });
+        SKPoint[]? points = Matrix.MapPoints(new SKPoint[] { bounds.TopLeft, bounds.TopRight, bounds.BottomRight, bounds.BottomLeft });
 
-        return new Bounds(points[0], points[1], points[2], points[3]);
+        return new(points[0], points[1], points[2], points[3]);
     }
 
     public Vector2 MapPoint(Vector2 point) => Matrix.MapPoint(point);

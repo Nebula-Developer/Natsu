@@ -1,6 +1,6 @@
 namespace Natsu.Graphics;
 
-public class Paint {
+public class Paint : IPaint {
     private Color _color = Colors.White;
     private FilterQuality _filterQuality = FilterQuality.None;
     private float _fontSize = 12;

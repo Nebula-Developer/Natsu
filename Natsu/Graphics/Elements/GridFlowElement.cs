@@ -15,7 +15,6 @@ public class GridElement : Element {
 
     public Dirty Layout = new();
 
-
     public Vector2 Spacing {
         get => _spacing;
         set {
@@ -45,11 +44,11 @@ public class GridElement : Element {
         Vector2 cellSize = new((size.X - Spacing.X * (Columns - 1)) / Columns, (size.Y - Spacing.Y * (Rows - 1)) / Rows);
 
         for (int i = 0; i < Children.Count; i++) {
-            Element child = Children[i];
+            Element? child = Children[i];
             int x = i % Columns;
             int y = i / Columns;
 
-            child.Position = new Vector2(x * (cellSize.X + Spacing.X), y * (cellSize.Y + Spacing.Y));
+            child.Position = new(x * (cellSize.X + Spacing.X), y * (cellSize.Y + Spacing.Y));
 
             child.Size = cellSize;
         }
@@ -58,8 +57,7 @@ public class GridElement : Element {
     }
 
     protected override void OnChildrenChange() {
-        if (Loaded)
-            Layout.Invalidate();
+        if (Loaded) Layout.Invalidate();
     }
 
     protected override void OnLoad() => Layout.Invalidate();
@@ -67,8 +65,7 @@ public class GridElement : Element {
     protected override void OnDrawSizeChange(Vector2 size) => Layout.Invalidate();
 
     protected override void OnUpdate() {
-        if (Layout.IsDirty)
-            ComputeLayout();
+        if (Layout.IsDirty) ComputeLayout();
     }
 }
 
@@ -103,7 +100,7 @@ public class GridFlowElement : Element {
         float columnWidth = 0;
 
         for (int i = 0; i < Children.Count; i++) {
-            Element child = Children[i];
+            Element? child = Children[i];
             Vector2 childSize = child.DrawSize;
 
             if (OverflowDirection == GridOverflowDirection.Horizontal) {
@@ -120,7 +117,7 @@ public class GridFlowElement : Element {
                 }
             }
 
-            child.Position = new Vector2(x, y);
+            child.Position = new(x, y);
 
             if (OverflowDirection == GridOverflowDirection.Horizontal) {
                 x += childSize.X + Spacing.X;
@@ -135,8 +132,7 @@ public class GridFlowElement : Element {
     }
 
     protected override void OnChildrenChange() {
-        if (Loaded)
-            Layout.Invalidate();
+        if (Loaded) Layout.Invalidate();
     }
 
     protected override void OnLoad() => Layout.Invalidate();
@@ -144,7 +140,6 @@ public class GridFlowElement : Element {
     protected override void OnDrawSizeChange(Vector2 size) => Layout.Invalidate();
 
     protected override void OnUpdate() {
-        if (Layout.IsDirty)
-            ComputeLayout();
+        if (Layout.IsDirty) ComputeLayout();
     }
 }

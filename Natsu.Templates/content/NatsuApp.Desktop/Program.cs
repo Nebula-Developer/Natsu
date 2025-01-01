@@ -7,9 +7,7 @@ public static class Program {
     public static void Main() {
         Application app = new MyApp();
 
-        DesktopWindowSettings settings = new() {
-            Title = "NatsuApp"
-        };
+        DesktopWindowSettings settings = new() { Title = "NatsuApp" };
 
         DesktopWindow window = new(app, settings);
         window.Run();

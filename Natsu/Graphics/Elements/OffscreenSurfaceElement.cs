@@ -7,9 +7,7 @@ public class OffscreenSurfaceElement : PaintableElement {
 
     private IOffscreenSurface? _surface;
 
-    public OffscreenSurfaceElement(IOffscreenSurface? surface = null) {
-        Surface = surface;
-    }
+    public OffscreenSurfaceElement(IOffscreenSurface? surface = null) => Surface = surface;
 
     public OffscreenSurfaceElement() { }
 

@@ -1,6 +1,5 @@
 using Natsu.Graphics;
 using Natsu.Graphics.Elements;
-using Natsu.Input;
 using Natsu.Mathematics;
 
 namespace Natsu.Sandbox;
@@ -8,10 +7,18 @@ namespace Natsu.Sandbox;
 public class MyApp : Application {
 #nullable disable
     public RectElement Child;
+
 #nullable enable
 
     protected override void OnLoad() {
-        Color[] colors = { Colors.Red, Colors.Green, Colors.Blue, Colors.White, Colors.Cyan, Colors.Magenta };
+        Color[] colors = {
+            Colors.Red,
+            Colors.Green,
+            Colors.Blue,
+            Colors.White,
+            Colors.Cyan,
+            Colors.Magenta
+        };
 
         RectElement? parent = null;
 
@@ -24,20 +31,19 @@ public class MyApp : Application {
 
             if (parent is not null) {
                 child.Parent = parent;
-                child.Position = new Vector2(10);
-            } else Add(child);
+                child.Position = new(10);
+            } else {
+                Add(child);
+            }
 
             parent = child;
         }
 
-        parent!.Add(new RectElement {
-            RelativeSizeAxes = Axes.Both,
-            Color = new Color(50, 100, 200)
-        });
+        parent!.Add(new RectElement { RelativeSizeAxes = Axes.Both, Color = new(50, 100, 200) });
 
-        Child = new RectElement {
+        Child = new() {
             Color = Colors.Yellow,
-            Size = new Vector2(50),
+            Size = new(50),
             Scale = 3,
             Name = "Main Child"
         };
