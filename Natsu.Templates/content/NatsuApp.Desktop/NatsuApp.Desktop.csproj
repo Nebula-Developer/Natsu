@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Natsu.Desktop" Version="*-*" />
+        <PackageReference Include="Natsu.Desktop" Version="_NATSU_VERSION_" />
         <ProjectReference Include="..\NatsuApp.App\NatsuApp.App.csproj" />
     </ItemGroup>
 

@@ -1,5 +1,6 @@
 ﻿using Natsu.Graphics;
-using Natsu.Graphics.Elements;
+using Natsu.Core;
+using Natsu.Core.Elements;
 using Natsu.Mathematics;
 
 namespace NatsuApp;

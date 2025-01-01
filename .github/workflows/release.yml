@@ -14,6 +14,8 @@ jobs:
           uses: actions/checkout@v2
         - name: Set VERSION variable from tag
           run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+        - name: Replace _NATSU_VERSION_ in templates with version number
+          run: find Natsu.Templates/content -type f -name "*.csproj" -exec sed -i "s/_NATSU_VERSION_/${VERSION}/g" {} \;
         - name: Build
           run: dotnet build --configuration Release /p:Version=${VERSION}
         - name: Test

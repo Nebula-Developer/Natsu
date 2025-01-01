@@ -1,4 +1,4 @@
-﻿using Natsu.Graphics;
+﻿using Natsu.Core;
 using Natsu.Platforms.Desktop;
 
 namespace NatsuApp;
