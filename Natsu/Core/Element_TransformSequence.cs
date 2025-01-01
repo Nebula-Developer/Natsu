@@ -1,7 +1,8 @@
-using Natsu.Graphics.Elements;
+using Natsu.Core.Elements;
+using Natsu.Graphics;
 using Natsu.Mathematics;
 
-namespace Natsu.Graphics;
+namespace Natsu.Core;
 
 public partial class Element {
     public List<TransformSequence> TransformSequences { get; } = new();

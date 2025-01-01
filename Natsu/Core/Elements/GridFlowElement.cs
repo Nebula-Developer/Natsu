@@ -1,7 +1,7 @@
 using Natsu.Mathematics;
 using Natsu.Utils;
 
-namespace Natsu.Graphics.Elements;
+namespace Natsu.Core.Elements;
 
 public enum GridOverflowDirection {
     Horizontal,

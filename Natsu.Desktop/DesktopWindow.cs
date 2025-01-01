@@ -1,4 +1,4 @@
-using Natsu.Graphics;
+using Natsu.Core;
 using Natsu.Input;
 using Natsu.Mathematics;
 using Natsu.Native;

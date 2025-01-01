@@ -2,7 +2,7 @@ using Natsu.Input;
 using Natsu.Mathematics;
 using Natsu.Utils;
 
-namespace Natsu.Graphics.Elements;
+namespace Natsu.Core.Elements;
 
 public class InputElement : Element {
     public bool AcceptInput { get; set; } = true;

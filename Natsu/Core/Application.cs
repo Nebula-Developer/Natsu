@@ -1,10 +1,11 @@
 #nullable disable
 
-using Natsu.Graphics.Elements;
+using Natsu.Core.Elements;
+using Natsu.Graphics;
 using Natsu.Mathematics;
 using Natsu.Native;
 
-namespace Natsu.Graphics;
+namespace Natsu.Core;
 
 public partial class Application : IDisposable {
     private Vector2 _size;

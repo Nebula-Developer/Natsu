@@ -1,7 +1,7 @@
-using Natsu.Graphics.Elements;
+using Natsu.Graphics;
 using Natsu.Mathematics;
 
-namespace Natsu.Graphics;
+namespace Natsu.Core.Elements;
 
 public class GraphElement : PaintableElement {
     public VectorPath? Path;

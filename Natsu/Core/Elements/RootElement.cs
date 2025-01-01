@@ -1,6 +1,6 @@
 using Natsu.Mathematics;
 
-namespace Natsu.Graphics.Elements;
+namespace Natsu.Core.Elements;
 
 public class RootElement : Element {
     public RootElement(Application app) {

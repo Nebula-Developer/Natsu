@@ -1,6 +1,7 @@
+using Natsu.Graphics;
 using Natsu.Mathematics;
 
-namespace Natsu.Graphics.Elements;
+namespace Natsu.Core.Elements;
 
 public class ImageElement : PaintableElement {
     public ImageElement(IImage image) {

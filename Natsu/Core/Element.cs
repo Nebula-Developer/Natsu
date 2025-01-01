@@ -1,7 +1,8 @@
+using Natsu.Graphics;
 using Natsu.Mathematics;
 using Natsu.Native;
 
-namespace Natsu.Graphics;
+namespace Natsu.Core;
 
 public partial class Element : IDisposable {
     private Application? _app;

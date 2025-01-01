@@ -1,11 +1,11 @@
 #nullable disable
 
-using Natsu.Graphics.Elements;
+using Natsu.Core.Elements;
 using Natsu.Input;
 using Natsu.Mathematics;
 using Natsu.Utils;
 
-namespace Natsu.Graphics;
+namespace Natsu.Core;
 
 public partial class Application {
     public enum MouseEnterCacheState {

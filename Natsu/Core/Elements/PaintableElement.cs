@@ -1,4 +1,6 @@
-namespace Natsu.Graphics.Elements;
+using Natsu.Graphics;
+
+namespace Natsu.Core.Elements;
 
 public class PaintableElement : Element, IPaint {
     public PaintableElement() =>

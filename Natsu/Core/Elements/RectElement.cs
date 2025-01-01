@@ -1,6 +1,7 @@
+using Natsu.Graphics;
 using Natsu.Mathematics;
 
-namespace Natsu.Graphics.Elements;
+namespace Natsu.Core.Elements;
 
 public class RectElement : PaintableElement {
     public Vector2 RoundedCorners { get; set; }

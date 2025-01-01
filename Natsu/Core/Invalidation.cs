@@ -1,6 +1,6 @@
 #nullable disable
 
-namespace Natsu.Graphics;
+namespace Natsu.Core;
 
 [Flags]
 public enum Invalidation {

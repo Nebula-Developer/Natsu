@@ -1,5 +1,6 @@
+using Natsu.Core;
+using Natsu.Core.Elements;
 using Natsu.Graphics;
-using Natsu.Graphics.Elements;
 using Natsu.Mathematics;
 
 namespace Natsu.Sandbox;

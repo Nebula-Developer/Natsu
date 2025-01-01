@@ -1,6 +1,6 @@
 using Natsu.Mathematics;
 
-namespace Natsu.Graphics;
+namespace Natsu.Core;
 
 public partial class Element {
     private Vector2 _anchorPosition;
