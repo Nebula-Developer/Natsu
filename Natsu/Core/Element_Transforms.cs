@@ -115,6 +115,7 @@ public partial class Element {
 
             Invalidate(Invalidation.Size);
             HandleSizeAffectsMatrix();
+            HandleParentSizeChange();
             PropagateChildrenSizeChange();
         }
     }

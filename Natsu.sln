@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Natsu.Desktop", "Natsu.Desk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Natsu.Templates", "Natsu.Templates\Natsu.Templates.csproj", "{DCB4C992-E399-41A1-90F8-7A685F713117}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Natsu.Tests", "Natsu.Tests\Natsu.Tests.csproj", "{46BCAE39-D758-4173-A70E-273DB4AE54BA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,5 +42,9 @@ Global
 		{DCB4C992-E399-41A1-90F8-7A685F713117}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCB4C992-E399-41A1-90F8-7A685F713117}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCB4C992-E399-41A1-90F8-7A685F713117}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46BCAE39-D758-4173-A70E-273DB4AE54BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46BCAE39-D758-4173-A70E-273DB4AE54BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46BCAE39-D758-4173-A70E-273DB4AE54BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46BCAE39-D758-4173-A70E-273DB4AE54BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
