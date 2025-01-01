@@ -22,6 +22,9 @@ public partial class Element {
     private Vector2 _worldPosition;
     private Vector2 _worldScale = Vector2.One;
 
+    /// <summary>
+    ///     The matrix that transforms the element into screen space.
+    /// </summary>
     public Matrix Matrix {
         get {
             if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
@@ -30,8 +33,14 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     A virtual matrix that is used by children to transform into this element's space.
+    /// </summary>
     public virtual Matrix ChildAccessMatrix => Matrix;
 
+    /// <summary>
+    ///     The position of the element in screen space.
+    /// </summary>
     public Vector2 WorldPosition {
         get {
             if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
@@ -40,8 +49,14 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     A virtual position calculation that is used to compute the anchor position under the parent's space.
+    /// </summary>
     protected virtual Vector2 ComputeAnchorPosition => AnchorPosition * Parent?.DrawSize ?? Vector2.Zero;
 
+    /// <summary>
+    ///     The bounds of the element in screen space.
+    /// </summary>
     public Bounds Bounds {
         get {
             if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
@@ -51,8 +66,14 @@ public partial class Element {
         private set => _bounds = value;
     }
 
+    /// <summary>
+    ///     A rectangle that represents the local bounds of the element's draw size as a <see cref="Rect" />.
+    /// </summary>
     public Rect RectBounds => new(0, 0, DrawSize.X, DrawSize.Y);
 
+    /// <summary>
+    ///     The rotation of the element in degrees.
+    /// </summary>
     public float Rotation {
         get => _rotation;
         set {
@@ -66,6 +87,9 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The axes that are relative to the parent's size.
+    /// </summary>
     public Axes RelativeSizeAxes {
         get => _relativeSizeAxes;
         set {
@@ -76,6 +100,9 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The axes that are relative to the child's size.
+    /// </summary>
     public Axes ChildRelativeSizeAxes {
         get => _childRelativeSizeAxes;
         set {
@@ -86,6 +113,9 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The margin of the element.
+    /// </summary>
     public Vector2 Margin {
         get => _margin;
         set {
@@ -96,6 +126,11 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The size of the element in screen space, after applying all size-related transformations.
+    ///     <br />
+    ///     This value should almost <i>always</i> be used over <see cref="Size" /> for rendering purposes.
+    /// </summary>
     public Vector2 DrawSize {
         get {
             if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
@@ -104,6 +139,12 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The raw size of the element.
+    ///     <br />
+    /// </summary>
+    // TODO: Implement this logic:
+    // If <see cref="RelativeSizeAxes"/> or <see cref="ChildRelativeSizeAxes"/> are set, the size will be used as a multiplier for those axes.
     public virtual Vector2 Size {
         get => _size;
         set {
@@ -120,6 +161,9 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The size from <see cref="RelativeSizeAxes" /> and <see cref="ChildRelativeSizeAxes" /> computation.
+    /// </summary>
     public Vector2 RelativeSize {
         get {
             if (RelativeSizeAxes == Axes.None && ChildRelativeSizeAxes == Axes.None) return Size;
@@ -130,6 +174,13 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The offset position of the element.
+    ///     <br />
+    ///     This value subtracts element's position by its own size.
+    ///     <br />
+    ///     For instance, if the offset position is set to <c>(0.5, 0.5)</c>, the element will move back by half of its size.
+    /// </summary>
     public Vector2 OffsetPosition {
         get => _offsetPosition;
         set {
@@ -140,6 +191,14 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The anchor position of the element.
+    ///     <br />
+    ///     This value adds element's position by its parent's size.
+    ///     <br />
+    ///     For instance, if the anchor position is set to <c>(0.5, 0.5)</c>, the element will move forward by half of its
+    ///     parent's size.
+    /// </summary>
     public Vector2 AnchorPosition {
         get => _anchorPosition;
         set {
@@ -150,6 +209,11 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The local position of the element.
+    ///     <br />
+    ///     Used as an offset for all position-related transformations.
+    /// </summary>
     public Vector2 Position {
         get => _position;
         set {
@@ -162,6 +226,9 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The scale of the element.
+    /// </summary>
     public Vector2 Scale {
         get => _scale;
         set {
@@ -172,6 +239,9 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The scale of the element in world space.
+    /// </summary>
     public Vector2 WorldScale {
         get {
             if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
@@ -180,6 +250,11 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     Whether the scale should divide the draw size.
+    ///     <br />
+    ///     Use this to keep the element's size consistent when scaling.
+    /// </summary>
     public bool ScaleAffectsDrawSize {
         get => _scaleAffectsDrawSize;
         set {
@@ -190,8 +265,15 @@ public partial class Element {
         }
     }
 
-    public bool SizeAffectsMatrix => RelativeSizeAxes != Axes.None || ChildRelativeSizeAxes != Axes.None || OffsetPosition != Vector2.Zero || AnchorPosition != Vector2.Zero || Margin != Vector2.Zero || Rotation != 0 || Scale != Vector2.One;
+    /// <summary>
+    ///     Computation to determine whether a change in <see cref="DrawSize" /> affects the matrix.
+    /// </summary>
+    public bool SizeAffectsMatrix => OffsetPosition != Vector2.Zero || AnchorPosition != Vector2.Zero || RelativeSizeAxes != Axes.None || ChildRelativeSizeAxes != Axes.None || Margin != Vector2.Zero || Rotation != 0 || Scale != Vector2.One;
 
+    /// <summary>
+    ///     Handles geometric invalidation if <see cref="SizeAffectsMatrix" /> is true.
+    /// </summary>
+    /// <returns>Whether the invalidation was handled</returns>
     public bool HandleSizeAffectsMatrix() {
         if (SizeAffectsMatrix) {
             Invalidate(Invalidation.Geometry);
@@ -201,10 +283,23 @@ public partial class Element {
         return false;
     }
 
+    /// <summary>
+    ///     Transforms a point from screen space to local space.
+    /// </summary>
+    /// <param name="screenSpace">The point in screen space</param>
+    /// <returns>The point in local space</returns>
     public Vector2 ToLocalSpace(Vector2 screenSpace) => Matrix.Invert().MapPoint(screenSpace);
 
+    /// <summary>
+    ///     Transforms a point from local space to screen space.
+    /// </summary>
+    /// <param name="localSpace">The point in local space</param>
+    /// <returns>The point in screen space</returns>
     public Vector2 ToScreenSpace(Vector2 localSpace) => Matrix.MapPoint(localSpace);
 
+    /// <summary>
+    ///     Updates the matrix of the element.
+    /// </summary>
     public void UpdateMatrix() {
         if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
 
@@ -244,6 +339,10 @@ public partial class Element {
 
     protected virtual void OnWorldPositionChange(Vector2 position) { }
 
+    /// <summary>
+    ///     Gets the span of all children based on their positions, scales, and sizes.
+    /// </summary>
+    /// <returns>The span of all children</returns>
     public Vector2 GetChildSpan() {
         float spanX = 0, spanY = 0;
 
@@ -308,6 +407,9 @@ public partial class Element {
         return ApplySizeEffects(nSize);
     }
 
+    /// <summary>
+    ///     Updates the draw size of the element.
+    /// </summary>
     public void UpdateDrawSize() {
         Vector2 nSize = Size;
 
@@ -346,7 +448,17 @@ public partial class Element {
         PropagateParentSizeDependencies();
     }
 
+    /// <summary>
+    ///     Calculates the bounds of the element.
+    /// </summary>
     public void CalculateBounds() => Bounds = Matrix.MapBounds(new(new(0, 0), new(DrawSize.X, 0), new(DrawSize.X, DrawSize.Y), new(0, DrawSize.Y)));
 
+    /// <summary>
+    ///     Virtual method that returns whether a point falls inside the element's bounds.
+    ///     <br />
+    ///     This is primarily used for positional input checks.
+    /// </summary>
+    /// <param name="point">The point to check</param>
+    /// <returns>Whether the point is inside the element</returns>
     public virtual bool PointInside(Vector2 point) => Bounds.Contains(point);
 }

@@ -6,18 +6,32 @@ public partial class Element {
     private readonly List<Element> _children = new();
     private Element? _parent;
 
+    /// <summary>
+    ///     Sets the parent of this element to be the <see cref="ContentContainer" /> of the specified element.
+    /// </summary>
     public Element? ContentParent {
-        get => _parent;
         set => Parent = value?.ContentContainer;
     }
 
+    /// <summary>
+    ///     The parent of this element.
+    /// </summary>
     public Element? Parent {
         get => _parent;
         set => updateParent(value);
     }
 
+    /// <summary>
+    ///     The content container used for appending content, rather than direct children.
+    ///     </br>
+    ///     This is useful for elements that don't directly want children, and instead
+    ///     want to pass them to a different element.
+    /// </summary>
     public virtual Element ContentContainer => this;
 
+    /// <summary>
+    ///     The content of this element that belongs to the <see cref="ContentContainer" />.
+    /// </summary>
     public virtual IReadOnlyList<Element> Content {
         get => ContentContainer._children.AsReadOnly();
         set {
@@ -28,6 +42,9 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     The children of this element.
+    /// </summary>
     public virtual IReadOnlyList<Element> Children {
         get => _children;
         set {
@@ -45,19 +62,23 @@ public partial class Element {
 
         _parent = value;
 
-        if (ContentParent?._app != null && ContentParent._app != App) App = ContentParent.App;
+        if (Parent?._app != null && Parent._app != App) App = Parent.App;
 
         Invalidate(Invalidation.All);
     }
 
+    /// <summary>
+    ///     Removes element(s) from the children of this element.
+    /// </summary>
+    /// <param name="elements">The element(s) to remove</param>
     public void Remove(params Element[] elements) {
         lock (_children) {
             foreach (Element? element in elements) {
                 _children.Remove(element);
-                if (element.ContentParent == this) element._parent = null;
+                if (element.Parent == this) element._parent = null;
             }
 
-            CildrenChanged();
+            ChildrenChanged();
         }
     }
 
@@ -72,34 +93,62 @@ public partial class Element {
                 }
 
             _children.Add(element);
-            CildrenChanged();
+            ChildrenChanged();
         }
     }
 
+    /// <summary>
+    ///     Adds new element(s) to the children of this element.
+    /// </summary>
+    /// <param name="elements">The element(s) to add</param>
     public void Add(params Element[] elements) {
         lock (_children) {
             foreach (Element? element in elements) {
                 addChild(element);
-                if (element.ContentParent != this) element.updateParent(this, false);
+                if (element.Parent != this) element.updateParent(this, false);
 
                 if (!element.Loaded && Loaded) element.Load();
             }
 
-            CildrenChanged();
+            ChildrenChanged();
         }
     }
 
+    /// <summary>
+    ///     Adds new element(s) to the <see cref="ContentContainer" />.
+    /// </summary>
+    /// <param name="elements">The element(s) to add</param>
     public void AddContent(params Element[] elements) => ContentContainer.Add(elements);
 
+    /// <summary>
+    ///     Removes element(s) from the <see cref="ContentContainer" />.
+    /// </summary>
+    /// <param name="elements">The element(s) to remove</param>
+    public void RemoveContent(params Element[] elements) => ContentContainer.Remove(elements);
+
+    /// <summary>
+    ///     Clears the children of this element.
+    /// </summary>
+    /// <param name="dispose">Whether to dispose the children</param>
     public void Clear(bool dispose = false) {
         lock (_children) {
             if (dispose) ForChildren(child => child.Dispose());
 
             _children.Clear();
-            CildrenChanged();
+            ChildrenChanged();
         }
     }
 
+    /// <summary>
+    ///     Clears the content of the <see cref="ContentContainer" />.
+    /// </summary>
+    /// <param name="dispose">Whether to dispose the content</param>
+    public void ClearContent(bool dispose = false) => ContentContainer.Clear(dispose);
+
+    /// <summary>
+    ///     Iterates over the children of this element in a thread-safe manner.
+    /// </summary>
+    /// <param name="action">The action to perform on each child</param>
     public void ForChildren(Action<Element> action) {
         lock (_children) {
             for (int i = 0; i < _children.Count; i++)
@@ -108,6 +157,10 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     Sorts the specified element into its correct position among the children.
+    /// </summary>
+    /// <param name="element">The element to sort</param>
     public void SortChild(Element element) {
         lock (_children) {
             _children.Remove(element);
@@ -115,13 +168,21 @@ public partial class Element {
         }
     }
 
+    /// <summary>
+    ///     Checks if this element has the specified element as a child.
+    /// </summary>
+    /// <param name="element">The element to check for</param>
+    /// <returns>Whether this element has the specified element as a child</returns>
     public bool HasChild(Element element) => _children.Contains(element);
 
     protected virtual void OnChildrenChange() { }
 
     public event Action? DoChildrenChange;
 
-    public void CildrenChanged() {
+    /// <summary>
+    ///     Called when the children of this element change.
+    /// </summary>
+    public void ChildrenChanged() {
         if (ChildRelativeSizeAxes != Axes.None) Invalidate(Invalidation.Geometry);
 
         OnChildrenChange();
