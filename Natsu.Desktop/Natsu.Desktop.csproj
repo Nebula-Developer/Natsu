@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="opentk" Version="4.8.2" />
+        <PackageReference Include="opentk" Version="4.9.3" />
         <PackageReference Include="TextCopy" Version="6.2.1" />
     </ItemGroup>
 
