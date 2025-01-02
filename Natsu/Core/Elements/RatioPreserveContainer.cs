@@ -28,6 +28,11 @@ public class RatioPreserveContainer : Element {
         Fit();
     }
 
+    public new bool Clip {
+        get => ContentWrapper.Clip;
+        set => ContentWrapper.Clip = value;
+    }
+
     public override Element ContentContainer => ContentWrapper;
 
     public float Ratio {

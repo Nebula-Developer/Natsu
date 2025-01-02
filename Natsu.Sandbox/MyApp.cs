@@ -1,56 +1,46 @@
 using Natsu.Core;
 using Natsu.Core.Elements;
 using Natsu.Graphics;
+using Natsu.Input;
 using Natsu.Mathematics;
 
 namespace Natsu.Sandbox;
 
 public class MyApp : Application {
-#nullable disable
-    public RectElement Child;
-
-#nullable enable
+    public ImageElement Image = null!;
 
     protected override void OnLoad() {
-        Color[] colors = {
-            Colors.Red,
-            Colors.Green,
-            Colors.Blue,
-            Colors.White,
-            Colors.Cyan,
-            Colors.Magenta
+        IImage image = ResourceLoader.LoadResourceImage("Resources/small-image.png");
+
+        RatioPreserveContainer container = new(1) {
+            RelativeSizeAxes = Axes.Both,
+            Clip = false
         };
 
-        RectElement? parent = null;
-
-        for (int i = 0; i < 6; i++) {
-            RectElement child = new() {
-                Color = colors[i],
-                ChildRelativeSizeAxes = Axes.Both,
-                Name = $"Child {i}"
-            };
-
-            if (parent is not null) {
-                child.Parent = parent;
-                child.Position = new(10);
-            } else {
-                Add(child);
-            }
-
-            parent = child;
-        }
-
-        parent!.Add(new RectElement { RelativeSizeAxes = Axes.Both, Color = new(50, 100, 200) });
-
-        Child = new() {
-            Color = Colors.Yellow,
-            Size = new(50),
-            Scale = 3,
-            Name = "Main Child"
+        Image = new(image) {
+            RelativeSizeAxes = Axes.Both,
+            ContentParent = container,
+            AnchorPosition = new(0.5f),
+            OffsetPosition = new(0.5f)
         };
 
-        Child.Parent = parent;
+        Add(container);
     }
 
-    protected override void OnUpdate() => Child.Position = MousePosition - 200;
+    protected override void OnKeyDown(Key key, KeyMods mods) {
+        switch (key) {
+            case Key.D1:
+                Image.FilterQuality = FilterQuality.None;
+                break;
+            case Key.D2:
+                Image.FilterQuality = FilterQuality.Low;
+                break;
+            case Key.D3:
+                Image.FilterQuality = FilterQuality.Medium;
+                break;
+            case Key.D4:
+                Image.FilterQuality = FilterQuality.High;
+                break;
+        }
+    }
 }

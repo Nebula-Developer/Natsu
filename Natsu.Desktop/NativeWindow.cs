@@ -13,7 +13,7 @@ namespace Natsu.Platforms.Desktop;
 public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) : GameWindow(settings.GameWindowSettings, settings.NativeWindowSettings), INativePlatform {
     private RangeI _textCaret;
     public DesktopWindow Bridge { get; } = bridge;
-    public MouseCursor TargetCursor { get; set; } = Hand;
+    public MouseCursor TargetCursor { get; set; } = PointingHand;
 
     public void Exit() => Close();
 
@@ -29,17 +29,17 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
             base.Cursor.Shape switch {
                 StandardShape.Arrow => CursorStyle.Pointer,
                 StandardShape.Crosshair => CursorStyle.Crosshair,
-                StandardShape.HResize => CursorStyle.ResizeHorizontal,
-                StandardShape.VResize => CursorStyle.ResizeVertical,
+                StandardShape.ResizeEW => CursorStyle.ResizeHorizontal,
+                StandardShape.ResizeNS => CursorStyle.ResizeVertical,
                 StandardShape.IBeam => CursorStyle.Text,
                 _ => CursorStyle.Default
             };
         set =>
             TargetCursor = value switch {
-                CursorStyle.Pointer => Hand,
+                CursorStyle.Pointer => PointingHand,
                 CursorStyle.Crosshair => Crosshair,
-                CursorStyle.ResizeHorizontal => HResize,
-                CursorStyle.ResizeVertical => VResize,
+                CursorStyle.ResizeHorizontal => ResizeEW,
+                CursorStyle.ResizeVertical => ResizeNS,
                 CursorStyle.Text => IBeam,
                 _ => Default
             };

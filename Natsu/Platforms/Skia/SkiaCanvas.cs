@@ -9,6 +9,10 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
 
     public SKPaint Paint { get; } = new();
 
+    public SKFont Font { get; } = new();
+
+    public SKSamplingOptions Sampling { get; set; }
+
     public void Clear(Color color) => Canvas.Clear(color);
 
     public void DrawRect(Rect rect, Paint paint) => Canvas.DrawRect(rect, UsePaint(paint));
@@ -17,11 +21,11 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
 
     public void DrawLine(Vector2 start, Vector2 end, Paint paint) => Canvas.DrawLine(start, end, UsePaint(paint));
 
-    public void DrawText(string text, Vector2 position, IFont font, Paint paint) => Canvas.DrawText(text, position.X, position.Y + paint.TextSize, UsePaint(paint, font));
+    public void DrawText(string text, Vector2 position, IFont font, Paint paint) => Canvas.DrawText(text, position.X, position.Y + paint.TextSize, SKTextAlign.Center, UseFont(paint, font), UsePaint(paint));
 
-    public void DrawImage(IImage image, Vector2 position, Paint paint) => Canvas.DrawImage(TryImage(image), position, UsePaint(paint));
+    public void DrawImage(IImage image, Vector2 position, Paint paint) => Canvas.DrawImage(TryImage(image), position, Sampling, UsePaint(paint));
 
-    public void DrawImage(IImage image, Rect rect, Paint paint) => Canvas.DrawImage(TryImage(image), rect, UsePaint(paint));
+    public void DrawImage(IImage image, Rect rect, Paint paint) => Canvas.DrawImage(TryImage(image), rect, Sampling, UsePaint(paint));
 
     public void DrawAtlas(IImage image, Rect[] regions, RotationScaleMatrix[] targets, Paint paint) => Canvas.DrawAtlas(TryImage(image), regions.Select(r => (SKRect)r).ToArray(), targets.Select(t => (SKRotationScaleMatrix)t).ToArray(), UsePaint(paint));
 
@@ -59,19 +63,27 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
 
     public void ClipPath(VectorPath path, bool difference = false, bool antialias = false) => Canvas.ClipPath(path.SkiaPath, difference ? SKClipOperation.Difference : SKClipOperation.Intersect, antialias);
 
-    public SKPaint UsePaint(Paint paint, IFont? font = null) {
+    public SKFont UseFont(Paint paint, IFont font) {
+        if (font is not SkiaFont skiaFont) throw new ArgumentException("Non-SkiaFont provided to SkiaCanvas");
+
+        Font.Typeface = skiaFont.Typeface;
+        Font.Size = paint.TextSize;
+
+        return Font;
+    }
+
+    public SKPaint UsePaint(Paint paint) {
         Paint.Color = paint.Color;
         Paint.IsStroke = paint.IsStroke;
         Paint.StrokeWidth = paint.StrokeWidth;
         Paint.IsAntialias = paint.IsAntialias;
-        Paint.TextSize = paint.TextSize;
 
-        Paint.FilterQuality = paint.FilterQuality switch {
-            FilterQuality.None => SKFilterQuality.None,
-            FilterQuality.Low => SKFilterQuality.Low,
-            FilterQuality.Medium => SKFilterQuality.Medium,
-            FilterQuality.High => SKFilterQuality.High,
-            _ => SKFilterQuality.None
+        Sampling = paint.FilterQuality switch {
+            FilterQuality.None => SKSamplingOptions.Default,
+            FilterQuality.Low => new(new SKCubicResampler(0.1f, 0.1f)),
+            FilterQuality.Medium => new(SKFilterMode.Linear),
+            FilterQuality.High => new(SKCubicResampler.Mitchell),
+            _ => SKSamplingOptions.Default
         };
 
         Paint.StrokeJoin = paint.StrokeJoin switch {
@@ -87,8 +99,6 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
             StrokeCap.Square => SKStrokeCap.Square,
             _ => SKStrokeCap.Butt
         };
-
-        if (font is SkiaFont skiaFont) Paint.Typeface = skiaFont.Typeface;
 
         return Paint;
     }
