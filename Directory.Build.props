@@ -2,21 +2,15 @@
 
 <Project>
     <PropertyGroup>
-        <!-- All version control is managed by the GitHub Actions workflow -->
-
-        <!-- PACKAGE VERSION CONTROL -->
-        <!-- /////////////////////// -->
-        <!-- <Version>0.2.1-beta</Version> -->
-        <!-- /////////////////////// -->
+        <Authors>NebulaDev</Authors>
+        <Description>A cross-platform 2D game/application framework built with flexibility in mind.</Description>
+        <PackageTags>game, framework, engine, 2d, cross-platform</PackageTags>
 
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-        <Authors>NebulaDev</Authors>
-        <Description>A cross-platform 2D game/application framework built with flexibility in mind.</Description>
-        <PackageTags>game, framework, engine, 2d, cross-platform</PackageTags>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>

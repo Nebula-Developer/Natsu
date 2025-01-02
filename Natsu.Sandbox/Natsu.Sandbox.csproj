@@ -12,6 +12,7 @@
         <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
         <IsPackable>false</IsPackable>
         <BuildProjectReferences>false</BuildProjectReferences>
+        <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
