@@ -1,17 +1,85 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+  
+  <!-- 
+    This upgraded .csproj includes extra build properties for improved code quality
+    (treating warnings as errors, generating documentation, enabling nullable context),
+    along with multi-targeting, advanced references, and optional publish settings.
+    You can remove or modify any extras that don't apply to your workflow.
+  -->
+  
+  <PropertyGroup>
+    <!-- Original fields -->
+    <Title>Natsu.Desktop</Title>
+    <RootNamespace>Natsu</RootNamespace>
+    <PackageId>Natsu.Desktop</PackageId>
+
+    <!-- 
+      Target multiple frameworks if you want. 
+      (Remove <TargetFrameworks> if you only need one.)
+    -->
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+    
+    <!-- Language version set to latest for new C# features. -->
+    <LangVersion>latest</LangVersion>
+    
+    <!-- Enable nullable reference types for safer code. -->
+    <Nullable>enable</Nullable>
+    
+    <!-- Turn warnings into errors to ensure code quality. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    
+    <!-- Generate an XML documentation file; beneficial for library usage. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    
+    <!-- Optional: produce an EXE instead of a DLL, if you want a desktop app entry point. -->
+    <OutputType>Exe</OutputType>
+    
+    <!-- Optional: sign assembly or define a strong name key. (Comment out if not needed) -->
+    <!-- <AssemblyOriginatorKeyFile>../KeyFiles/MyKey.snk</AssemblyOriginatorKeyFile> -->
+    <!-- <SignAssembly>true</SignAssembly> -->
+    
+    <!-- Optional: single file publishing for simplified distribution. -->
+    <!-- <PublishSingleFile>true</PublishSingleFile> -->
+    <!-- <PublishTrimmed>true</PublishTrimmed> -->
+    
+    <!-- Additional compile-time flags or environment conditions can go here. -->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <!-- Debug-specific property overrides, e.g. define DEBUG symbol, etc. -->
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <!-- Release-specific property overrides. -->
+    <DefineConstants>TRACE</DefineConstants>
+    <!-- Possibly enabling optimizations or advanced build steps. -->
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Original reference to your main project. -->
+    <ProjectReference Include="..\Natsu\Natsu.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Original references -->
+    <PackageReference Include="opentk" Version="4.9.3" />
+    <PackageReference Include="TextCopy" Version="6.2.1" />
+    
+    <!-- Potential advanced references -->
+    <!-- <PackageReference Include="Newtonsoft.Json" Version="13.0.1" /> -->
+    <!-- <PackageReference Include="Serilog" Version="2.12.0" /> -->
+  </ItemGroup>
+  
+  <!--
+    Optional runtime identifier section for self-contained publishing or cross-platform builds.
+    For instance, if you want a Windows-only or cross-platform release:
+
     <PropertyGroup>
-        <Title>Natsu.Desktop</Title>
-        <RootNamespace>Natsu</RootNamespace>
-        <PackageId>Natsu.Desktop</PackageId>
+      <RuntimeIdentifiers>win10-x64;linux-x64;osx.11.0-x64</RuntimeIdentifiers>
+      <SelfContained>false</SelfContained>
     </PropertyGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\Natsu\Natsu.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="opentk" Version="4.9.3" />
-        <PackageReference Include="TextCopy" Version="6.2.1" />
-    </ItemGroup>
+  -->
 
 </Project>
