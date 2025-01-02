@@ -7,4 +7,18 @@ updates:
     commit-message:
       prefix: "Chore"
     labels:
-      - "dotnet"
+      - "update"
+      - "priority/low"
+      - "size/xs"
+    groups:
+      testing:
+        dependency-type: "development"
+        patterns:
+          - "xunit*"
+          - "Microsoft.NET.Test.Sdk"
+          - "coverlet.collector"
+      natsu:
+        dependency-type: "production"
+        patterns:
+          - "Roslynator.Analyzers"
+          - "SkiaSharp*"
