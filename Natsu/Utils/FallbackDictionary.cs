@@ -16,7 +16,10 @@ public class FallbackDictionary<TKey, TValue> where TKey : notnull {
     public TValue this[TKey key] {
         get {
             lock (_lock) {
-                return Primary.TryGetValue(key, out TValue? value) ? value : Fallback;
+                if (Primary.TryGetValue(key, out TValue? value)) return value;
+
+                Primary[key] = Fallback;
+                return Primary[key];
             }
         }
         set {

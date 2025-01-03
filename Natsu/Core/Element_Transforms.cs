@@ -210,6 +210,16 @@ public partial class Element {
     }
 
     /// <summary>
+    ///     Controls both <see cref="AnchorPosition" /> and <see cref="OffsetPosition" /> to be the same value.
+    /// </summary>
+    public Vector2 Pivot {
+        set {
+            AnchorPosition = value;
+            OffsetPosition = value;
+        }
+    }
+
+    /// <summary>
     ///     The local position of the element.
     ///     <br />
     ///     Used as an offset for all position-related transformations.
