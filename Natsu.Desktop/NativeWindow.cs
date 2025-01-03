@@ -10,7 +10,7 @@ using static OpenTK.Windowing.Common.Input.MouseCursor;
 
 namespace Natsu.Platforms.Desktop;
 
-public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) : GameWindow(settings.GameWindowSettings, settings.NativeWindowSettings), INativePlatform {
+internal class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) : GameWindow(settings.GameWindowSettings, settings.NativeWindowSettings), INativePlatform {
     private RangeI _textCaret;
     public DesktopWindow Bridge { get; } = bridge;
     public MouseCursor TargetCursor { get; set; } = PointingHand;

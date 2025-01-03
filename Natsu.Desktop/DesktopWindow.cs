@@ -11,9 +11,19 @@ using MouseButton = Natsu.Input.MouseButton;
 
 namespace Natsu.Platforms.Desktop;
 
+/// <summary>
+///     A cross-platform desktop window.
+///     <br />
+///     Primarily targets Windows, macOS, and Linux.
+/// </summary>
 public class DesktopWindow {
     private Vector2 _scale;
 
+    /// <summary>
+    ///     Constructs a new <see cref="DesktopWindow" />.
+    /// </summary>
+    /// <param name="app">The <see cref="Application" /> to host</param>
+    /// <param name="settings">The settings to use for the window</param>
     public DesktopWindow(Application app, DesktopWindowSettings? settings = null) {
         if (settings == null) settings = new();
 
@@ -21,12 +31,24 @@ public class DesktopWindow {
         Window = new(settings, this);
     }
 
+    /// <summary>
+    ///     The <see cref="Application" /> hosted by the window.
+    /// </summary>
     public Application App { get; }
-    public NativeWindow Window { get; }
+
+    internal NativeWindow Window { get; }
+
+    /// <summary>
+    ///     The <see cref="INativePlatform" /> that handles agnostic platform operations.
+    /// </summary>
     public INativePlatform Platform => Window;
 
-    public void CreateSurface(Vector2 size) {
-        size = size.Max(Vector2.One);
+    /// <summary>
+    ///     Creates a new surface for rendering.
+    ///     <br />
+    ///     This should be called whenever the window is resized.
+    /// </summary>
+    public void CreateSurface() {
         lock (this) {
             _surface?.Dispose();
             _target?.Dispose();
@@ -61,20 +83,20 @@ public class DesktopWindow {
         }
     }
 
-    public void Load() {
+    internal void Load() {
         App.Platform = Window;
         App.ResourceLoader = new SkiaResourceLoader();
 
-        CreateSurface(Window.Size);
+        CreateSurface();
 
         App.Load();
     }
 
-    public void Resize(int width, int height) => CreateSurface(new(width, height));
+    internal void Resize(int width, int height) => CreateSurface();
 
-    public void Update(double time) => App.Update(time);
+    internal void Update(double time) => App.Update(time);
 
-    public void Render(double time) {
+    internal void Render(double time) {
         if (_surface == null) return;
 
         App.Render(time);
@@ -82,9 +104,9 @@ public class DesktopWindow {
         Window.SwapBuffers();
     }
 
-    public void Dispose() => App.Dispose();
+    internal void Dispose() => App.Dispose();
 
-    public KeyMods TranslateKeyMods(KeyModifiers mods) {
+    internal KeyMods TranslateKeyMods(KeyModifiers mods) {
         KeyMods keyMods = KeyMods.None;
 
         if ((mods & KeyModifiers.Shift) != 0) keyMods |= KeyMods.Shift;
@@ -98,22 +120,30 @@ public class DesktopWindow {
         return keyMods;
     }
 
-    public void KeyDown(KeyboardKeyEventArgs e) => App.KeyDown((Key)e.Key, TranslateKeyMods(e.Modifiers));
+    internal void KeyDown(KeyboardKeyEventArgs e) => App.KeyDown((Key)e.Key, TranslateKeyMods(e.Modifiers));
 
-    public void KeyUp(KeyboardKeyEventArgs e) => App.KeyUp((Key)e.Key, TranslateKeyMods(e.Modifiers));
+    internal void KeyUp(KeyboardKeyEventArgs e) => App.KeyUp((Key)e.Key, TranslateKeyMods(e.Modifiers));
 
-    public void TextInput(string change, int location, int replaced) => App.TextInput(change, location, replaced);
+    internal void TextInput(string change, int location, int replaced) => App.TextInput(change, location, replaced);
 
+    /// <summary>
+    ///     Maps a position from window space to application space.
+    /// </summary>
+    /// <param name="pos">The position to map</param>
+    /// <returns>The mapped position</returns>
     public Vector2 MapPosition(Vector2 pos) => pos * _scale;
 
-    public void MouseDown(MouseButtonEventArgs e) => App.MouseDown((MouseButton)e.Button, MapPosition(new(Window.MouseState.X, Window.MouseState.Y)));
+    internal void MouseDown(MouseButtonEventArgs e) => App.MouseDown((MouseButton)e.Button, MapPosition(new(Window.MouseState.X, Window.MouseState.Y)));
 
-    public void MouseUp(MouseButtonEventArgs e) => App.MouseUp((MouseButton)e.Button, MapPosition(new(Window.MouseState.X, Window.MouseState.Y)));
+    internal void MouseUp(MouseButtonEventArgs e) => App.MouseUp((MouseButton)e.Button, MapPosition(new(Window.MouseState.X, Window.MouseState.Y)));
 
-    public void MouseMove(MouseMoveEventArgs e) => App.MouseMove(MapPosition(new(e.X, e.Y)));
+    internal void MouseMove(MouseMoveEventArgs e) => App.MouseMove(MapPosition(new(e.X, e.Y)));
 
-    public void MouseWheel(MouseWheelEventArgs e) => App.MouseWheel(new(e.Offset.X, e.Offset.Y));
+    internal void MouseWheel(MouseWheelEventArgs e) => App.MouseWheel(new(e.Offset.X, e.Offset.Y));
 
+    /// <summary>
+    ///     Runs the window.
+    /// </summary>
     public void Run() => Window.Run();
 #nullable disable
     private GRContext _context;
