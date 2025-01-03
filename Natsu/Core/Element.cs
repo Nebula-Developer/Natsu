@@ -113,6 +113,14 @@ public partial class Element : IDisposable {
     }
 
     /// <summary>
+    ///     Schedules a task to be executed after a certain amount of time.
+    /// </summary>
+    /// <param name="time">The time to wait before executing the task</param>
+    /// <param name="task">The task to execute</param>
+    /// <returns>The scheduled task</returns>
+    public ScheduledTask Schedule(double time, Action task) => App.Scheduler.Schedule(time, task);
+
+    /// <summary>
     ///     Loads this element and its children.
     /// </summary>
     /// <returns>Whether the element's load methods were called.</returns>

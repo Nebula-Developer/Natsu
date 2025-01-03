@@ -72,12 +72,12 @@ public class DesktopWindow {
 
     public void Resize(int width, int height) => CreateSurface(new(width, height));
 
-    public void Update() => App.Update();
+    public void Update(double time) => App.Update(time);
 
-    public void Render() {
+    public void Render(double time) {
         if (_surface == null) return;
 
-        App.Render();
+        App.Render(time);
         _context.Flush();
         Window.SwapBuffers();
     }

@@ -97,11 +97,11 @@ public class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) 
     protected override void OnResize(ResizeEventArgs e) => Bridge.Resize(e.Width, e.Height);
 
     protected override void OnUpdateFrame(FrameEventArgs e) {
-        Bridge.Update();
+        Bridge.Update(e.Time);
         if (TargetCursor != base.Cursor) base.Cursor = TargetCursor;
     }
 
-    protected override void OnRenderFrame(FrameEventArgs e) => Bridge.Render();
+    protected override void OnRenderFrame(FrameEventArgs e) => Bridge.Render(e.Time);
 
     protected override void OnUnload() => Bridge.Dispose();
 

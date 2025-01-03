@@ -35,12 +35,17 @@ public partial class Application : IDisposable {
     /// <summary>
     ///     A clock used for time keeping within the <see cref="Render" /> method.
     /// </summary>
-    public FrameClock RenderTime { get; } = new();
+    public Clock RenderTime { get; } = new();
 
     /// <summary>
     ///     A clock used for time keeping within the <see cref="Update" /> method.
     /// </summary>
-    public FrameClock UpdateTime { get; } = new();
+    public Clock UpdateTime { get; } = new();
+
+    /// <summary>
+    ///     A scheduler used for scheduling tasks.
+    /// </summary>
+    public Scheduler Scheduler { get; } = new();
 
     /// <summary>
     ///     The root element of the application.
@@ -97,8 +102,10 @@ public partial class Application : IDisposable {
     /// <summary>
     ///     Updates the application.
     /// </summary>
-    public void Update() {
-        UpdateTime.Update();
+    /// <param name="time">The time since the last update</param>
+    public void Update(double time) {
+        UpdateTime.Update(time);
+        Scheduler.Update(time);
 
         Root.Update();
         OnUpdate();
@@ -110,8 +117,9 @@ public partial class Application : IDisposable {
     /// <summary>
     ///     Renders the application.
     /// </summary>
-    public void Render() {
-        RenderTime.Update();
+    /// <param name="time">The time since the last render</param>
+    public void Render(double time) {
+        RenderTime.Update(time);
 
         Canvas.Clear(Colors.Black);
         Root.Render(Canvas);
@@ -146,6 +154,14 @@ public partial class Application : IDisposable {
     /// </summary>
     /// <param name="elements">The element(s) to remove</param>
     public void Remove(params Element[] elements) => Root.Remove(elements);
+
+    /// <summary>
+    ///     Schedules a task to be executed after a certain amount of time.
+    /// </summary>
+    /// <param name="time">The time to wait before executing the task</param>
+    /// <param name="task">The task to execute</param>
+    /// <returns>The scheduled task</returns>
+    public ScheduledTask Schedule(double time, Action task) => Scheduler.Schedule(time, task);
 
     public static implicit operator Element(Application app) => app.Root;
 }
