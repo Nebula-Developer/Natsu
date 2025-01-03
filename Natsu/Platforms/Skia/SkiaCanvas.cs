@@ -21,7 +21,7 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
 
     public void DrawLine(Vector2 start, Vector2 end, Paint paint) => Canvas.DrawLine(start, end, UsePaint(paint));
 
-    public void DrawText(string text, Vector2 position, IFont font, Paint paint) => Canvas.DrawText(text, position.X, position.Y + paint.TextSize, SKTextAlign.Center, UseFont(paint, font), UsePaint(paint));
+    public void DrawText(string text, Vector2 position, IFont font, Paint paint) => Canvas.DrawText(text, position.X, position.Y + paint.TextSize, SKTextAlign.Left, UseFont(paint, font), UsePaint(paint));
 
     public void DrawImage(IImage image, Vector2 position, Paint paint) => Canvas.DrawImage(TryImage(image), position, Sampling, UsePaint(paint));
 
