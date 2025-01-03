@@ -1,5 +1,6 @@
 using Natsu.Core;
 using Natsu.Core.Elements;
+using Natsu.Extensions;
 using Natsu.Graphics;
 using Natsu.Input;
 using Natsu.Mathematics;

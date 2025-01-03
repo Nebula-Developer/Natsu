@@ -16,6 +16,11 @@ public class PaintableElement : Element, IPaint {
         set => Paint.Color = value;
     }
 
+    public float Opacity {
+        get => Paint.Opacity;
+        set => Paint.Opacity = value;
+    }
+
     public float StrokeWidth {
         get => Paint.StrokeWidth;
         set => Paint.StrokeWidth = value;

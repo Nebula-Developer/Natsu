@@ -16,6 +16,14 @@ public class Paint : IPaint {
         }
     }
 
+    public float Opacity {
+        get => _color.A / 255f;
+        set {
+            _color.A = (byte)(value * 255);
+            DoChange?.Invoke();
+        }
+    }
+
     public float StrokeWidth {
         get => _strokeWidth;
         set {

@@ -1,5 +1,6 @@
 using Natsu.Core;
 using Natsu.Core.Elements;
+using Natsu.Extensions;
 using Natsu.Graphics;
 using Natsu.Input;
 using Natsu.Mathematics;
@@ -23,6 +24,8 @@ public class MyApp : Application {
             AnchorPosition = new(0.5f),
             OffsetPosition = new(0.5f)
         };
+
+        Image.FadeOut(1).Then().FadeIn(1).Loop();
 
         Add(container);
     }

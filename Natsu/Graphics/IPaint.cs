@@ -2,6 +2,7 @@ namespace Natsu.Graphics;
 
 public interface IPaint {
     Color Color { get; set; }
+    float Opacity { get; set; }
     float StrokeWidth { get; set; }
     bool IsStroke { get; set; }
     bool IsAntialias { get; set; }
