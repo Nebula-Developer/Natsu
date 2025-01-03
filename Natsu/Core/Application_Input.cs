@@ -208,7 +208,8 @@ public partial class Application {
 
         foreach (GlobalInputElement elm in _globalPressedTouchInputs[id]) elm.TouchMove(id, position);
 
-        foreach (InputElement elm in _touchDownCache[id]) elm.TouchMove(id, position);
+        if (!_touchDownCache.TryGetValue(id, out HashSet<InputElement> cache)) return;
+        foreach (InputElement elm in cache) elm.TouchMove(id, position);
     }
 
     public virtual void HandleCursorChange(CursorStyle style) => Platform.Cursor = style;
