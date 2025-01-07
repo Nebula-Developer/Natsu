@@ -15,6 +15,8 @@ public partial class Element : IDisposable {
     private int _index;
     private string? _name;
 
+    private INativePlatform _platform = new BatchNativePlatform();
+
     /// <summary>
     ///     Whether this element should dispose its children when it is disposed.
     /// </summary>
@@ -60,14 +62,20 @@ public partial class Element : IDisposable {
     /// <summary>
     ///     The <see cref="ResourceLoader" /> used by the application.
     /// </summary>
-    public ResourceLoader ResourceLoader => App.ResourceLoader;
+    public ResourceLoader ResourceLoader => App?.ResourceLoader ?? new NullResourceLoader();
 
     /// <summary>
     ///     The <see cref="INativePlatform" /> used by the application.
     ///     <br />
     ///     Used to send platform-specific commands to the appplication/platform.
     /// </summary>
-    public INativePlatform Platform => App.Platform;
+    public INativePlatform Platform {
+        get => _platform;
+        set {
+            if (_platform is BatchNativePlatform batch) batch.Apply(value);
+            _platform = value;
+        }
+    }
 
     /// <summary>
     ///     The index of this element used to sort it in the parent's children list.
@@ -346,6 +354,7 @@ public partial class Element : IDisposable {
 
         Application old = _app;
         _app = app;
+        Platform = app?.Platform;
 
         ForChildren(child => child.setApp(app));
 
