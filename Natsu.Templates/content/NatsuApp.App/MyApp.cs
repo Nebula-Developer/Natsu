@@ -2,6 +2,7 @@
 using Natsu.Core;
 using Natsu.Core.Elements;
 using Natsu.Mathematics;
+using Natsu.Extensions;
 
 namespace NatsuApp;
 
