@@ -10,6 +10,11 @@ public interface ITransform {
     public ITransformSequence Sequence { get; set; }
 
     /// <summary>
+    ///     The index of the transform in the sequence.
+    /// </summary>
+    public int Index { get; set; }
+
+    /// <summary>
     ///     The name used to identify the transform.
     /// </summary>
     public string Name { get; }

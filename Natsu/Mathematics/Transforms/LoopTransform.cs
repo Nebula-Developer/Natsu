@@ -3,8 +3,6 @@ namespace Natsu.Mathematics.Transforms;
 public class LoopTransform : ITransform {
     private int _loopCount = -1;
 
-    private bool _loopLock;
-
     /// <summary>
     ///     The amount of times the loop should be performed.
     ///     <br />
@@ -28,6 +26,8 @@ public class LoopTransform : ITransform {
     /// </summary>
     public float LoopTime { get; set; }
 
+    public int Index { get; set; }
+
     public string Name => "Loop";
 
     public ITransformSequence Sequence { get; set; } = null!;
@@ -50,16 +50,8 @@ public class LoopTransform : ITransform {
 
     public void Complete() {
         RemainingLoops--;
-        _loopLock = true;
-        Sequence.ResetTo(LoopTime);
+        Sequence.ResetTo(LoopTime, Index);
     }
 
-    public void Reset(bool seek = true) {
-        if (_loopLock) {
-            _loopLock = false;
-            return;
-        }
-
-        RemainingLoops = LoopCount;
-    }
+    public void Reset(bool seek = true) => RemainingLoops = LoopCount;
 }

@@ -48,7 +48,8 @@ public interface ITransformSequence {
     ///     Resets the sequence to the given time.
     /// </summary>
     /// <param name="time">The time to reset to</param>
-    public void ResetTo(float time);
+    /// <param name="index">Which index to prevent further resetting</param>
+    public void ResetTo(float time, int index = -1);
 
     /// <summary>
     ///     Resets the sequence to the start.

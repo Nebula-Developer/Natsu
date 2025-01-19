@@ -15,6 +15,8 @@ public class Transform : ITransform {
 
     public float Duration { get; set; }
 
+    public int Index { get; set; }
+
     public Easing Easing { get; set; } = Easings.Linear;
 
     public bool IsCompleted { get; set; }

@@ -42,13 +42,14 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
         }
     }
 
-    public void ResetTo(float toTime) {
+    public void ResetTo(float toTime, int index = -1) {
         float fromTime = Time;
         Time = toTime;
 
         HashSet<string> valueResetNames = new();
 
-        foreach (ITransform transform in Transforms)
+        for (int i = 0; i < (index == -1 ? Transforms.Count : index); i++) {
+            ITransform transform = Transforms[i];
             if (transform.StartTime >= toTime && transform.StartTime < fromTime) {
                 if (!valueResetNames.Contains(transform.Name)) {
                     transform.Reset();
@@ -61,6 +62,7 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
                 transform.Reset(false);
                 transform.Seek(progress);
             }
+        }
     }
 
     public void Reset() => ResetTo(0);
@@ -77,7 +79,10 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     public TransformSequence<T> Append(ITransform transform, bool applyBaseTime = true) {
         transform.Sequence = this;
         transform.StartTime += applyBaseTime ? BaseTime : 0;
+
         Transforms.Add(transform);
+        transform.Index = Transforms.Count - 1;
+
         return this;
     }
 
@@ -109,7 +114,10 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
 
         loop.Sequence = this;
         loop.StartTime = BaseTime;
+
         Transforms.Add(loop);
+        loop.Index = Transforms.Count - 1;
+
         return this;
     }
 

@@ -29,7 +29,7 @@ public class MyApp : Application {
 
         TransformSequence<ImageElement>? flash = Image.Begin("flash");
         flash.FadeOut(1).Then().FadeIn(1);
-        flash.Loop();
+        flash.Loop(2);
 
         TransformSequence<ImageElement>? spinny = Image.Begin("spinny-sizing");
         spinny.MoveTo(new(0, 200), 1, Ease.ExponentialOut).RotateTo(45, 1, Ease.ExponentialOut).Then();
@@ -37,7 +37,7 @@ public class MyApp : Application {
         spinny.SetLoopPoint(1);
         spinny.MoveTo(new(0, -200), 1, Ease.ExponentialOut).ScaleTo(new(.75f), 1, Ease.ExponentialOut).Then();
         spinny.MoveTo(new(0, 0), 1, Ease.ExponentialOut).ScaleTo(new(1), 1, Ease.ExponentialOut);
-        spinny.Loop(1, 1).Loop(); // Go back to lp1 1 time, then go back to the start.
+        spinny.Loop(1, 1).Loop(2); // Go back to lp1 1 time, then go back to the start.
 
         Add(container);
     }
