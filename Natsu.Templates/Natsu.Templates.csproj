@@ -14,6 +14,9 @@
 
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+
+        <!-- Supresses nuspec dupendency issues, which affect the warning as errors property. -->
+        <NoWarn>NU5128</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
