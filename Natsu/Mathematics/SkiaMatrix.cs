@@ -5,6 +5,13 @@ namespace Natsu.Mathematics;
 public struct SkiaMatrix {
     public SKMatrix Matrix { get; set; } = SKMatrix.CreateIdentity();
 
+    public float[,] Values =>
+        new float[3, 3] {
+            { Matrix.Values[0], Matrix.Values[1], Matrix.Values[2] },
+            { Matrix.Values[3], Matrix.Values[4], Matrix.Values[5] },
+            { Matrix.Values[6], Matrix.Values[7], Matrix.Values[8] }
+        };
+
     public void Reset() => Matrix = SKMatrix.CreateIdentity();
 
     public void Translate(float x, float y) => Matrix = Matrix.PostConcat(SKMatrix.CreateTranslation(x, y));
