@@ -4,11 +4,20 @@ using Natsu.Core.Elements;
 using Natsu.Graphics;
 using Natsu.Mathematics;
 using Natsu.Native;
+using Natsu.Utils.Logging;
 
 namespace Natsu.Core;
 
 public partial class Application : IDisposable {
     private Vector2 _size;
+
+    public Logger AppLogger = new() {
+        Outputs = {
+            new FileLoggerOutput(Path.Join(AppContext.BaseDirectory, "log.txt")),
+            new ConsoleLoggerOutput()
+        },
+        Prefix = "[App] "
+    };
 
     /// <summary>
     ///     The <see cref="INativePlatform" /> that handles agnostic platform operations.
@@ -66,6 +75,8 @@ public partial class Application : IDisposable {
     ///     Disposes the application and all of its resources/elements.
     /// </summary>
     public void Dispose() {
+        AppLogger.Info($"Disposing {GetType().Name}...");
+
         Root.Dispose();
         OnDispose();
         DoDispose?.Invoke();
@@ -94,6 +105,8 @@ public partial class Application : IDisposable {
     ///     Loads the application.
     /// </summary>
     public void Load() {
+        AppLogger.Info($"Loading {GetType().Name}...");
+
         Root.Load();
         OnLoad();
         DoLoad?.Invoke();
