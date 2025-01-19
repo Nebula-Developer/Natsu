@@ -8,15 +8,22 @@ namespace Natsu.Extensions;
 
 public static class ElementTransformExtensions {
     public static TransformSequence<T> TransformTo<T>(this T element, string property, Action<double> setter, double duration = 0, Ease ease = Ease.Linear) where T : Element {
-        Transform t = new(t => setter(t), duration) { Ease = Easings.FromEase(ease) };
-        TransformSequence<T> seq = new TransformSequence<T>(element, property).Append(t);
+        Transform t = new(t => setter(t)) { Duration = (float)duration, Easing = Easings.FromEase(ease), Name = property };
+        TransformSequence<T> seq = new TransformSequence<T>(element).Append(t);
+        seq.Name = property;
         element.AddTransformSequence(seq);
         return seq;
     }
 
     public static TransformSequence<T> TransformTo<T>(this TransformSequence<T> sequence, string property, Action<double> setter, double duration = 0, Ease ease = Ease.Linear) where T : Element {
-        Transform t = new(t => setter(t), duration) { Ease = Easings.FromEase(ease) };
+        Transform t = new(t => setter(t)) { Duration = (float)duration, Easing = Easings.FromEase(ease), Name = property };
         return sequence.Append(t);
+    }
+
+    public static TransformSequence<T> Begin<T>(this T element, string name) where T : Element {
+        TransformSequence<T> seq = new(element) { Name = name };
+        element.AddTransformSequence(seq);
+        return seq;
     }
 
     public static TransformSequence<T> ScaleTo<T>(this T element, Vector2 scale, double duration = 0, Ease ease = Ease.Linear) where T : Element {
@@ -124,23 +131,23 @@ public static class ElementTransformExtensions {
     }
 
     public static TransformSequence<T> OpacityTo<T>(this T element, float alpha, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement {
-        float currentAlpha = element.Paint.Color.A;
-        TransformSequence<T> seq = element.TransformTo("Alpha", t => element.Opacity = (byte)Easings.Lerp(currentAlpha, alpha, (float)t), duration, ease);
+        float currentAlpha = element.Paint.Opacity;
+        TransformSequence<T> seq = element.TransformTo("Alpha", t => element.Opacity = (float)Easings.Lerp(currentAlpha, alpha, t), duration, ease);
         seq.FutureData["Alpha"] = alpha;
         return seq;
     }
 
     public static TransformSequence<T> OpacityTo<T>(this TransformSequence<T> sequence, float alpha, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement {
-        float currentAlpha = sequence.FutureData.ContainsKey("Alpha") ? (float)sequence.FutureData["Alpha"] : sequence.Target.Paint.Color.A;
+        float currentAlpha = sequence.FutureData.ContainsKey("Alpha") ? (float)sequence.FutureData["Alpha"] : sequence.Target.Paint.Opacity;
         sequence.FutureData["Alpha"] = alpha;
-        return sequence.TransformTo("Alpha", t => { sequence.Target.Opacity = (byte)Easings.Lerp(currentAlpha, alpha, (float)t); }, duration, ease);
+        return sequence.TransformTo("Alpha", t => { sequence.Target.Opacity = (float)Easings.Lerp(currentAlpha, alpha, t); }, duration, ease);
     }
 
     public static TransformSequence<T> FadeOut<T>(this T element, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement => element.OpacityTo(0, duration, ease);
 
     public static TransformSequence<T> FadeOut<T>(this TransformSequence<T> sequence, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement => sequence.OpacityTo(0, duration, ease);
 
-    public static TransformSequence<T> FadeIn<T>(this T element, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement => element.OpacityTo(255, duration, ease);
+    public static TransformSequence<T> FadeIn<T>(this T element, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement => element.OpacityTo(1, duration, ease);
 
-    public static TransformSequence<T> FadeIn<T>(this TransformSequence<T> sequence, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement => sequence.OpacityTo(255, duration, ease);
+    public static TransformSequence<T> FadeIn<T>(this TransformSequence<T> sequence, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement => sequence.OpacityTo(1, duration, ease);
 }

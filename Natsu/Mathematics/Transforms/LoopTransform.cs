@@ -1,26 +1,65 @@
 namespace Natsu.Mathematics.Transforms;
 
-public class LoopTransform : Transform {
-    public LoopTransform(double startTime, int times = -1, int point = 0) : base(_ => { }, 0) {
-        StartTime = startTime;
-        Times = times;
-        Point = point;
+public class LoopTransform : ITransform {
+    private int _loopCount = -1;
+
+    private bool _loopLock;
+
+    /// <summary>
+    ///     The amount of times the loop should be performed.
+    ///     <br />
+    ///     If set to -1, the loop will be performed indefinitely.
+    /// </summary>
+    public int LoopCount {
+        get => _loopCount;
+        set {
+            _loopCount = value;
+            RemainingLoops = value;
+        }
     }
 
-    public int Times { get; set; }
-    public int Count { get; set; }
-    public int Point { get; set; }
+    /// <summary>
+    ///     The remaining amount of loops to perform.
+    /// </summary>
+    public int RemainingLoops { get; set; }
 
-    public void Loop(TransformSequence? sequence) {
-        if (sequence == null) return;
+    /// <summary>
+    ///     The point in time to reset to.
+    /// </summary>
+    public float LoopTime { get; set; }
 
-        if (Times == -1 || Count++ < Times) sequence.ResetTo(Point);
+    public string Name => "Loop";
+
+    public ITransformSequence Sequence { get; set; } = null!;
+
+    public float StartTime { get; set; }
+
+    public float Duration {
+        get => 0;
+        set { }
     }
 
-    protected override void OnSetProgress(double progress, TransformSequence? sequence) => Loop(sequence);
+    public Easing Easing { get; set; } = Easings.Linear;
 
-    public override void Reset(TransformSequence? sequence = null) {
-        base.Reset(sequence);
-        if (sequence == null || sequence.Time > StartTime + sequence.DeltaTime) Count = 0;
+    public bool IsCompleted {
+        get => RemainingLoops == 0;
+        set { }
+    }
+
+    public void Seek(float time) { }
+
+    public void Complete() {
+        RemainingLoops--;
+        _loopLock = true;
+        Sequence.ResetTo(LoopTime);
+    }
+
+    public void Reset(bool seek = true) {
+        if (_loopLock) {
+            _loopLock = false;
+            return;
+        }
+
+        RemainingLoops = LoopCount;
     }
 }

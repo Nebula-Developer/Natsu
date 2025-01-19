@@ -3,7 +3,7 @@ using Natsu.Mathematics.Transforms;
 namespace Natsu.Core;
 
 public partial class Element {
-    public List<TransformSequence> TransformSequences { get; } = new();
+    public List<ITransformSequence> TransformSequences { get; } = new();
 
     /// <summary>
     ///     Updates all transform sequences.
@@ -11,19 +11,16 @@ public partial class Element {
     public void UpdateTransformSequences() {
         lock (TransformSequences) {
             for (int i = 0; i < TransformSequences.Count; i++) {
-                TransformSequence? sequence = TransformSequences[i];
+                ITransformSequence? sequence = TransformSequences[i];
                 if (sequence == null) continue;
 
-                if (sequence.IsComplete || sequence.Stopped) {
+                if (sequence.IsCompleted) {
                     TransformSequences.RemoveAt(i);
                     i--;
                     continue;
                 }
 
-                if (App != null)
-                    sequence.Update(App.UpdateTime.DeltaTime);
-                else
-                    sequence.Update();
+                if (App != null) sequence.Update((float)App.UpdateTime.DeltaTime);
             }
         }
     }
@@ -32,7 +29,7 @@ public partial class Element {
     ///     Adds a new transform sequence to the element.
     /// </summary>
     /// <param name="sequence">The transform sequence to add</param>
-    public void AddTransformSequence(TransformSequence sequence) {
+    public void AddTransformSequence(ITransformSequence sequence) {
         lock (TransformSequences) {
             TransformSequences.Add(sequence);
         }
@@ -44,7 +41,7 @@ public partial class Element {
     public void StopTransformSequences() {
         lock (TransformSequences) {
             for (int i = 0; i < TransformSequences.Count; i++) {
-                TransformSequence? sequence = TransformSequences[i];
+                ITransformSequence? sequence = TransformSequences[i];
                 if (sequence == null) continue;
 
                 TransformSequences.RemoveAt(i);
@@ -60,7 +57,7 @@ public partial class Element {
     public void StopTransformSequences(params string[] properties) {
         lock (TransformSequences) {
             for (int i = 0; i < TransformSequences.Count; i++) {
-                TransformSequence? sequence = TransformSequences[i];
+                ITransformSequence? sequence = TransformSequences[i];
                 if (sequence == null || !properties.Contains(sequence.Name)) continue;
 
                 TransformSequences.RemoveAt(i);
