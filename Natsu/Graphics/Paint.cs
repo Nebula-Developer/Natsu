@@ -1,12 +1,20 @@
 namespace Natsu.Graphics;
 
-public class Paint : IPaint {
+public class Paint : IPaint, IEquatable<Paint> {
     private Color _color = Colors.White;
     private FilterQuality _filterQuality = FilterQuality.None;
     private float _fontSize = 12;
     private bool _isAntialias;
     private bool _isStroke;
+    private StrokeCap _strokeCap = StrokeCap.Butt;
+    private StrokeJoin _strokeJoin = StrokeJoin.Miter;
     private float _strokeWidth = 1;
+
+    public bool Equals(Paint? other) {
+        if (ReferenceEquals(null, other)) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return _color.Equals(other._color) && _filterQuality == other._filterQuality && _fontSize.Equals(other._fontSize) && _isAntialias == other._isAntialias && _isStroke == other._isStroke && _strokeWidth.Equals(other._strokeWidth) && StrokeCap == other.StrokeCap && StrokeJoin == other.StrokeJoin;
+    }
 
     public Color Color {
         get => _color;
@@ -64,9 +72,21 @@ public class Paint : IPaint {
         }
     }
 
-    public StrokeCap StrokeCap { get; set; } = StrokeCap.Butt;
+    public StrokeCap StrokeCap {
+        get => _strokeCap;
+        set {
+            _strokeCap = value;
+            DoChange?.Invoke();
+        }
+    }
 
-    public StrokeJoin StrokeJoin { get; set; } = StrokeJoin.Miter;
+    public StrokeJoin StrokeJoin {
+        get => _strokeJoin;
+        set {
+            _strokeJoin = value;
+            DoChange?.Invoke();
+        }
+    }
 
     public event Action? DoChange;
 }

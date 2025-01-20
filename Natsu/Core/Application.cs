@@ -75,7 +75,7 @@ public partial class Application : IDisposable {
     ///     Disposes the application and all of its resources/elements.
     /// </summary>
     public void Dispose() {
-        AppLogger.Info($"Disposing {GetType().Name}...");
+        AppLogger.Debug($"Disposing {GetType().Name}...");
 
         Root.Dispose();
         OnDispose();
@@ -105,7 +105,9 @@ public partial class Application : IDisposable {
     ///     Loads the application.
     /// </summary>
     public void Load() {
-        AppLogger.Info($"Loading {GetType().Name}...");
+        AppLogger.Debug($"Loading {GetType().Name} on {Platform?.GetType().Name ?? "no platform"}...");
+        AppLogger.Debug($"Renderer: {Renderer?.GetType().Name ?? "none"}");
+        AppLogger.Debug($"ResourceLoader: {ResourceLoader?.GetType().Name ?? "none"}");
 
         Root.Load();
         OnLoad();

@@ -20,5 +20,5 @@ public class ReadonlyColor {
     public byte A { get; }
 
     public static implicit operator Color(ReadonlyColor color) => new(color.R, color.G, color.B, color.A);
-    public static implicit operator ReadonlyColor(Color color) => new(color.R, color.G, color.B, color.A);
+    public static explicit operator ReadonlyColor(Color color) => new(color.R, color.G, color.B, color.A);
 }
