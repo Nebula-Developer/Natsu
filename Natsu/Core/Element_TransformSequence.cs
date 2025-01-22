@@ -20,7 +20,7 @@ public partial class Element {
                     continue;
                 }
 
-                if (App != null) sequence.Update((float)App.UpdateTime.DeltaTime);
+                if (App != null) sequence.Update((float)App.Time.DeltaTime);
             }
         }
     }

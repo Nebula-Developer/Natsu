@@ -19,12 +19,12 @@ public class ApplicationTests {
         Application app = CreateApp();
 
         app.Update(0.1f);
-        Assert.True(Precision.Approximately(0.1f, app.UpdateTime.Time));
+        Assert.True(Precision.Approximately(0.1f, app.Time.Time));
 
-        app.UpdateTime.TimeScale = 2;
+        app.Time.TimeScale = 2;
         app.Update(0.1f);
-        Assert.True(Precision.Approximately(0.3f, app.UpdateTime.Time));
-        Assert.True(Precision.Approximately(0.2f, app.UpdateTime.RawTime));
+        Assert.True(Precision.Approximately(0.3f, app.Time.Time));
+        Assert.True(Precision.Approximately(0.2f, app.Time.RawTime));
     }
 
     [Fact]

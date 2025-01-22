@@ -44,12 +44,13 @@ public partial class Application : IDisposable {
     /// <summary>
     ///     A clock used for time keeping within the <see cref="Render" /> method.
     /// </summary>
+    [Obsolete("For application runtime, use Application.Time instead.")]
     public Clock RenderTime { get; } = new();
 
     /// <summary>
     ///     A clock used for time keeping within the <see cref="Update" /> method.
     /// </summary>
-    public Clock UpdateTime { get; } = new();
+    public Clock Time { get; } = new();
 
     /// <summary>
     ///     A scheduler used for scheduling tasks.
@@ -119,7 +120,7 @@ public partial class Application : IDisposable {
     /// </summary>
     /// <param name="time">The time since the last update</param>
     public void Update(double time) {
-        UpdateTime.Update(time);
+        Time.Update(time);
         Scheduler.Update(time);
 
         Root.Update();
@@ -134,8 +135,6 @@ public partial class Application : IDisposable {
     /// </summary>
     /// <param name="time">The time since the last render</param>
     public void Render(double time) {
-        RenderTime.Update(time);
-
         Canvas.Clear(Colors.Black);
         Root.Render(Canvas);
         OnRender();
