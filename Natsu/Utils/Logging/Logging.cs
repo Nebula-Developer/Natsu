@@ -18,8 +18,8 @@ public static class Logging {
     /// <inheritdoc cref="ILoggerOutput.Info" />
     public static void Info(string message) => Log(LogLevel.Info, message);
 
-    /// <inheritdoc cref="ILoggerOutput.Warning" />
-    public static void Warning(string message) => Log(LogLevel.Warning, message);
+    /// <inheritdoc cref="ILoggerOutput.Warn" />
+    public static void Warn(string message) => Log(LogLevel.Warning, message);
 
     /// <inheritdoc cref="ILoggerOutput.Error" />
     public static void Error(string message) => Log(LogLevel.Error, message);

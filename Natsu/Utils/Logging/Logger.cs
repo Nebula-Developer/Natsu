@@ -32,8 +32,8 @@ public class Logger {
     /// <inheritdoc cref="ILoggerOutput.Info" />
     public void Info(string message) => Log(LogLevel.Info, message);
 
-    /// <inheritdoc cref="ILoggerOutput.Warning" />
-    public void Warning(string message) => Log(LogLevel.Warning, message);
+    /// <inheritdoc cref="ILoggerOutput.Warn" />
+    public void Warn(string message) => Log(LogLevel.Warning, message);
 
     /// <inheritdoc cref="ILoggerOutput.Error" />
     public void Error(string message) => Log(LogLevel.Error, message);

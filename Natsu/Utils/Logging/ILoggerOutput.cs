@@ -39,7 +39,7 @@ public interface ILoggerOutput {
     ///     Outputs a warning log message.
     /// </summary>
     /// <param name="message">The message to log</param>
-    void Warning(string message) => Log(LogLevel.Warning, message);
+    void Warn(string message) => Log(LogLevel.Warning, message);
 
     /// <summary>
     ///     Outputs an error log message.

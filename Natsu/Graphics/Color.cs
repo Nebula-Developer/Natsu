@@ -65,4 +65,9 @@ public class Color {
         A = b.A;
         return this;
     }
+
+    public Color Value {
+        get => this;
+        set => Become(value);
+    }
 }

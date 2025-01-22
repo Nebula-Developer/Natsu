@@ -5,6 +5,7 @@ using Natsu.Graphics;
 using Natsu.Input;
 using Natsu.Mathematics;
 using Natsu.Mathematics.Transforms;
+using Natsu.Utils.Logging;
 
 namespace Natsu.Sandbox;
 
@@ -29,7 +30,7 @@ public class MyApp : Application {
 
         TransformSequence<ImageElement>? flash = Image.Begin("flash");
         flash.FadeOut(1).Then().FadeIn(1);
-        flash.Loop();
+        flash.Loop(4); // Will flash 5 times total (it will have run once before the loop)
 
         TransformSequence<ImageElement>? spinny = Image.Begin("spinny-sizing");
         spinny.MoveTo(new(0, 200), 1, Ease.ExponentialOut).RotateTo(45, 1, Ease.ExponentialOut).Then();
@@ -38,6 +39,11 @@ public class MyApp : Application {
         spinny.MoveTo(new(0, -200), 1, Ease.ExponentialOut).ScaleTo(new(.75f), 1, Ease.ExponentialOut).Then();
         spinny.MoveTo(new(0, 0), 1, Ease.ExponentialOut).ScaleTo(new(1), 1, Ease.ExponentialOut);
         spinny.Loop(1, 1).Loop(2); // Go back to lp1 1 time, then go back to the start. 
+
+        Logging.Fatal("This is a fatal message! AAAAAHHH!");
+        Logging.Error("This is an error message!");
+        Logging.Warn("This is a warning message!");
+        Logging.Info("This is an info message!");
 
         Add(container);
     }
