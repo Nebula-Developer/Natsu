@@ -42,7 +42,7 @@ public class Color {
 
     public static bool operator !=(Color a, Color b) => a.R != b.R || a.G != b.G || a.B != b.B || a.A != b.A;
 
-    public static Color Lerp(Color a, Color b, float t) => new((byte)Easings.Lerp(a.R, b.R, t), (byte)Easings.Lerp(a.G, b.G, t), (byte)Easings.Lerp(a.B, b.B, t), (byte)Easings.Lerp(a.A, b.A, t));
+    public static Color Lerp(Color a, Color b, float t) => new((byte)EasingHelper.Lerp(a.R, b.R, t), (byte)EasingHelper.Lerp(a.G, b.G, t), (byte)EasingHelper.Lerp(a.B, b.B, t), (byte)EasingHelper.Lerp(a.A, b.A, t));
 
     public override bool Equals(object obj) => obj is Color other && this == other;
 

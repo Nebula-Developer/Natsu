@@ -17,7 +17,7 @@ public class Transform : ITransform {
 
     public int Index { get; set; }
 
-    public Easing Easing { get; set; } = Easings.Linear;
+    public EaseFunction Easing { get; set; } = EasingHelper.Linear;
 
     public bool IsCompleted { get; set; }
 

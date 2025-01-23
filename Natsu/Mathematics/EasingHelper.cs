@@ -1,42 +1,8 @@
 namespace Natsu.Mathematics;
 
-public delegate double Easing(double t);
+public delegate double EaseFunction(double t);
 
-public enum Ease {
-    Linear,
-    QuadraticIn,
-    QuadraticOut,
-    QuadraticInOut,
-    CubicIn,
-    CubicOut,
-    CubicInOut,
-    QuarticIn,
-    QuarticOut,
-    QuarticInOut,
-    QuinticIn,
-    QuinticOut,
-    QuinticInOut,
-    SineIn,
-    SineOut,
-    SineInOut,
-    CircularIn,
-    CircularOut,
-    CircularInOut,
-    ExponentialIn,
-    ExponentialOut,
-    ExponentialInOut,
-    ElasticIn,
-    ElasticOut,
-    ElasticInOut,
-    BackIn,
-    BackOut,
-    BackInOut,
-    BounceIn,
-    BounceOut,
-    BounceInOut
-}
-
-public static class Easings {
+public static class EasingHelper {
     public static double Lerp(double a, double b, double t) => a + (b - a) * t;
 
     // Linear easing
@@ -193,39 +159,39 @@ public static class Easings {
         return 0.5 * BounceOut(t * 2 - 1) + 0.5;
     }
 
-    public static Easing FromEase(Ease ease) =>
+    public static EaseFunction FromEaseType(EaseType ease) =>
         ease switch {
-            Ease.Linear => Linear,
-            Ease.QuadraticIn => QuadraticIn,
-            Ease.QuadraticOut => QuadraticOut,
-            Ease.QuadraticInOut => QuadraticInOut,
-            Ease.CubicIn => CubicIn,
-            Ease.CubicOut => CubicOut,
-            Ease.CubicInOut => CubicInOut,
-            Ease.QuarticIn => QuarticIn,
-            Ease.QuarticOut => QuarticOut,
-            Ease.QuarticInOut => QuarticInOut,
-            Ease.QuinticIn => QuinticIn,
-            Ease.QuinticOut => QuinticOut,
-            Ease.QuinticInOut => QuinticInOut,
-            Ease.SineIn => SineIn,
-            Ease.SineOut => SineOut,
-            Ease.SineInOut => SineInOut,
-            Ease.CircularIn => CircularIn,
-            Ease.CircularOut => CircularOut,
-            Ease.CircularInOut => CircularInOut,
-            Ease.ExponentialIn => ExponentialIn,
-            Ease.ExponentialOut => ExponentialOut,
-            Ease.ExponentialInOut => ExponentialInOut,
-            Ease.ElasticIn => ElasticIn,
-            Ease.ElasticOut => ElasticOut,
-            Ease.ElasticInOut => ElasticInOut,
-            Ease.BackIn => BackIn,
-            Ease.BackOut => BackOut,
-            Ease.BackInOut => BackInOut,
-            Ease.BounceIn => BounceIn,
-            Ease.BounceOut => BounceOut,
-            Ease.BounceInOut => BounceInOut,
+            EaseType.Linear => Linear,
+            EaseType.QuadraticIn => QuadraticIn,
+            EaseType.QuadraticOut => QuadraticOut,
+            EaseType.QuadraticInOut => QuadraticInOut,
+            EaseType.CubicIn => CubicIn,
+            EaseType.CubicOut => CubicOut,
+            EaseType.CubicInOut => CubicInOut,
+            EaseType.QuarticIn => QuarticIn,
+            EaseType.QuarticOut => QuarticOut,
+            EaseType.QuarticInOut => QuarticInOut,
+            EaseType.QuinticIn => QuinticIn,
+            EaseType.QuinticOut => QuinticOut,
+            EaseType.QuinticInOut => QuinticInOut,
+            EaseType.SineIn => SineIn,
+            EaseType.SineOut => SineOut,
+            EaseType.SineInOut => SineInOut,
+            EaseType.CircularIn => CircularIn,
+            EaseType.CircularOut => CircularOut,
+            EaseType.CircularInOut => CircularInOut,
+            EaseType.ExponentialIn => ExponentialIn,
+            EaseType.ExponentialOut => ExponentialOut,
+            EaseType.ExponentialInOut => ExponentialInOut,
+            EaseType.ElasticIn => ElasticIn,
+            EaseType.ElasticOut => ElasticOut,
+            EaseType.ElasticInOut => ElasticInOut,
+            EaseType.BackIn => BackIn,
+            EaseType.BackOut => BackOut,
+            EaseType.BackInOut => BackInOut,
+            EaseType.BounceIn => BounceIn,
+            EaseType.BounceOut => BounceOut,
+            EaseType.BounceInOut => BounceInOut,
             _ => Linear
         };
 }

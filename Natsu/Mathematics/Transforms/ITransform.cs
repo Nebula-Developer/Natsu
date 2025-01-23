@@ -32,7 +32,7 @@ public interface ITransform {
     /// <summary>
     ///     The easing function of the transform.
     /// </summary>
-    public Easing Easing { get; set; }
+    public EaseFunction Easing { get; set; }
 
     /// <summary>
     ///     Whether the transform has already been performed.

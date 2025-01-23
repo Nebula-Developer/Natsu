@@ -39,7 +39,7 @@ public class LoopTransform : ITransform {
         set { }
     }
 
-    public Easing Easing { get; set; } = Easings.Linear;
+    public EaseFunction Easing { get; set; } = EasingHelper.Linear;
 
     public bool IsCompleted {
         get => RemainingLoops == 0;

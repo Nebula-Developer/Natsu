@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Natsu.Core;
 using Natsu.Core.Elements;
 using Natsu.Extensions;
@@ -6,6 +7,7 @@ using Natsu.Input;
 using Natsu.Mathematics;
 using Natsu.Mathematics.Transforms;
 using OpenTK.Graphics.ES11;
+using OpenTK.Graphics.OpenGL;
 
 namespace Natsu.Sandbox;
 
@@ -22,12 +24,12 @@ public class BouncyButton : InputElement {
 
     protected override void OnPressDown(Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Scale));
-        Background.ScaleTo(0.6f, 2f, Ease.ExponentialOut);
+        Background.ScaleTo(0.6f, 2f, EaseType.ExponentialOut);
     }
 
     protected override void OnPressUp(Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Scale));
-        Background.ScaleTo(1f, 0.8f, Ease.ElasticOut);
+        Background.ScaleTo(1f, 0.8f, EaseType.ElasticOut);
     }
 
     protected override void OnPress(Vector2 position) {
@@ -49,26 +51,30 @@ public class MyApp : Application {
         _loop = new TransformSequence<BouncyButton>(Button)
             .Then(5f)
             .SetLoopPoint(3)
-            .Then(5f)
+            .MoveTo(new(0, 100), 5f, EaseType.ExponentialOut)
             .Loop(3, 3)
             .Then(10f)
             .Loop(-1, 0);
 
         Button.AddTransformSequence(_loop);
+
+        _stopwatch.Start();
     }
     
     private ITransformSequence _loop = null!;
+    private Stopwatch _stopwatch = new();
 
     protected override void OnKeyDown(Key key, KeyMods mods) {
         _loop.Reset();
+        _stopwatch.Restart();
     }
 
     protected override void OnRender() {
-        Canvas.DrawText(_loop.Time.ToString(), new(10, 10), ResourceLoader.DefaultFont, new() {
+        Canvas.DrawText(_loop.Time.ToString("0.00"), new(10, 10), ResourceLoader.DefaultFont, new() {
             TextSize = 40 
         });
 
-        Canvas.DrawText(Time.Time.ToString(), new(10, 50), ResourceLoader.DefaultFont, new() {
+        Canvas.DrawText(_stopwatch.Elapsed.TotalSeconds.ToString("0.00"), new(10, 50), ResourceLoader.DefaultFont, new() {
             TextSize = 40 
         });
     }

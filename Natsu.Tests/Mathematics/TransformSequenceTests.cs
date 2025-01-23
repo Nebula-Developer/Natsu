@@ -24,7 +24,7 @@ public class TransformSequenceTests {
         public string Name => "MockTransform";
         public int Index { get; set; }
         public ITransformSequence Sequence { get; set; } = null!;
-        public Easing Easing { get; set; } = Easings.Linear;
+        public EaseFunction Easing { get; set; } = EasingHelper.Linear;
         bool ITransform.IsCompleted { get => IsCompleted; set => IsCompleted = value; }
 
         public void Seek(float progress) => Progress = progress;
@@ -152,15 +152,15 @@ public class TransformSequenceTests {
     }
 
     public static IEnumerable<object[]> GetEaseValues() =>
-        Enum.GetValues(typeof(Ease))
-            .Cast<Ease>()
+        Enum.GetValues(typeof(EaseType))
+            .Cast<EaseType>()
             .Select(e => new object[] { e });
 
     [Theory]
     [MemberData(nameof(GetEaseValues))]
-    public void TestEasing(Ease ease) {
+    public void TestEasing(EaseType ease) {
         var sequence = new TransformSequence<object>(new object());
-        var easing = Easings.FromEase(ease);
+        var easing = EasingHelper.FromEaseType(ease);
 
         float progress = 0;
         var transform = new Transform((t) => {
