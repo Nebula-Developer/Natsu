@@ -16,9 +16,21 @@ public class BouncyButton : InputElement {
         Pivot = new(0.5f),
         RelativeSizeAxes = Axes.Both,
         IsAntialias = true
+        // Clip = true
     };
 
-    protected override void OnLoad() => Add(Background);
+    public BoxElement BottomRight = new() {
+        Size = new(0.5f, 0.25f),
+        RawRelativeSizeAxes = Axes.Both,
+        Pivot = Vector2.One,
+        RoundedCorners = new(30, 60),
+        IsAntialias = true
+    };
+
+    protected override void OnLoad() {
+        Add(Background);
+        Background.Add(BottomRight);
+    }
 
     protected override void OnPressDown(Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Scale));
@@ -42,7 +54,7 @@ public class MyApp : Application {
     private ITransformSequence _loop = null!;
 
     public BouncyButton Button = new() {
-        Size = new(200, 100),
+        Size = new(400, 300),
         Pivot = new(0.5f)
     };
 

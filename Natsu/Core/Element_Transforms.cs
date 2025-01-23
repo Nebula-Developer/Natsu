@@ -88,9 +88,27 @@ public partial class Element {
     }
 
     /// <summary>
-    ///     The axes that are relative to the parent's size.
+    ///     Specifies the axes that are relative to the parent's size.
+    ///     <br /><br />
+    ///     This value overrides <see cref="Size" />.
+    ///     <br />
+    ///     To avoid overriding, use <see cref="RawRelativeSizeAxes" />.
     /// </summary>
     public Axes RelativeSizeAxes {
+        get => _relativeSizeAxes;
+        set {
+            if (_relativeSizeAxes == value) return;
+
+            _relativeSizeAxes = value; // Avoid recursion here
+            Size = new(RelativeSizeAxes.HasFlag(Axes.X) ? 1 : Size.X, RelativeSizeAxes.HasFlag(Axes.Y) ? 1 : Size.Y);
+        }
+    }
+
+    /// <summary>
+    ///     Specifies the raw axes that are relative to the parent's size,
+    ///     without affecting the <see cref="Size" /> property.
+    /// </summary>
+    public Axes RawRelativeSizeAxes {
         get => _relativeSizeAxes;
         set {
             if (_relativeSizeAxes == value) return;
@@ -101,9 +119,27 @@ public partial class Element {
     }
 
     /// <summary>
-    ///     The axes that are relative to the child's size.
+    ///     Specifies the axes that are relative to the child's size.
+    ///     <br /><br />
+    ///     This value overrides <see cref="Size" />.
+    ///     <br />
+    ///     To avoid overriding, use <see cref="RawChildRelativeSizeAxes" />.
     /// </summary>
     public Axes ChildRelativeSizeAxes {
+        get => _childRelativeSizeAxes;
+        set {
+            if (_childRelativeSizeAxes == value) return;
+
+            _childRelativeSizeAxes = value; // Avoid recursion
+            Size = new(ChildRelativeSizeAxes.HasFlag(Axes.X) ? 1 : Size.X, ChildRelativeSizeAxes.HasFlag(Axes.Y) ? 1 : Size.Y);
+        }
+    }
+
+    /// <summary>
+    ///     Specifies the raw axes that are relative to the child's size,
+    ///     without affecting the <see cref="Size" /> property.
+    /// </summary>
+    public Axes RawChildRelativeSizeAxes {
         get => _childRelativeSizeAxes;
         set {
             if (_childRelativeSizeAxes == value) return;
@@ -142,17 +178,15 @@ public partial class Element {
     /// <summary>
     ///     The raw size of the element.
     ///     <br />
+    ///     If <see cref="RelativeSizeAxes" /> or <see cref="ChildRelativeSizeAxes" /> are set, the size will be used as a
+    ///     multiplier for those axes.
     /// </summary>
-    // TODO: Implement this logic:
-    // If <see cref="RelativeSizeAxes"/> or <see cref="ChildRelativeSizeAxes"/> are set, the size will be used as a multiplier for those axes.
     public virtual Vector2 Size {
         get => _size;
         set {
-            if ((RelativeSizeAxes | ChildRelativeSizeAxes) == Axes.Both) throw new InvalidOperationException("Cannot set size on element with both relative size axes.");
-
             if (_size == value) return;
 
-            _size = value;
+            _size = Vector2.Max(value, Vector2.Zero);
 
             Invalidate(Invalidation.Size);
             HandleSizeAffectsMatrix();
@@ -244,7 +278,7 @@ public partial class Element {
         set {
             if (_scale == value) return;
 
-            _scale = value;
+            _scale = Vector2.Max(value, new(float.MinValue));
             Invalidate(Invalidation.DrawSize);
         }
     }
@@ -397,12 +431,12 @@ public partial class Element {
         Vector2 distPos = ChildRelativeSizeAxes != Axes.None ? GetChildSpan() : Vector2.Zero;
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.X))
-            newX = distPos.X;
-        else if (accessParent && RelativeSizeAxes.HasFlag(Axes.X) && Parent != null) newX = Parent.DrawSize.X;
+            newX = distPos.X * orig.X;
+        else if (accessParent && RelativeSizeAxes.HasFlag(Axes.X) && Parent != null) newX = Parent.DrawSize.X * orig.X;
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.Y))
-            newY = distPos.Y;
-        else if (accessParent && RelativeSizeAxes.HasFlag(Axes.Y) && Parent != null) newY = Parent.DrawSize.Y;
+            newY = distPos.Y * orig.X;
+        else if (accessParent && RelativeSizeAxes.HasFlag(Axes.Y) && Parent != null) newY = Parent.DrawSize.Y * orig.X;
 
         return new(newX, newY);
     }
