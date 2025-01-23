@@ -24,7 +24,7 @@ public class BouncyButton : InputElement {
 
     protected override void OnPressDown(Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Scale));
-        Background.ScaleTo(0.6f, 2f, EaseType.ExponentialOut);
+        Background.ScaleTo(0.6f, 2f, EaseType.ExpoOut);
     }
 
     protected override void OnPressUp(Vector2 position) {
@@ -51,7 +51,7 @@ public class MyApp : Application {
         _loop = new TransformSequence<BouncyButton>(Button)
             .Then(5f)
             .SetLoopPoint(3)
-            .MoveTo(new(0, 100), 5f, EaseType.ExponentialOut)
+            .MoveTo(new(0, 100), 5f, EaseType.ExpoOut)
             .Loop(3, 3)
             .Then(10f)
             .Loop(-1, 0);
