@@ -3,6 +3,7 @@ using Natsu.Core.Elements;
 using Natsu.Graphics;
 using Natsu.Mathematics;
 using Natsu.Mathematics.Transforms;
+using Natsu.Utils.Logging;
 
 namespace Natsu.Extensions;
 
@@ -127,7 +128,7 @@ public static class ElementTransformExtensions {
     public static TransformSequence<T> ColorTo<T>(this TransformSequence<T> sequence, Color color, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement {
         Color? currentColor = sequence.FutureData.ContainsKey("Color") ? (Color)sequence.FutureData["Color"] : sequence.Target.Paint.Color;
         sequence.FutureData["Color"] = color;
-        return sequence.TransformTo("Color", t => { sequence.Target.Paint.Color = Color.Lerp(currentColor, color, (float)t); }, duration, ease);
+        return sequence.TransformTo("Color", t => sequence.Target.Paint.Color = Color.Lerp(currentColor, color, (float)t), duration, ease);
     }
 
     public static TransformSequence<T> OpacityTo<T>(this T element, float alpha, double duration = 0, Ease ease = Ease.Linear) where T : PaintableElement {

@@ -22,7 +22,7 @@ public class Transform : ITransform {
     public bool IsCompleted { get; set; }
 
     public void Seek(float time) {
-        float progress = (float)Easing(time / Duration);
+        float progress = (float)Easing(time);
         Setter(progress);
     }
 }

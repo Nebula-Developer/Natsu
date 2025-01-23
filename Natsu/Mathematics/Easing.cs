@@ -30,7 +30,10 @@ public enum Ease {
     ElasticInOut,
     BackIn,
     BackOut,
-    BackInOut
+    BackInOut,
+    BounceIn,
+    BounceOut,
+    BounceInOut
 }
 
 public static class Easings {
@@ -165,10 +168,10 @@ public static class Easings {
 
     public static double BackInOut(double t) {
         const double s = 1.70158 * 1.525;
-        if (t < 0.5) return 0.5 * t * t * ((s + 1) * t - s);
+        if (t < 0.5) return 0.5 * (t * t * ((s + 1) * t - s));
 
         double u = t - 1;
-        return 0.5 * (u * u * ((s + 1) * u + s) + 1);
+        return 0.5 * (u * u * ((s + 1) * u + s) + 2);
     }
 
     // Bounce easing
@@ -220,6 +223,9 @@ public static class Easings {
             Ease.BackIn => BackIn,
             Ease.BackOut => BackOut,
             Ease.BackInOut => BackInOut,
+            Ease.BounceIn => BounceIn,
+            Ease.BounceOut => BounceOut,
+            Ease.BounceInOut => BounceInOut,
             _ => Linear
         };
 }

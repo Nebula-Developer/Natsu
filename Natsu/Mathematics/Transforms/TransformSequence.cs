@@ -1,10 +1,12 @@
+using Natsu.Utils.Logging;
+
 namespace Natsu.Mathematics.Transforms;
 
 public class TransformSequence<T>(T target) : ITransformSequence<T> {
     /// <summary>
     ///     Returns the end time of the sequence.
     /// </summary>
-    public float EndTime => Transforms.Max(t => t.StartTime + t.Duration);
+    public float EndTime => Transforms.Count > 0 ? Transforms.Max(t => t.StartTime + t.Duration) : 0;
 
     /// <summary>
     ///     Dictionary used to store additional data for future use.
@@ -17,18 +19,26 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
 
     public float BaseTime { get; set; }
 
+    /// <summary>
+    ///    The collective time of all the <see cref="This" /> delays.
+    ///    <br />
+    ///    Used for calculating the <see cref="BaseTime" /> when there are no actual transforms.
+    /// </summary>
+    public float BaseDelayTime { get; set; }
+
     public T Target { get; } = target;
 
     public float Time { get; private set; }
 
-    public Dictionary<int, float> LoopPoints { get; } = new() {
-        [0] = 0
+    public Dictionary<int, LoopPoint> LoopPoints { get; } = new() {
+        [0] = new LoopPoint(0, 0)
     };
 
     public string Name { get; set; } = "";
 
     public void Update(float time) {
         Time += time;
+
         foreach (ITransform transform in Transforms) {
             float endTime = transform.StartTime + transform.Duration;
             float startTime = transform.StartTime;
@@ -37,20 +47,27 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
                 float progress = (Time - startTime) / transform.Duration;
                 transform.Seek(progress);
             } else if (Time >= endTime && !transform.IsCompleted) {
-                transform.Complete();
+                transform.Seek(1);
+                transform.Complete(Time - endTime);
             }
         }
     }
 
-    public void ResetTo(float toTime, int index = -1) {
+    public void ResetTo(float toTime, int startIndex = 0, int endIndex = -1) {
         float fromTime = Time;
         Time = toTime;
 
         HashSet<string> valueResetNames = new();
 
-        for (int i = 0; i < (index == -1 ? Transforms.Count : index); i++) {
+        for (int i = startIndex; i < (endIndex == -1 ? Transforms.Count : endIndex); i++) {
             ITransform transform = Transforms[i];
-            if (transform.StartTime >= toTime && transform.StartTime < fromTime) {
+
+            if (transform is LoopTransform loop && loop.StartTime > toTime && loop.StartTime <= fromTime) {
+                loop.Reset();
+                continue;
+            }
+
+            if (transform.StartTime >= toTime && transform.StartTime <= fromTime) {
                 if (!valueResetNames.Contains(transform.Name)) {
                     transform.Reset();
                     valueResetNames.Add(transform.Name);
@@ -92,7 +109,8 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     /// <param name="delay">The delay to add to the end time</param>
     /// <returns>The sequence itself, for chaining</returns>
     public TransformSequence<T> Then(float delay = 0) {
-        BaseTime = EndTime + delay;
+        BaseTime = Math.Max(EndTime, BaseDelayTime) + delay;
+        BaseDelayTime += delay;
         return this;
     }
 
@@ -109,11 +127,12 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
 
         LoopTransform loop = new() {
             LoopCount = loopCount,
-            LoopTime = LoopPoints[loopPoint]
+            LoopPoint = LoopPoints[loopPoint]
         };
 
         loop.Sequence = this;
         loop.StartTime = BaseTime;
+        loop.Duration = 0;
 
         Transforms.Add(loop);
         loop.Index = Transforms.Count - 1;
@@ -126,8 +145,8 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     /// </summary>
     /// <param name="point">The loop point to set</param>
     /// <returns>The sequence itself, for chaining</returns>
-    public TransformSequence<T> SetLoopPoint(int point) {
-        LoopPoints[point] = BaseTime;
+    public TransformSequence<T> SetLoopPoint(int point, bool withStartTime = true) {
+        LoopPoints[point] = new LoopPoint(BaseTime, withStartTime ? Transforms.Count + 1 : 0);
         return this;
     }
 }

@@ -24,7 +24,7 @@ public class LoopTransform : ITransform {
     /// <summary>
     ///     The point in time to reset to.
     /// </summary>
-    public float LoopTime { get; set; }
+    public LoopPoint LoopPoint { get; set; }
 
     public int Index { get; set; }
 
@@ -48,9 +48,10 @@ public class LoopTransform : ITransform {
 
     public void Seek(float time) { }
 
-    public void Complete() {
+    public void Complete(float overtime) {
         RemainingLoops--;
-        Sequence.ResetTo(LoopTime, Index);
+        Sequence.ResetTo(LoopPoint, Index);
+        Sequence.Update(overtime);
     }
 
     public void Reset(bool seek = true) => RemainingLoops = LoopCount;
