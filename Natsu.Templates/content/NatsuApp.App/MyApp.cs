@@ -7,7 +7,7 @@ using Natsu.Extensions;
 namespace NatsuApp;
 
 public class MyApp : Application {
-    public RectElement Spinner = new() {
+    public BoxElement Spinner = new() {
         Size = new Vector2(100),
         RoundedCorners = new Vector2(10),
         Color = Colors.Red,
@@ -18,6 +18,6 @@ public class MyApp : Application {
 
     protected override void OnLoad() {
         Add(Spinner);
-        Spinner.RotateTo(360, 2, Ease.QuinticOut).Loop();
+        Spinner.RotateTo(360, 2, EaseType.QuintOut).Loop();
     }
 }
