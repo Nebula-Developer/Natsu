@@ -1,46 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
-using Natsu.Mathematics.Transforms;
-using Natsu.Utils.Logging;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Natsu.Mathematics.Transforms.Tests;
 
 public class TransformSequenceTests {
-    ITestOutputHelper Logger { get; }
-
-    public TransformSequenceTests(ITestOutputHelper logger) {
-        Logger = logger;
-    }
-
-    private class MockTransform : ITransform {
-        public float StartTime { get; set; }
-        public float Duration { get; set; }
-        public float Progress { get; private set; }
-        public bool IsCompleted { get; private set; }
-        public string Name => "MockTransform";
-        public int Index { get; set; }
-        public ITransformSequence Sequence { get; set; } = null!;
-        public EaseFunction Easing { get; set; } = EasingHelper.Linear;
-        bool ITransform.IsCompleted { get => IsCompleted; set => IsCompleted = value; }
-
-        public void Seek(float progress) => Progress = progress;
-
-        public void Complete() {
-            IsCompleted = true;
-        }
-
-        public void Reset(bool resetValues = true) {
-            IsCompleted = false;
-        }
-    }
+    public TransformSequenceTests(ITestOutputHelper logger) => Logger = logger;
+    private ITestOutputHelper Logger { get; }
 
     [Fact]
     public void TestEndTime() {
-        var sequence = new TransformSequence<object>(new object());
+        TransformSequence<object>? sequence = new(new());
         sequence.Append(new MockTransform { StartTime = 0, Duration = 5 });
         sequence.Append(new MockTransform { StartTime = 3, Duration = 7 });
 
@@ -49,9 +17,9 @@ public class TransformSequenceTests {
 
     [Fact]
     public void TestIsCompleted() {
-        var sequence = new TransformSequence<object>(new object());
-        var transform1 = new MockTransform { StartTime = 0, Duration = 5 };
-        var transform2 = new MockTransform { StartTime = 3, Duration = 7 };
+        TransformSequence<object>? sequence = new(new());
+        MockTransform? transform1 = new() { StartTime = 0, Duration = 5 };
+        MockTransform? transform2 = new() { StartTime = 3, Duration = 7 };
 
         sequence.Append(transform1);
         sequence.Append(transform2);
@@ -66,8 +34,8 @@ public class TransformSequenceTests {
 
     [Fact]
     public void TestUpdate() {
-        var sequence = new TransformSequence<object>(new object());
-        var transform = new MockTransform { StartTime = 0, Duration = 5 };
+        TransformSequence<object>? sequence = new(new());
+        MockTransform? transform = new() { StartTime = 0, Duration = 5 };
 
         sequence.Append(transform);
         sequence.Update(3);
@@ -81,21 +49,21 @@ public class TransformSequenceTests {
 
     [Fact]
     public void TestResetTo() {
-        var sequence = new TransformSequence<object>(new object());
-        var transform = new MockTransform { StartTime = 0, Duration = 5 };
+        TransformSequence<object>? sequence = new(new());
+        MockTransform? transform = new() { StartTime = 0, Duration = 5 };
 
         sequence.Append(transform);
         sequence.Update(5);
         sequence.ResetTo(3);
 
         Assert.False(transform.IsCompleted);
-        Assert.Equal(3f/5f, transform.Progress, .01f);
+        Assert.Equal(3f / 5f, transform.Progress, .01f);
     }
 
     [Fact]
     public void TestAppend() {
-        var sequence = new TransformSequence<object>(new object());
-        var transform = new MockTransform { StartTime = 0, Duration = 5 };
+        TransformSequence<object>? sequence = new(new());
+        MockTransform? transform = new() { StartTime = 0, Duration = 5 };
 
         sequence.Append(transform);
 
@@ -105,8 +73,8 @@ public class TransformSequenceTests {
 
     [Fact]
     public void TestThen() {
-        var sequence = new TransformSequence<object>(new object());
-        var transform = new MockTransform { StartTime = 0, Duration = 5 };
+        TransformSequence<object>? sequence = new(new());
+        MockTransform? transform = new() { StartTime = 0, Duration = 5 };
 
         sequence.Append(transform);
         sequence.Then(2);
@@ -116,8 +84,8 @@ public class TransformSequenceTests {
 
     [Fact]
     public void TestLoop() {
-        var sequence = new TransformSequence<object>(new object());
-        var transform = new MockTransform { StartTime = 0, Duration = 1 };
+        TransformSequence<object>? sequence = new(new());
+        MockTransform? transform = new() { StartTime = 0, Duration = 1 };
         sequence.Append(transform);
         sequence.Loop(3);
 
@@ -137,8 +105,8 @@ public class TransformSequenceTests {
 
     [Fact]
     public void TestSetLoopPoint() {
-        var sequence = new TransformSequence<object>(new object());
-        
+        TransformSequence<object>? sequence = new(new());
+
         sequence.Then(1);
         sequence.SetLoopPoint(3); // After 6 seconds, we will be here (1s).
         sequence.Then(5);
@@ -151,21 +119,15 @@ public class TransformSequenceTests {
         Assert.Equal(1f, sequence.Time, .01f);
     }
 
-    public static IEnumerable<object[]> GetEaseValues() =>
-        Enum.GetValues(typeof(EaseType))
-            .Cast<EaseType>()
-            .Select(e => new object[] { e });
+    public static IEnumerable<object[]> GetEaseValues() => Enum.GetValues(typeof(EaseType)).Cast<EaseType>().Select(e => new object[] { e });
 
-    [Theory]
-    [MemberData(nameof(GetEaseValues))]
+    [Theory, MemberData(nameof(GetEaseValues))]
     public void TestEasing(EaseType ease) {
-        var sequence = new TransformSequence<object>(new object());
-        var easing = EasingHelper.FromEaseType(ease);
+        TransformSequence<object>? sequence = new(new());
+        EaseFunction? easing = EasingHelper.FromEaseType(ease);
 
         float progress = 0;
-        var transform = new Transform((t) => {
-            progress = t;
-        }) { StartTime = 0, Duration = 10, Easing = easing, Name = "TestEasingsTransform" };
+        Transform? transform = new(t => { progress = t; }) { StartTime = 0, Duration = 10, Easing = easing, Name = "TestEasingsTransform" };
 
         sequence.Append(transform);
 
@@ -176,5 +138,27 @@ public class TransformSequenceTests {
 
         sequence.Update(10);
         Assert.Equal(1f, progress, .01f);
+    }
+
+    private class MockTransform : ITransform {
+        public float Progress { get; private set; }
+        public bool IsCompleted { get; private set; }
+        public float StartTime { get; set; }
+        public float Duration { get; set; }
+        public string Name => "MockTransform";
+        public int Index { get; set; }
+        public ITransformSequence Sequence { get; set; } = null!;
+        public EaseFunction Easing { get; set; } = EasingHelper.Linear;
+
+        bool ITransform.IsCompleted {
+            get => IsCompleted;
+            set => IsCompleted = value;
+        }
+
+        public void Seek(float progress) => Progress = progress;
+
+        public void Reset(bool resetValues = true) => IsCompleted = false;
+
+        public void Complete() => IsCompleted = true;
     }
 }

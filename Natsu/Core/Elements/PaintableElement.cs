@@ -2,6 +2,9 @@ using Natsu.Graphics;
 
 namespace Natsu.Core.Elements;
 
+/// <summary>
+///     An element that has inherits <see cref="Paint" /> properties.
+/// </summary>
 public class PaintableElement : Element, IPaint {
     public PaintableElement() =>
         Paint.DoChange += () => {
@@ -9,6 +12,9 @@ public class PaintableElement : Element, IPaint {
             OnPaintValueChange();
         };
 
+    /// <summary>
+    ///     The element's paint.
+    /// </summary>
     public Paint Paint { get; } = new();
 
     public Color Color {

@@ -3,7 +3,6 @@ using Natsu.Core.Elements;
 using Natsu.Graphics;
 using Natsu.Mathematics;
 using Natsu.Mathematics.Transforms;
-using Natsu.Utils.Logging;
 
 namespace Natsu.Extensions;
 

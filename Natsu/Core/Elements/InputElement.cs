@@ -4,16 +4,48 @@ using Natsu.Utils;
 
 namespace Natsu.Core.Elements;
 
+/// <summary>
+///     An element that can take in positional input.
+/// </summary>
 public class InputElement : Element {
+    /// <summary>
+    ///     Whether this element can accept input.
+    /// </summary>
     public bool AcceptInput { get; set; } = true;
+
+    /// <summary>
+    ///     Whether this element will block input if its handler is not present.
+    /// </summary>
     public bool GrabFallback { get; set; } = true;
+
+    /// <summary>
+    ///     Whether this element will change the cursor when hovered.
+    /// </summary>
     public bool HoverCursor { get; set; } = true;
+
+    /// <summary>
+    ///     The cursor style to use when the cursor is over this element.
+    /// </summary>
     public CursorStyle Cursor { get; set; } = CursorStyle.Pointer;
 
+    /// <summary>
+    ///     The state of the mouse buttons in this element.
+    /// </summary>
     public FallbackDictionary<MouseButton, bool> MouseButtons { get; } = new(false);
+
+    /// <summary>
+    ///     The state of the keys in this element.
+    /// </summary>
     public FallbackDictionary<Key, bool> Keys { get; } = new(false);
 
+    /// <summary>
+    ///     Whether the mouse is over this element.
+    /// </summary>
     public bool IsMouseOver { get; private set; }
+
+    /// <summary>
+    ///     Whether this element is focused.
+    /// </summary>
     public bool IsFocused { get; private set; }
 
     protected virtual bool OnMouseDown(MouseButton button, Vector2 position) => GrabFallback;

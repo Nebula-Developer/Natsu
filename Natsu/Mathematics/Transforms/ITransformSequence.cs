@@ -1,9 +1,9 @@
 namespace Natsu.Mathematics.Transforms;
 
 /// <summary>
-///    A point in time that can be reset to.
-///    <br />
-///    Holds the time, and the index of the transform that it was created from.
+///     A point in time that can be reset to.
+///     <br />
+///     Holds the time, and the index of the transform that it was created from.
 /// </summary>
 public struct LoopPoint {
     /// <summary>
@@ -80,7 +80,7 @@ public interface ITransformSequence {
     public void ResetTo(float time, int startIndex = 0, int endIndex = -1);
 
     /// <summary>
-    ///    Resets the sequence to the given loop point.
+    ///     Resets the sequence to the given loop point.
     /// </summary>
     /// <param name="loopPoint">The loop point to reset to</param>
     /// <param name="endIndex">The transform index to stop resetting at</param>

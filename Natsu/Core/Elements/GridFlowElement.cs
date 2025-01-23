@@ -3,11 +3,17 @@ using Natsu.Utils;
 
 namespace Natsu.Core.Elements;
 
+/// <summary>
+///     The direction in which the grid overflows its elements.
+/// </summary>
 public enum GridOverflowDirection {
     Horizontal,
     Vertical
 }
 
+/// <summary>
+///     A grid element that will lay out its children with a fixed number of columns and rows.
+/// </summary>
 public class GridElement : Element {
     private int _columns = 1;
     private int _rows = 1;
@@ -69,6 +75,9 @@ public class GridElement : Element {
     }
 }
 
+/// <summary>
+///     A grid element that will lay out its children so that they fit within the grid's bounds.
+/// </summary>
 public class GridFlowElement : Element {
     private GridOverflowDirection _overflowDirection = GridOverflowDirection.Horizontal;
     private Vector2 _spacing = 0f;

@@ -3,7 +3,15 @@ using Natsu.Mathematics;
 
 namespace Natsu.Core.Elements;
 
-public class RectElement : PaintableElement {
+/// <summary>
+///     A simple box that is drawn to the screen.
+/// </summary>
+public class BoxElement : PaintableElement {
+    /// <summary>
+    ///     The rounded corners of the box.
+    ///     <br />
+    ///     Execute the <see cref="Canvas.DrawRoundRect" /> method if not equal to zero.
+    /// </summary>
     public Vector2 RoundedCorners { get; set; }
 
     protected override void OnRender(ICanvas canvas) {

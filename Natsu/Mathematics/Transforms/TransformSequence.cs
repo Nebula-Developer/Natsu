@@ -1,5 +1,3 @@
-using Natsu.Utils.Logging;
-
 namespace Natsu.Mathematics.Transforms;
 
 public class TransformSequence<T>(T target) : ITransformSequence<T> {
@@ -13,25 +11,25 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     /// </summary>
     public Dictionary<string, object> FutureData { get; } = new();
 
+    /// <summary>
+    ///     The collective time of all the <see cref="This" /> delays.
+    ///     <br />
+    ///     Used for calculating the <see cref="BaseTime" /> when there are no actual transforms.
+    /// </summary>
+    public float BaseDelayTime { get; set; }
+
     public List<ITransform> Transforms { get; } = new();
 
     public bool IsCompleted => Transforms.All(t => t.IsCompleted);
 
     public float BaseTime { get; set; }
 
-    /// <summary>
-    ///    The collective time of all the <see cref="This" /> delays.
-    ///    <br />
-    ///    Used for calculating the <see cref="BaseTime" /> when there are no actual transforms.
-    /// </summary>
-    public float BaseDelayTime { get; set; }
-
     public T Target { get; } = target;
 
     public float Time { get; private set; }
 
     public Dictionary<int, LoopPoint> LoopPoints { get; } = new() {
-        [0] = new LoopPoint(0, 0)
+        [0] = new(0, 0)
     };
 
     public string Name { get; set; } = "";
@@ -146,7 +144,7 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     /// <param name="point">The loop point to set</param>
     /// <returns>The sequence itself, for chaining</returns>
     public TransformSequence<T> SetLoopPoint(int point, bool withStartTime = true) {
-        LoopPoints[point] = new LoopPoint(BaseTime, withStartTime ? Transforms.Count + 1 : 0);
+        LoopPoints[point] = new(BaseTime, withStartTime ? Transforms.Count + 1 : 0);
         return this;
     }
 }

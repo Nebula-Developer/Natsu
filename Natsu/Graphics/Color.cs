@@ -26,6 +26,11 @@ public class Color {
     public virtual byte B { get; set; }
     public virtual byte A { get; set; }
 
+    public Color Value {
+        get => this;
+        set => Become(value);
+    }
+
     public static Color operator +(Color a, Color b) => new((byte)Math.Clamp(a.R + b.R, 0, 255), (byte)Math.Clamp(a.G + b.G, 0, 255), (byte)Math.Clamp(a.B + b.B, 0, 255), (byte)Math.Clamp(a.A + b.A, 0, 255));
 
     public static Color operator -(Color a, Color b) => new((byte)Math.Clamp(a.R - b.R, 0, 255), (byte)Math.Clamp(a.G - b.G, 0, 255), (byte)Math.Clamp(a.B - b.B, 0, 255), (byte)Math.Clamp(a.A - b.A, 0, 255));
@@ -64,10 +69,5 @@ public class Color {
         B = b.B;
         A = b.A;
         return this;
-    }
-
-    public Color Value {
-        get => this;
-        set => Become(value);
     }
 }

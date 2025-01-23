@@ -1,7 +1,7 @@
 namespace Natsu.Graphics;
 
 /// <summary>
-/// A collection of basic colors for quick use.
+///     A collection of basic colors for quick use.
 /// </summary>
 public static class Colors {
     public static ReadonlyColor White { get; } = new(255, 255, 255);

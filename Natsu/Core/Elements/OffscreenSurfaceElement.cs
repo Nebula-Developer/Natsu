@@ -3,6 +3,9 @@ using Natsu.Mathematics;
 
 namespace Natsu.Core.Elements;
 
+/// <summary>
+///     An element that will draw an <see cref="IOffscreenSurface" /> to the screen.
+/// </summary>
 public class OffscreenSurfaceElement : PaintableElement {
     private IImage? _snapshot;
 
@@ -12,6 +15,9 @@ public class OffscreenSurfaceElement : PaintableElement {
 
     public OffscreenSurfaceElement() { }
 
+    /// <summary>
+    ///     The offscreen surface to draw.
+    /// </summary>
     public IOffscreenSurface? Surface {
         get => _surface;
         set {

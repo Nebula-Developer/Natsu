@@ -15,14 +15,15 @@ public struct ConsoleLoggerTheme {
     public Color ErrorBackground { get; set; } = Colors.Transparent;
     public Color FatalBackground { get; set; } = Colors.Black;
 
-    public (Color fg, Color bg) GetColors(LogLevel level) => level switch {
-        LogLevel.Debug => (Debug, DebugBackground),
-        LogLevel.Info => (Info, InfoBackground),
-        LogLevel.Warning => (Warning, WarningBackground),
-        LogLevel.Error => (Error, ErrorBackground),
-        LogLevel.Fatal => (Fatal, FatalBackground),
-        _ => (Colors.White, Colors.Black)
-    };
+    public (Color fg, Color bg) GetColors(LogLevel level) =>
+        level switch {
+            LogLevel.Debug => (Debug, DebugBackground),
+            LogLevel.Info => (Info, InfoBackground),
+            LogLevel.Warning => (Warning, WarningBackground),
+            LogLevel.Error => (Error, ErrorBackground),
+            LogLevel.Fatal => (Fatal, FatalBackground),
+            _ => (Colors.White, Colors.Black)
+        };
 
     public static ConsoleLoggerTheme Default { get; } = new();
     public ConsoleLoggerTheme() { }

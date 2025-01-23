@@ -3,6 +3,9 @@ using Natsu.Mathematics;
 
 namespace Natsu.Core.Elements;
 
+/// <summary>
+///     A text element that will draw text to the screen.
+/// </summary>
 public class TextElement : PaintableElement {
     private bool _autoSize = true;
 
@@ -19,6 +22,9 @@ public class TextElement : PaintableElement {
         Font = font;
     }
 
+    /// <summary>
+    ///     The text to draw.
+    /// </summary>
     public string Text {
         get => _text;
         set {
@@ -27,6 +33,11 @@ public class TextElement : PaintableElement {
         }
     }
 
+    /// <summary>
+    ///     The font to use when drawing the text.
+    ///     <br />
+    ///     If null, the <see cref="ResourceLoader.DefaultFont" /> will be used.
+    /// </summary>
     public IFont? Font {
         get {
             if (_font == null && App != null) _font = ResourceLoader.DefaultFont;
@@ -50,6 +61,9 @@ public class TextElement : PaintableElement {
         set => base.Size = value;
     }
 
+    /// <summary>
+    ///     Whether to set this element's <see cref="Size" /> to the size of the text.
+    /// </summary>
     public bool AutoSize {
         get => _autoSize;
         set {
@@ -58,6 +72,9 @@ public class TextElement : PaintableElement {
         }
     }
 
+    /// <summary>
+    ///     Calculate the size of the text.
+    /// </summary>
     public void CalculateSize() {
         if (Font == null) return;
 
