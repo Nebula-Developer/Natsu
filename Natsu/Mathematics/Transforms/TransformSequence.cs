@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Natsu.Mathematics.Transforms;
 
 public class TransformSequence<T>(T target) : ITransformSequence<T> {
@@ -100,6 +102,48 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
 
         return this;
     }
+
+    /// <summary>
+    ///     Creates a basic transform.
+    /// </summary>
+    /// <param name="property">The name of the property to transform</param>
+    /// <param name="to">The value to transform to</param>
+    /// <param name="duration">The length of the transform</param>
+    /// <param name="easing">The easing to apply to the time</param>
+    /// <param name="name">The name of the transform for identification</param>
+    /// <param name="interpolation">The interpolation function to use</param>
+    /// <returns>The created sequence</returns>
+    public TransformSequence<T> Create<X>(string property, X to, float duration, EaseType easing, string? name, Func<X, X, float, X> interpolation) {
+        PropertyInfo? propertyInfo = typeof(T).GetProperty(property);
+        if (propertyInfo == null) throw new InvalidOperationException($"Property {property} does not exist in {typeof(T).Name}");
+
+        X a = FutureData.TryGetValue(property, out object? value) ? (X)value : (X)propertyInfo.GetValue(Target)!;
+
+        Transform transform = new(t => {
+            X value = interpolation(a, to, t);
+            propertyInfo.SetValue(Target, value);
+        }) {
+            Name = name ?? property,
+            Duration = duration,
+            Easing = EasingHelper.FromEaseType(easing)
+        };
+
+        FutureData[property] = to!;
+        if (Name == string.Empty) Name = property;
+
+        return Append(transform);
+    }
+
+    /// <summary>
+    ///     Creates a basic transform, using a helper for determining the interpolation.
+    /// </summary>
+    /// <param name="property">The name of the property to transform</param>
+    /// <param name="to">The value to transform to</param>
+    /// <param name="duration">The length of the transform</param>
+    /// <param name="easing">The easing to apply to the time</param>
+    /// <param name="name">The name of the transform for identification</param>
+    /// <returns>The created sequence</returns>
+    public TransformSequence<T> Create<X>(string property, X to, float duration, EaseType easing = EaseType.Linear, string? name = null) => Create(property, to, duration, easing, name, EasingHelper.GetInterpolation<X>());
 
     /// <summary>
     ///     Moves the <see cref="BaseTime" /> of the sequence to the end of the longest transform.

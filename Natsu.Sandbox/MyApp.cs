@@ -3,9 +3,7 @@ using Natsu.Core;
 using Natsu.Core.Elements;
 using Natsu.Extensions;
 using Natsu.Graphics;
-using Natsu.Input;
 using Natsu.Mathematics;
-using Natsu.Mathematics.Transforms;
 
 namespace Natsu.Sandbox;
 
@@ -51,8 +49,6 @@ public class BouncyButton : InputElement {
 public class MyApp : Application {
     private readonly Stopwatch _stopwatch = new();
 
-    private ITransformSequence _loop = null!;
-
     public BouncyButton Button = new() {
         Size = new(400, 300),
         Pivot = new(0.5f)
@@ -61,26 +57,6 @@ public class MyApp : Application {
     protected override void OnLoad() {
         Add(Button);
 
-        // loop = Button.MoveTo(new(0, 100), 0.5f).Then().MoveTo(new(0, 0), 0.5f).Loop(1).SetLoopPoint(1).RotateTo(360, 1f).Loop(-1, 1);
-        _loop = new TransformSequence<BouncyButton>(Button).Then(5f).SetLoopPoint(3).MoveTo(new(0, 100), 5f, EaseType.ExpoOut).Loop(3, 3).Then(10f).Loop();
-
-        Button.AddTransformSequence(_loop);
-
         _stopwatch.Start();
-    }
-
-    protected override void OnKeyDown(Key key, KeyMods mods) {
-        _loop.Reset();
-        _stopwatch.Restart();
-    }
-
-    protected override void OnRender() {
-        Canvas.DrawText(_loop.Time.ToString("0.00"), new(10, 10), ResourceLoader.DefaultFont, new() {
-            TextSize = 40
-        });
-
-        Canvas.DrawText(_stopwatch.Elapsed.TotalSeconds.ToString("0.00"), new(10, 50), ResourceLoader.DefaultFont, new() {
-            TextSize = 40
-        });
     }
 }

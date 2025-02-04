@@ -1,8 +1,19 @@
+using Natsu.Graphics;
+
 namespace Natsu.Mathematics;
 
 public delegate double EaseFunction(double t);
 
 public static class EasingHelper {
+    private static readonly Dictionary<Type, Delegate> InterpolationFunctions = new() {
+        { typeof(float), (Func<float, float, float, float>)Lerp },
+        { typeof(double), (Func<double, double, float, double>)Lerp },
+        { typeof(Vector2), Vector2.Lerp },
+        { typeof(Vector3), Vector3.Lerp },
+        { typeof(Vector4), Vector4.Lerp },
+        { typeof(Color), Color.Lerp }
+    };
+
     public static double Lerp(double a, double b, double t) => a + (b - a) * t;
 
     // Linear easing
@@ -194,4 +205,12 @@ public static class EasingHelper {
             EaseType.BounceInOut => BounceInOut,
             _ => Linear
         };
+
+    private static float Lerp(float a, float b, float t) => a + (b - a) * t;
+    private static double Lerp(double a, double b, float t) => a + (b - a) * t;
+
+    public static Func<T, T, float, T> GetInterpolation<T>() {
+        if (InterpolationFunctions.TryGetValue(typeof(T), out Delegate? del)) return (Func<T, T, float, T>)del;
+        throw new NotSupportedException($"No interpolation function registered for type {typeof(T)}.");
+    }
 }
