@@ -6,9 +6,21 @@ public class Paint : IPaint, IEquatable<Paint> {
     private float _fontSize = 12;
     private bool _isAntialias;
     private bool _isStroke;
+
+    private float _opacity = 1;
     private StrokeCap _strokeCap = StrokeCap.Butt;
     private StrokeJoin _strokeJoin = StrokeJoin.Miter;
     private float _strokeWidth = 1;
+
+    public Paint() => Color.DoChange += () => DoChange?.Invoke();
+
+    public byte ColorOpacity {
+        get => (byte)(Color.A * Opacity);
+        set {
+            Color.A = (byte)(Opacity == 0 ? 0 : (byte)(value / Opacity));
+            DoChange?.Invoke();
+        }
+    }
 
     public bool Equals(Paint? other) {
         if (ReferenceEquals(null, other)) return false;
@@ -21,14 +33,7 @@ public class Paint : IPaint, IEquatable<Paint> {
         set {
             _color = value;
             DoChange?.Invoke();
-        }
-    }
-
-    public float Opacity {
-        get => _color.A / 255f;
-        set {
-            _color.A = (byte)(value * 255);
-            DoChange?.Invoke();
+            Color.DoChange += () => DoChange?.Invoke();
         }
     }
 
@@ -84,6 +89,15 @@ public class Paint : IPaint, IEquatable<Paint> {
         get => _strokeJoin;
         set {
             _strokeJoin = value;
+            DoChange?.Invoke();
+        }
+    }
+
+    public float Opacity {
+        get => _opacity;
+        set {
+            value = Math.Clamp(value, 0, 1);
+            _opacity = value;
             DoChange?.Invoke();
         }
     }

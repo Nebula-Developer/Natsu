@@ -6,6 +6,16 @@ public partial class Element {
     public List<ITransformSequence> TransformSequences { get; } = new();
 
     /// <summary>
+    ///     Adds a new transform sequence to the element.
+    /// </summary>
+    /// <param name="sequence">The transform sequence to add</param>
+    public void AddTransformSequence(ITransformSequence sequence) {
+        lock (TransformSequences) {
+            TransformSequences.Add(sequence);
+        }
+    }
+
+    /// <summary>
     ///     Updates all transform sequences.
     /// </summary>
     public void UpdateTransformSequences() {
@@ -22,16 +32,6 @@ public partial class Element {
 
                 if (App != null) sequence.Update((float)App.Time.DeltaTime);
             }
-        }
-    }
-
-    /// <summary>
-    ///     Adds a new transform sequence to the element.
-    /// </summary>
-    /// <param name="sequence">The transform sequence to add</param>
-    public void AddTransformSequence(ITransformSequence sequence) {
-        lock (TransformSequences) {
-            TransformSequences.Add(sequence);
         }
     }
 

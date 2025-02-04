@@ -58,5 +58,7 @@ public class MyApp : Application {
         Add(Button);
 
         _stopwatch.Start();
+
+        Button.Background.FadeOut(1).Then().FadeIn(1).Loop();
     }
 }

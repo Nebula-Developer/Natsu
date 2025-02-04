@@ -24,31 +24,18 @@ public class PaintTests {
         paint.DoChange += () => eventCount++;
 
         paint.Color = Colors.Red;
-        paint.Opacity = 0.5f;
         paint.StrokeWidth = 2;
         paint.IsStroke = true;
         paint.IsAntialias = true;
 
-        Assert.Equal(5, eventCount);
+        Assert.Equal(4, eventCount);
 
         paint.FilterQuality = FilterQuality.High;
         paint.TextSize = 24;
         paint.StrokeCap = StrokeCap.Round;
         paint.StrokeJoin = StrokeJoin.Round;
 
-        Assert.Equal(9, eventCount);
-    }
-
-    [Fact]
-    public void TestOpacityProperty() {
-        Paint? paint = new();
-
-        for (float newOpacity = 0; newOpacity <= 1; newOpacity += 0.1f) {
-            paint.Opacity = newOpacity;
-
-            Assert.Equal(newOpacity, paint.Opacity, 2);
-            Assert.Equal((byte)(newOpacity * 255), paint.Color.A);
-        }
+        Assert.Equal(8, eventCount);
     }
 
     [Fact]

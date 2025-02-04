@@ -6,6 +6,16 @@ using SkiaSharp;
 namespace Natsu.Graphics;
 
 public class Color {
+    private byte _a;
+
+    private byte _b;
+
+    private byte _g;
+
+    private byte _r;
+
+    public Action DoChange;
+
     public Color(byte r, byte g, byte b, byte a) {
         R = r;
         G = g;
@@ -15,16 +25,39 @@ public class Color {
 
     public Color(byte r, byte g, byte b) : this(r, g, b, 255) { }
 
-    public Color(float r, float g, float b) : this(r, g, b, 255) { }
-
-    public Color(float r, float g, float b, float a) : this((byte)r, (byte)g, (byte)b, (byte)a) { }
-
     public Color() => (R, G, B, A) = (0, 0, 0, 255);
 
-    public virtual byte R { get; set; }
-    public virtual byte G { get; set; }
-    public virtual byte B { get; set; }
-    public virtual byte A { get; set; }
+    public virtual byte R {
+        get => _r;
+        set {
+            _r = value;
+            DoChange?.Invoke();
+        }
+    }
+
+    public virtual byte G {
+        get => _g;
+        set {
+            _g = value;
+            DoChange?.Invoke();
+        }
+    }
+
+    public virtual byte B {
+        get => _b;
+        set {
+            _b = value;
+            DoChange?.Invoke();
+        }
+    }
+
+    public virtual byte A {
+        get => _a;
+        set {
+            _a = value;
+            DoChange?.Invoke();
+        }
+    }
 
     public Color Value {
         get => this;
@@ -70,4 +103,12 @@ public class Color {
         A = b.A;
         return this;
     }
+}
+
+public class ColorF : Color {
+    public ColorF(float r, float g, float b, float a) : base((byte)(r * 255), (byte)(g * 255), (byte)(b * 255), (byte)(a * 255)) { }
+
+    public ColorF(float r, float g, float b) : this(r, g, b, 1f) { }
+
+    public ColorF() : base(0, 0, 0, 255) { }
 }

@@ -73,7 +73,8 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
     }
 
     public SKPaint UsePaint(Paint paint) {
-        Paint.Color = paint.Color;
+        Paint.Color = new(paint.Color.R, paint.Color.G, paint.Color.B, paint.ColorOpacity);
+
         Paint.IsStroke = paint.IsStroke;
         Paint.StrokeWidth = paint.StrokeWidth;
         Paint.IsAntialias = paint.IsAntialias;
