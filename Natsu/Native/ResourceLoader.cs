@@ -14,7 +14,7 @@ public abstract class ResourceLoader : IDisposable {
     public NamedStorage<IFont> FontData { get; } = new();
     public NamedStorage<IImage> ImageData { get; } = new();
 
-    public virtual Assembly ProjectAssembly { get; } = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
+    public virtual Assembly ProjectAssembly { get; set; } = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
 
     public virtual Assembly FrameworkAssembly { get; } = Assembly.GetExecutingAssembly();
 

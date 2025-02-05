@@ -116,6 +116,11 @@ public partial class Application : IDisposable {
         AppLogger.Debug($"Renderer: {Renderer?.GetType().Name ?? "none"}");
         AppLogger.Debug($"ResourceLoader: {ResourceLoader?.GetType().Name ?? "none"}");
 
+        // TODO: Find a better way to handle this
+        // This only works if the Application class is in the same assembly
+        // as the resources, which covers most cases
+        ResourceLoader.ProjectAssembly = GetType().Assembly;
+
         Root.Load();
         OnLoad();
         DoLoad?.Invoke();
