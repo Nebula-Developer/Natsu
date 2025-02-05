@@ -1,6 +1,6 @@
 namespace Natsu.Mathematics;
 
-public enum EaseType {
+public enum Easing {
     Linear,
     QuadIn,
     QuadOut,

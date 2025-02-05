@@ -48,19 +48,19 @@ public class MyApp : Application {
 
         BoxInputArea.DoPress += (_, _) => {
             Box.StopTransformSequences(nameof(Box.Color), nameof(Box.Rotation));
-            Box.ColorTo(Colors.Green).ColorTo(Colors.Orange, 2f, EaseType.ExpoOut);
-            Box.RotateTo(0).RotateTo(90, 0.5f, EaseType.ExpoOut);
+            Box.ColorTo(Colors.Green).ColorTo(Colors.Orange, 2f, Easing.ExpoOut);
+            Box.RotateTo(0).RotateTo(90, 0.5f, Easing.ExpoOut);
         };
 
 
         BoxInputArea.DoPressDown += (_, _) => {
             Box.StopTransformSequences(nameof(Box.Scale));
-            Box.ScaleTo(0.5f, 3f, EaseType.ExpoOut);
+            Box.ScaleTo(0.5f, 3f, Easing.ExpoOut);
         };
 
         BoxInputArea.DoPressUp += (_, _) => {
             Box.StopTransformSequences(nameof(Box.Scale));
-            Box.ScaleTo(1f, 0.8f, EaseType.ElasticOut);
+            Box.ScaleTo(1f, 0.8f, Easing.ElasticOut);
         };
     }
 }

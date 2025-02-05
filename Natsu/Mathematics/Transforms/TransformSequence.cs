@@ -113,7 +113,7 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     /// <param name="name">The name of the transform for identification</param>
     /// <param name="interpolation">The interpolation function to use</param>
     /// <returns>The created sequence</returns>
-    public TransformSequence<T> Create<X>(string property, X to, float duration, EaseType easing, string? name, Func<X, X, float, X> interpolation) {
+    public TransformSequence<T> Create<X>(string property, X to, float duration, Easing easing, string? name, Func<X, X, float, X> interpolation) {
         PropertyInfo? propertyInfo = typeof(T).GetProperty(property);
         if (propertyInfo == null) throw new InvalidOperationException($"Property {property} does not exist in {typeof(T).Name}");
 
@@ -143,7 +143,7 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     /// <param name="easing">The easing to apply to the time</param>
     /// <param name="name">The name of the transform for identification</param>
     /// <returns>The created sequence</returns>
-    public TransformSequence<T> Create<X>(string property, X to, float duration, EaseType easing = EaseType.Linear, string? name = null) => Create(property, to, duration, easing, name, EasingHelper.GetInterpolation<X>());
+    public TransformSequence<T> Create<X>(string property, X to, float duration, Easing easing = Easing.Linear, string? name = null) => Create(property, to, duration, easing, name, EasingHelper.GetInterpolation<X>());
 
     /// <summary>
     ///     Moves the <see cref="BaseTime" /> of the sequence to the end of the longest transform.

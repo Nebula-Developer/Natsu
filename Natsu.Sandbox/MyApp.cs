@@ -33,12 +33,12 @@ public class BouncyButton : InputElement {
 
     protected override void OnPressDown(int index, Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Scale));
-        Background.ScaleTo(0.6f, 2f, EaseType.ExpoOut);
+        Background.ScaleTo(0.6f, 2f, Easing.ExpoOut);
     }
 
     protected override void OnPressUp(int index, Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Scale));
-        Background.ScaleTo(1f, 0.8f, EaseType.ElasticOut);
+        Background.ScaleTo(1f, 0.8f, Easing.ElasticOut);
     }
 
     protected override void OnPress(int index, Vector2 position) {

@@ -119,10 +119,10 @@ public class TransformSequenceTests {
         Assert.Equal(1f, sequence.Time, .01f);
     }
 
-    public static IEnumerable<object[]> GetEaseValues() => Enum.GetValues(typeof(EaseType)).Cast<EaseType>().Select(e => new object[] { e });
+    public static IEnumerable<object[]> GetEaseValues() => Enum.GetValues(typeof(Easing)).Cast<Easing>().Select(e => new object[] { e });
 
     [Theory, MemberData(nameof(GetEaseValues))]
-    public void TestEasing(EaseType ease) {
+    public void TestEasing(Easing ease) {
         TransformSequence<object>? sequence = new(new());
         EaseFunction? easing = EasingHelper.FromEaseType(ease);
 

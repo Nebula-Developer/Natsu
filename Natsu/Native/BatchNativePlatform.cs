@@ -14,7 +14,7 @@ public class BatchNativePlatform : INativePlatform {
     public List<(string, object?[])> Calls { get; } = new();
 
     public void Exit() => Calls.Add(("Exit", Array.Empty<object>()));
-    public void SendSignal(string signal, object? data = null) => Calls.Add(("SendSignal", [signal, data]));
+    public object? SendSignal(string signal, object? data = null) => null;
 
     public PlatformType Type => TryGetProperty<PlatformType>("Type");
     public PlatformFamily Family => TryGetProperty<PlatformFamily>("Family");

@@ -21,7 +21,7 @@ public class EmptyPlatform : INativePlatform {
     public float UpdateFrequency { get; set; } = 60;
 
     public void Exit() { }
-    public void SendSignal(string signal, object? data = null) { }
+    public object? SendSignal(string signal, object? data = null) => null;
 
     public PlatformType Type => PlatformType.Other;
     public PlatformFamily Family => PlatformFamily.Other;

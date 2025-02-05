@@ -64,8 +64,9 @@ internal class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge
         set => base.UpdateFrequency = value;
     }
 
-    public void SendSignal(string signal, object? data = null) {
+    public object? SendSignal(string signal, object? data = null) {
         if (signal == "ping") Console.WriteLine("pong");
+        return null;
     }
 
     public bool KeyboardVisible {
