@@ -46,19 +46,19 @@ public class MyApp : Application {
 
         Root.Scale = new(2f); // This makes the whole scene 2x bigger!
 
-        BoxInputArea.DoPress += (_) => {
+        BoxInputArea.DoPress += (_, _) => {
             Box.StopTransformSequences(nameof(Box.Color), nameof(Box.Rotation));
             Box.ColorTo(Colors.Green).ColorTo(Colors.Orange, 2f, EaseType.ExpoOut);
             Box.RotateTo(0).RotateTo(90, 0.5f, EaseType.ExpoOut);
         };
 
 
-        BoxInputArea.DoPressDown += (_) => {
+        BoxInputArea.DoPressDown += (_, _) => {
             Box.StopTransformSequences(nameof(Box.Scale));
             Box.ScaleTo(0.5f, 3f, EaseType.ExpoOut);
         };
 
-        BoxInputArea.DoPressUp += (_) => {
+        BoxInputArea.DoPressUp += (_, _) => {
             Box.StopTransformSequences(nameof(Box.Scale));
             Box.ScaleTo(1f, 0.8f, EaseType.ElasticOut);
         };
