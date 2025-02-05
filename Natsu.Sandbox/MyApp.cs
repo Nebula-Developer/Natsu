@@ -4,6 +4,7 @@ using Natsu.Core.Elements;
 using Natsu.Extensions;
 using Natsu.Graphics;
 using Natsu.Mathematics;
+using Natsu.Utils.Logging;
 
 namespace Natsu.Sandbox;
 
@@ -30,17 +31,17 @@ public class BouncyButton : InputElement {
         Background.Add(BottomRight);
     }
 
-    protected override void OnPressDown(Vector2 position) {
+    protected override void OnPressDown(int index, Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Scale));
         Background.ScaleTo(0.6f, 2f, EaseType.ExpoOut);
     }
 
-    protected override void OnPressUp(Vector2 position) {
+    protected override void OnPressUp(int index, Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Scale));
         Background.ScaleTo(1f, 0.8f, EaseType.ElasticOut);
     }
 
-    protected override void OnPress(Vector2 position) {
+    protected override void OnPress(int index, Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Color));
         Background.ColorTo(Colors.White).Then().ColorTo(Colors.Purple, 0.8f);
     }
@@ -60,5 +61,7 @@ public class MyApp : Application {
         _stopwatch.Start();
 
         Button.Background.FadeOut(1).Then().FadeIn(1).Loop();
+
+        Button.DoPressMove += (index, vec) => { Logging.Debug($"PressMove: {index} {vec}"); };
     }
 }

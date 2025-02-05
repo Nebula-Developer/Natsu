@@ -141,6 +141,10 @@ public class DesktopWindow {
 
     internal void MouseWheel(MouseWheelEventArgs e) => App.MouseWheel(new(e.Offset.X, e.Offset.Y));
 
+    internal void Focus() => App.Focus();
+
+    internal void Blur() => App.Blur();
+
     /// <summary>
     ///     Runs the window.
     /// </summary>

@@ -132,4 +132,11 @@ internal class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge
     protected override void OnMouseMove(MouseMoveEventArgs e) => Bridge.MouseMove(e);
 
     protected override void OnMouseWheel(MouseWheelEventArgs e) => Bridge.MouseWheel(e);
+
+    protected override void OnFocusedChanged(FocusedChangedEventArgs e) {
+        if (e.IsFocused)
+            Bridge.Focus();
+        else
+            Bridge.Blur();
+    }
 }

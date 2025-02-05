@@ -96,11 +96,17 @@ public partial class Application : IDisposable {
 
     protected virtual void OnResize(Vector2i size) { }
 
+    protected virtual void OnFocus() { }
+
+    protected virtual void OnBlur() { }
+
     public event Action DoLoad;
     public event Action DoDispose;
     public event Action DoUpdate;
     public event Action DoRender;
     public event Action<Vector2i> DoResize;
+    public event Action DoFocus;
+    public event Action DoBlur;
 
     /// <summary>
     ///     Loads the application.
@@ -155,6 +161,22 @@ public partial class Application : IDisposable {
         Renderer.Resize(size.X, size.Y);
         OnResize(size);
         DoResize?.Invoke(size);
+    }
+
+    /// <summary>
+    ///     Triggers the focus event.
+    /// </summary>
+    public void Focus() {
+        OnFocus();
+        DoFocus?.Invoke();
+    }
+
+    /// <summary>
+    ///     Triggers the blur event.
+    /// </summary>
+    public void Blur() {
+        OnBlur();
+        DoBlur?.Invoke();
     }
 
     /// <summary>

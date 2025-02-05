@@ -66,13 +66,15 @@ public class InputElement : Element {
 
     protected virtual void OnTouchPressDodge(int id, Vector2 position) { }
 
-    protected virtual void OnPressDown(Vector2 position) { }
+    protected virtual void OnPressDown(int index, Vector2 position) { }
 
-    protected virtual void OnPressUp(Vector2 position) { }
+    protected virtual void OnPressUp(int index, Vector2 position) { }
 
-    protected virtual void OnPress(Vector2 position) { }
+    protected virtual void OnPress(int index, Vector2 position) { }
 
-    protected virtual void OnPressDodge(Vector2 position) { }
+    protected virtual void OnPressDodge(int index, Vector2 position) { }
+
+    protected virtual void OnPressMove(int index, Vector2 position) { }
 
     protected virtual bool OnMouseEnter(Vector2 position) => GrabFallback;
 
@@ -107,10 +109,11 @@ public class InputElement : Element {
     public event Action<int, Vector2>? DoTouchPress;
     public event Action<int, Vector2>? DoTouchPressDodge;
 
-    public event Action<Vector2>? DoPressDown;
-    public event Action<Vector2>? DoPressUp;
-    public event Action<Vector2>? DoPress;
-    public event Action<Vector2>? DoPressDodge;
+    public event Action<int, Vector2>? DoPressDown;
+    public event Action<int, Vector2>? DoPressUp;
+    public event Action<int, Vector2>? DoPress;
+    public event Action<int, Vector2>? DoPressDodge;
+    public event Action<int, Vector2>? DoPressMove;
 
     public event Action<Vector2>? DoMouseEnter;
     public event Action<Vector2>? DoMouseLeave;
@@ -131,7 +134,7 @@ public class InputElement : Element {
         MouseButtons[button] = true;
         DoMouseDown?.Invoke(button, position);
         bool r = OnMouseDown(button, position);
-        if (button == MouseButton.Left) PressDown(position);
+        PressDown((int)button, position);
 
         return r;
     }
@@ -140,25 +143,25 @@ public class InputElement : Element {
         MouseButtons[button] = false;
         DoMouseUp?.Invoke(button, position);
         OnMouseUp(button, position);
-        if (button == MouseButton.Left) PressUp(position);
+        PressUp((int)button, position);
     }
 
     public void MousePress(MouseButton button, Vector2 position) {
         DoMousePress?.Invoke(button, position);
         OnMousePress(button, position);
-        if (button == MouseButton.Left) Press(position);
+        Press((int)button, position);
     }
 
     public void MousePressDodge(MouseButton button, Vector2 position) {
         DoMousePressDodge?.Invoke(button, position);
         OnMousePressDodge(button, position);
-        if (button == MouseButton.Left) PressDodge(position);
+        PressDodge((int)button, position);
     }
 
     public bool TouchDown(int id, Vector2 position) {
         DoTouchDown?.Invoke(id, position);
         bool r = OnTouchDown(id, position);
-        if (id == 0) PressDown(position);
+        PressDown(id, position);
 
         return r;
     }
@@ -166,44 +169,50 @@ public class InputElement : Element {
     public void TouchUp(int id, Vector2 position) {
         DoTouchUp?.Invoke(id, position);
         OnTouchUp(id, position);
-        if (id == 0) PressUp(position);
+        PressUp(id, position);
     }
 
     public void TouchMove(int id, Vector2 position) {
         DoTouchMove?.Invoke(id, position);
         OnTouchMove(id, position);
+        PressMove(id, position);
     }
 
     public void TouchPress(int id, Vector2 position) {
         DoTouchPress?.Invoke(id, position);
         OnTouchPress(id, position);
-        if (id == 0) Press(position);
+        Press(id, position);
     }
 
     public void TouchPressDodge(int id, Vector2 position) {
         DoTouchPressDodge?.Invoke(id, position);
         OnTouchPressDodge(id, position);
-        if (id == 0) PressDodge(position);
+        PressDodge(id, position);
     }
 
-    public void PressDown(Vector2 position) {
-        DoPressDown?.Invoke(position);
-        OnPressDown(position);
+    public void PressDown(int index, Vector2 position) {
+        DoPressDown?.Invoke(index, position);
+        OnPressDown(index, position);
     }
 
-    public void PressUp(Vector2 position) {
-        DoPressUp?.Invoke(position);
-        OnPressUp(position);
+    public void PressUp(int index, Vector2 position) {
+        DoPressUp?.Invoke(index, position);
+        OnPressUp(index, position);
     }
 
-    public void Press(Vector2 position) {
-        DoPress?.Invoke(position);
-        OnPress(position);
+    public void Press(int index, Vector2 position) {
+        DoPress?.Invoke(index, position);
+        OnPress(index, position);
     }
 
-    public void PressDodge(Vector2 position) {
-        DoPressDodge?.Invoke(position);
-        OnPressDodge(position);
+    public void PressDodge(int index, Vector2 position) {
+        DoPressDodge?.Invoke(index, position);
+        OnPressDodge(index, position);
+    }
+
+    public void PressMove(int index, Vector2 position) {
+        DoPressMove?.Invoke(index, position);
+        OnPressMove(index, position);
     }
 
     public bool MouseEnter(Vector2 position) {
@@ -221,6 +230,10 @@ public class InputElement : Element {
     public void MouseMove(Vector2 position) {
         DoMouseMove?.Invoke(position);
         OnMouseMove(position);
+
+        foreach ((MouseButton button, bool down) in MouseButtons.Primary)
+            if (down)
+                PressMove((int)button, position);
     }
 
     public void MouseWheel(Vector2 delta) {
