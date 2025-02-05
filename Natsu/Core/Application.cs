@@ -133,7 +133,7 @@ public partial class Application : IDisposable {
         OnUpdate();
         DoUpdate?.Invoke();
 
-        MouseMove();
+        MouseMove(null, true);
     }
 
     /// <summary>
