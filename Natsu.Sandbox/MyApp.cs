@@ -63,5 +63,9 @@ public class MyApp : Application {
         Button.Background.FadeOut(1).Then().FadeIn(1).Loop();
 
         Button.DoPressMove += (index, vec) => { Logging.Debug($"PressMove: {index} {vec}"); };
+        Button.DoPress += (_, _) => {
+            Button.UseLocalPositions = !Button.UseLocalPositions;
+            Logging.Debug($"UseLocalPositions: {Button.UseLocalPositions}");
+        };
     }
 }

@@ -48,6 +48,8 @@ public class InputElement : Element {
     /// </summary>
     public bool IsFocused { get; private set; }
 
+    public bool UseLocalPositions { get; set; }
+
     protected virtual bool OnMouseDown(MouseButton button, Vector2 position) => GrabFallback;
 
     protected virtual void OnMouseUp(MouseButton button, Vector2 position) { }
@@ -131,109 +133,126 @@ public class InputElement : Element {
     public event Action? DoBlur;
 
     public bool MouseDown(MouseButton button, Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         MouseButtons[button] = true;
         DoMouseDown?.Invoke(button, position);
         bool r = OnMouseDown(button, position);
-        PressDown((int)button, position);
+        PressDown((int)button, position, false);
 
         return r;
     }
 
     public void MouseUp(MouseButton button, Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         MouseButtons[button] = false;
         DoMouseUp?.Invoke(button, position);
         OnMouseUp(button, position);
-        PressUp((int)button, position);
+        PressUp((int)button, position, false);
     }
 
     public void MousePress(MouseButton button, Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         DoMousePress?.Invoke(button, position);
         OnMousePress(button, position);
-        Press((int)button, position);
+        Press((int)button, position, false);
     }
 
     public void MousePressDodge(MouseButton button, Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         DoMousePressDodge?.Invoke(button, position);
         OnMousePressDodge(button, position);
-        PressDodge((int)button, position);
+        PressDodge((int)button, position, false);
     }
 
     public bool TouchDown(int id, Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         DoTouchDown?.Invoke(id, position);
         bool r = OnTouchDown(id, position);
-        PressDown(id, position);
+        PressDown(id, position, false);
 
         return r;
     }
 
     public void TouchUp(int id, Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         DoTouchUp?.Invoke(id, position);
         OnTouchUp(id, position);
-        PressUp(id, position);
+        PressUp(id, position, false);
     }
 
     public void TouchMove(int id, Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         DoTouchMove?.Invoke(id, position);
         OnTouchMove(id, position);
-        PressMove(id, position);
+        PressMove(id, position, false);
     }
 
     public void TouchPress(int id, Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         DoTouchPress?.Invoke(id, position);
         OnTouchPress(id, position);
-        Press(id, position);
+        Press(id, position, false);
     }
 
     public void TouchPressDodge(int id, Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         DoTouchPressDodge?.Invoke(id, position);
         OnTouchPressDodge(id, position);
-        PressDodge(id, position);
+        PressDodge(id, position, false);
     }
 
-    public void PressDown(int index, Vector2 position) {
+    public void PressDown(int index, Vector2 position, bool applyLocalTransformation = true) {
+        if (applyLocalTransformation && UseLocalPositions) position = ToLocalSpace(position);
         DoPressDown?.Invoke(index, position);
         OnPressDown(index, position);
     }
 
-    public void PressUp(int index, Vector2 position) {
+    public void PressUp(int index, Vector2 position, bool applyLocalTransformation = true) {
+        if (applyLocalTransformation && UseLocalPositions) position = ToLocalSpace(position);
         DoPressUp?.Invoke(index, position);
         OnPressUp(index, position);
     }
 
-    public void Press(int index, Vector2 position) {
+    public void Press(int index, Vector2 position, bool applyLocalTransformation = true) {
+        if (applyLocalTransformation && UseLocalPositions) position = ToLocalSpace(position);
         DoPress?.Invoke(index, position);
         OnPress(index, position);
     }
 
-    public void PressDodge(int index, Vector2 position) {
+    public void PressDodge(int index, Vector2 position, bool applyLocalTransformation = true) {
+        if (applyLocalTransformation && UseLocalPositions) position = ToLocalSpace(position);
         DoPressDodge?.Invoke(index, position);
         OnPressDodge(index, position);
     }
 
-    public void PressMove(int index, Vector2 position) {
+    public void PressMove(int index, Vector2 position, bool applyLocalTransformation = true) {
+        if (applyLocalTransformation && UseLocalPositions) position = ToLocalSpace(position);
         DoPressMove?.Invoke(index, position);
         OnPressMove(index, position);
     }
 
     public bool MouseEnter(Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         IsMouseOver = true;
         DoMouseEnter?.Invoke(position);
         return OnMouseEnter(position);
     }
 
     public void MouseLeave(Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         IsMouseOver = false;
         DoMouseLeave?.Invoke(position);
         OnMouseLeave(position);
     }
 
     public void MouseMove(Vector2 position) {
+        if (UseLocalPositions) position = ToLocalSpace(position);
         DoMouseMove?.Invoke(position);
         OnMouseMove(position);
 
         foreach ((MouseButton button, bool down) in MouseButtons.Primary)
             if (down)
-                PressMove((int)button, position);
+                PressMove((int)button, position, false);
     }
 
     public void MouseWheel(Vector2 delta) {
