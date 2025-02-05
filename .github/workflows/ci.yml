@@ -21,3 +21,15 @@ jobs:
           run: dotnet build --configuration Release
         - name: Test
           run: dotnet test --configuration Release --no-build
+    template:
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        permissions:
+          contents: read
+        steps:
+        - name: Checkout
+          uses: actions/checkout@v2
+        - name: Make Local Templates
+          run: ./MakeLocalTemplate.sh
+        - name: Build
+          run: dotnet build LocalTemplate/NatsuApp.Desktop --configuration Release
