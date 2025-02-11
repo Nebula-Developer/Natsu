@@ -251,6 +251,7 @@ public partial class Element {
             AnchorPosition = value;
             OffsetPosition = value;
         }
+        get => AnchorPosition;
     }
 
     /// <summary>

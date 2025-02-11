@@ -96,6 +96,11 @@ public interface INativePlatform {
     PlatformArchitecture Architecture { get; }
 
     /// <summary>
+    ///     The capability flags of the host's platform.
+    /// </summary>
+    PlatformCapabilities Capabilities { get; }
+
+    /// <summary>
     ///     The version of the host's operating system.
     /// </summary>
     string OSVersion { get; }
@@ -104,5 +109,24 @@ public interface INativePlatform {
     ///     The name of the host's operating system.
     /// </summary>
     string OSName { get; }
+    #endregion
+
+    #region Platform-Specific capabilities
+    /// <summary>
+    ///     Sends a haptic feedback signal to the platform.
+    /// </summary>
+    /// <remarks>
+    ///     Primarily targets Android and iOS.
+    /// </remarks>
+    /// <param name="duration">The duration of the haptic feedback</param>
+    /// <param name="intensity">The intensity of the haptic feedback</param>
+    void HapticFeedback(float duration, float intensity);
+
+    /// <summary>
+    ///     Sends a notification to the platform.
+    /// </summary>
+    /// <param name="title">The title of the notification</param>
+    /// <param name="message">The message of the notification</param>
+    void Notify(string title, string message);
     #endregion
 }

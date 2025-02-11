@@ -93,6 +93,14 @@ internal class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge
     public string OSVersion { get; } = Environment.OSVersion.VersionString;
     public string OSName { get; } = RuntimeInformation.OSDescription;
 
+    public PlatformCapabilities Capabilities => PlatformCapabilities.Clipboard | PlatformCapabilities.Keyboard | PlatformCapabilities.Mouse | PlatformCapabilities.Clipboard | PlatformCapabilities.TextInput | PlatformCapabilities.Cursor;
+
+    public void HapticFeedback(float intensity, float duration) { }
+
+    public void Notify(string title, string message) {
+        // TODO: Implement notifications
+    }
+
     protected override void OnLoad() => Bridge.Load();
 
     protected override void OnResize(ResizeEventArgs e) => Bridge.Resize(e.Width, e.Height);

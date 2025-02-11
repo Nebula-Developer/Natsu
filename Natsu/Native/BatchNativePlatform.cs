@@ -82,4 +82,10 @@ public class BatchNativePlatform : INativePlatform {
 
     public string OSVersion => TryGetProperty<string>("OSVersion");
     public string OSName => TryGetProperty<string>("OSName");
+
+    public PlatformCapabilities Capabilities => TryGetProperty<PlatformCapabilities>("Capabilities");
+
+    public void HapticFeedback(float intensity, float duration) => Calls.Add(("HapticFeedback", new object[] { intensity, duration }));
+
+    public void Notify(string title, string message) => Calls.Add(("Notify", new object[] { title, message }));
 }

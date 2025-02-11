@@ -4,13 +4,12 @@ using Natsu.Core.Elements;
 using Natsu.Extensions;
 using Natsu.Graphics;
 using Natsu.Mathematics;
-using Natsu.Utils.Logging;
 
 namespace Natsu.Sandbox;
 
 public class BouncyButton : InputElement {
     public BoxElement Background = new() {
-        Color = Colors.Purple,
+        Color = new(30, 40, 50),
         RoundedCorners = new(10),
         Pivot = new(0.5f),
         RelativeSizeAxes = Axes.Both,
@@ -18,18 +17,7 @@ public class BouncyButton : InputElement {
         // Clip = true
     };
 
-    public BoxElement BottomRight = new() {
-        Size = new(0.5f, 0.25f),
-        RawRelativeSizeAxes = Axes.Both,
-        Pivot = Vector2.One,
-        RoundedCorners = new(30, 60),
-        IsAntialias = true
-    };
-
-    protected override void OnLoad() {
-        Add(Background);
-        Background.Add(BottomRight);
-    }
+    protected override void OnLoad() => Add(Background);
 
     protected override void OnPressDown(int index, Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Scale));
@@ -43,7 +31,7 @@ public class BouncyButton : InputElement {
 
     protected override void OnPress(int index, Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Color));
-        Background.ColorTo(Colors.White).Then().ColorTo(Colors.Purple, 0.8f);
+        Background.ColorTo(Colors.White).Then().ColorTo(new(30, 40, 50));
     }
 }
 
@@ -58,14 +46,16 @@ public class MyApp : Application {
     protected override void OnLoad() {
         Add(Button);
 
-        _stopwatch.Start();
+        Button.PivotTo(new(0)).PivotTo(new(1), 1, Easing.ExpoOut).Then().PivotTo(new(0), 1, Easing.ExpoOut).Loop();
 
-        Button.Background.FadeOut(1).Then().FadeIn(1).Loop();
+        // _stopwatch.Start();
 
-        Button.DoPressMove += (index, vec) => { Logging.Debug($"PressMove: {index} {vec}"); };
-        Button.DoPress += (_, _) => {
-            Button.UseLocalPositions = !Button.UseLocalPositions;
-            Logging.Debug($"UseLocalPositions: {Button.UseLocalPositions}");
-        };
+        // Button.Background.FadeOut(1).Then().FadeIn(1).Loop();
+
+        // Button.DoPressMove += (index, vec) => { Logging.Debug($"PressMove: {index} {vec}"); };
+        // Button.DoPress += (_, _) => {
+        //     Button.UseLocalPositions = !Button.UseLocalPositions;
+        //     Logging.Debug($"UseLocalPositions: {Button.UseLocalPositions}");
+        // };
     }
 }

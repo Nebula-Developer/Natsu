@@ -29,4 +29,9 @@ public class EmptyPlatform : INativePlatform {
 
     public string OSVersion => "0.0.0";
     public string OSName => "Empty";
+
+    public PlatformCapabilities Capabilities => PlatformCapabilities.None;
+
+    public void HapticFeedback(float intensity, float duration) { }
+    public void Notify(string title, string message) { }
 }

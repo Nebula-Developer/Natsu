@@ -225,4 +225,6 @@ public struct Matrix {
 
         return result;
     }
+
+    public override string ToString() => $"Matrix: {Values[0, 0]}, {Values[0, 1]}, {Values[0, 2]}\n" + $"        {Values[1, 0]}, {Values[1, 1]}, {Values[1, 2]}\n" + $"        {Values[2, 0]}, {Values[2, 1]}, {Values[2, 2]}";
 }
