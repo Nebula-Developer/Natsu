@@ -1,0 +1,8 @@
+* text=auto
+*.cs eol=lf
+*.csproj eol=lf
+*.sln eol=lf
+*.json eol=lf
+*.xml eol=lf
+*.sh eol=lf
+*.md eol=lf

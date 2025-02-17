@@ -1,5 +1,6 @@
 #nullable disable
 
+using Natsu.Audio;
 using Natsu.Core.Elements;
 using Natsu.Graphics;
 using Natsu.Mathematics;
@@ -18,6 +19,11 @@ public partial class Application : IDisposable {
         },
         Prefix = "[App] "
     };
+
+    /// <summary>
+    ///     The <see cref="IAudioManager" /> that handles audio operations.
+    /// </summary>
+    public IAudioManager AudioManager;
 
     /// <summary>
     ///     The <see cref="INativePlatform" /> that handles agnostic platform operations.
@@ -116,6 +122,9 @@ public partial class Application : IDisposable {
         AppLogger.Debug($"Renderer: {Renderer?.GetType().Name ?? "none"}");
         AppLogger.Debug($"ResourceLoader: {ResourceLoader?.GetType().Name ?? "none"}");
 
+        AudioManager.Load();
+        AppLogger.Debug($"AudioManager: {AudioManager?.GetType().Name ?? "none"}");
+
         // TODO: Find a better way to handle this
         // This only works if the Application class is in the same assembly
         // as the resources, which covers most cases
@@ -133,6 +142,7 @@ public partial class Application : IDisposable {
     public void Update(double time) {
         Time.Update(time);
         Scheduler.Update(time);
+        AudioManager.Update(time);
 
         Root.Update();
         OnUpdate();

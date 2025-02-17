@@ -1,9 +1,11 @@
 using System.Diagnostics;
+using Natsu.Audio;
 using Natsu.Core;
 using Natsu.Core.Elements;
 using Natsu.Extensions;
 using Natsu.Graphics;
 using Natsu.Mathematics;
+using Natsu.Mathematics.Transforms;
 
 namespace Natsu.Sandbox;
 
@@ -31,7 +33,7 @@ public class BouncyButton : InputElement {
 
     protected override void OnPress(int index, Vector2 position) {
         Background.StopTransformSequences(nameof(Background.Color));
-        Background.ColorTo(Colors.White).Then().ColorTo(new(30, 40, 50));
+        Background.ColorTo(Colors.White).Then().ColorTo(new(30, 40, 50), 0.5f, Easing.QuadOut);
     }
 }
 
@@ -46,16 +48,14 @@ public class MyApp : Application {
     protected override void OnLoad() {
         Add(Button);
 
-        Button.PivotTo(new(0)).PivotTo(new(1), 1, Easing.ExpoOut).Then().PivotTo(new(0), 1, Easing.ExpoOut).Loop();
+        byte[]? pluck = ResourceLoader.LoadResource("Resources/pluck.mp3");
 
-        // _stopwatch.Start();
+        Button.DoPress += (_, _) => {
+            IAudioStream? stream = AudioManager.CreateStream(pluck, true);
 
-        // Button.Background.FadeOut(1).Then().FadeIn(1).Loop();
-
-        // Button.DoPressMove += (index, vec) => { Logging.Debug($"PressMove: {index} {vec}"); };
-        // Button.DoPress += (_, _) => {
-        //     Button.UseLocalPositions = !Button.UseLocalPositions;
-        //     Logging.Debug($"UseLocalPositions: {Button.UseLocalPositions}");
-        // };
+            stream.FrequencyTo(1, stream.Length / 4).Then(0.1f).VolumeTo(0, 1f).Then(0.1f).Append(new Transform(_ => { stream.Stop(); }) {
+                Name = "stop"
+            });
+        };
     }
 }
