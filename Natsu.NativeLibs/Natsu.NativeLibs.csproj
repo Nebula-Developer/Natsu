@@ -1,0 +1,23 @@
+﻿<!-- see: https://github.com/ppy/osu-framework/tree/master/osu.Framework.NativeLibs -->
+
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+      <Title>Natsu.NativeLibs</Title>
+      <RootNamespace>Natsu</RootNamespace>
+      <PackageId>Natsu.NativeLibs</PackageId>
+      <IsPackable>true</IsPackable>
+      <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="runtimes\**\native\*">
+      <Pack>true</Pack>
+      <PackagePath>runtimes</PackagePath>
+    </None>
+
+    <None Include="_._">
+      <Pack>true</Pack>
+      <PackagePath>lib\$(TargetFramework)</PackagePath>
+    </None>
+  </ItemGroup>
+</Project>
