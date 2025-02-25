@@ -2,7 +2,9 @@ using Natsu.Core;
 using Natsu.Input;
 using Natsu.Mathematics;
 using Natsu.Native;
+using Natsu.Platforms.Audio.ManagedBassAudio;
 using Natsu.Platforms.Skia;
+using Natsu.Platforms.Skia.Shaders;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -86,6 +88,8 @@ public class DesktopWindow {
     internal void Load() {
         App.Platform = Window;
         App.ResourceLoader = new SkiaResourceLoader();
+        App.AudioManager = new BassAudioManager();
+        App.ShaderManager = new SkiaShaderManager();
 
         CreateSurface();
 

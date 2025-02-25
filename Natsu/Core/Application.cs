@@ -1,7 +1,9 @@
 #nullable disable
 
+using Natsu.Audio;
 using Natsu.Core.Elements;
 using Natsu.Graphics;
+using Natsu.Graphics.Shaders;
 using Natsu.Mathematics;
 using Natsu.Native;
 using Natsu.Utils.Logging;
@@ -20,6 +22,11 @@ public partial class Application : IDisposable {
     };
 
     /// <summary>
+    ///     The <see cref="IAudioManager" /> that handles audio operations.
+    /// </summary>
+    public IAudioManager AudioManager;
+
+    /// <summary>
     ///     The <see cref="INativePlatform" /> that handles agnostic platform operations.
     /// </summary>
     public INativePlatform Platform;
@@ -33,6 +40,11 @@ public partial class Application : IDisposable {
     ///     The <see cref="Native.ResourceLoader" /> that handles loading resources.
     /// </summary>
     public ResourceLoader ResourceLoader;
+
+    /// <summary>
+    ///     The <see cref="IShaderManager" /> that handles shader operations.
+    /// </summary>
+    public IShaderManager ShaderManager;
 
     public Application() => Root = new(this);
 
@@ -116,6 +128,9 @@ public partial class Application : IDisposable {
         AppLogger.Debug($"Renderer: {Renderer?.GetType().Name ?? "none"}");
         AppLogger.Debug($"ResourceLoader: {ResourceLoader?.GetType().Name ?? "none"}");
 
+        AudioManager.Load();
+        AppLogger.Debug($"AudioManager: {AudioManager?.GetType().Name ?? "none"}");
+
         // TODO: Find a better way to handle this
         // This only works if the Application class is in the same assembly
         // as the resources, which covers most cases
@@ -133,6 +148,7 @@ public partial class Application : IDisposable {
     public void Update(double time) {
         Time.Update(time);
         Scheduler.Update(time);
+        AudioManager.Update(time);
 
         Root.Update();
         OnUpdate();

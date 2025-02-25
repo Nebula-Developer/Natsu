@@ -1,3 +1,5 @@
+using Natsu.Graphics.Shaders;
+
 namespace Natsu.Graphics;
 
 /// <summary>
@@ -52,4 +54,11 @@ public interface IPaint {
     ///     The join of the stroke.
     /// </summary>
     StrokeJoin StrokeJoin { get; set; }
+
+    /// <summary>
+    ///     The shader of the paint.
+    ///     <br />
+    ///     A shader will usually override other properties of the paint.
+    /// </summary>
+    IShader? Shader { get; set; }
 }

@@ -1,5 +1,6 @@
 using Natsu.Graphics;
 using Natsu.Mathematics;
+using Natsu.Platforms.Skia.Shaders;
 using SkiaSharp;
 
 namespace Natsu.Platforms.Skia;
@@ -100,6 +101,8 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
             StrokeCap.Square => SKStrokeCap.Square,
             _ => SKStrokeCap.Butt
         };
+
+        Paint.Shader = paint.Shader is SkiaShader skiaShader ? skiaShader.Shader : null;
 
         return Paint;
     }

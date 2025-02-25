@@ -18,6 +18,8 @@
         <PackageProjectUrl>https://github.com/nebula-developer/natsu</PackageProjectUrl>
         <RepositoryUrl>https://github.com/nebula-developer/natsu</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
+
+        <NativeLibsVer>0.4.1-beta</NativeLibsVer>
     </PropertyGroup>
 
     <ItemGroup>

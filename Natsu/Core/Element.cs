@@ -185,7 +185,7 @@ public partial class Element : IDisposable, ITransformable {
     public void Update() {
         if (!Active) return;
 
-        UpdateTransformSequences();
+        UpdateTransformSequences(App.Time.DeltaTime);
 
         OnUpdate();
         DoUpdate?.Invoke();

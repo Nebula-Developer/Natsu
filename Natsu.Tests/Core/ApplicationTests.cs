@@ -1,6 +1,8 @@
 using Natsu.Core;
 using Natsu.Mathematics;
 using Natsu.Platforms.Empty;
+using Natsu.Platforms.Empty.Audio;
+using Natsu.Platforms.Empty.Shaders;
 
 namespace Natsu.Tests.Core;
 
@@ -10,6 +12,9 @@ public class ApplicationTests {
         app.Renderer = new EmptyRenderer();
         app.Platform = new EmptyPlatform();
         app.ResourceLoader = new EmptyResourceLoader();
+        app.AudioManager = new EmptyAudioManager();
+        app.ShaderManager = new EmptyShaderManager();
+
         if (load) app.Load();
         return app;
     }

@@ -1,3 +1,5 @@
+using Natsu.Graphics.Shaders;
+
 namespace Natsu.Graphics;
 
 public class Paint : IPaint, IEquatable<Paint> {
@@ -8,6 +10,7 @@ public class Paint : IPaint, IEquatable<Paint> {
     private bool _isStroke;
 
     private float _opacity = 1;
+    private IShader? _shader;
     private StrokeCap _strokeCap = StrokeCap.Butt;
     private StrokeJoin _strokeJoin = StrokeJoin.Miter;
     private float _strokeWidth = 1;
@@ -98,6 +101,14 @@ public class Paint : IPaint, IEquatable<Paint> {
         set {
             value = Math.Clamp(value, 0, 1);
             _opacity = value;
+            DoChange?.Invoke();
+        }
+    }
+
+    public IShader? Shader {
+        get => _shader;
+        set {
+            _shader = value;
             DoChange?.Invoke();
         }
     }
