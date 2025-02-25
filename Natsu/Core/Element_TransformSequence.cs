@@ -17,6 +17,18 @@ public partial class Element {
         }
     }
 
+    public void StopTransformSequences() {
+        lock (TransformSequences) {
+            TransformSequences.Clear();
+        }
+    }
+
+    public void StopTransformSequences(params string[] properties) {
+        lock (TransformSequences) {
+            TransformSequences.RemoveAll(s => properties.Contains(s.Name));
+        }
+    }
+
     public void UpdateTransformSequences(double time) {
         lock (TransformSequences) {
             for (int i = 0; i < TransformSequences.Count; i++) {
@@ -30,42 +42,6 @@ public partial class Element {
                 }
 
                 sequence.Update((float)time);
-            }
-        }
-    }
-
-    public void StopTransformSequences() {
-        lock (TransformSequences) {
-            for (int i = 0; i < TransformSequences.Count; i++) {
-                ITransformSequence? sequence = TransformSequences[i];
-                if (sequence == null) continue;
-
-                TransformSequences.RemoveAt(i);
-                i--;
-            }
-        }
-    }
-
-    public void StopTransformSequences(params string[] properties) {
-        lock (TransformSequences) {
-            for (int i = 0; i < TransformSequences.Count; i++) {
-                ITransformSequence? sequence = TransformSequences[i];
-                if (sequence == null || !properties.Contains(sequence.Name)) continue;
-
-                TransformSequences.RemoveAt(i);
-                i--;
-            }
-        }
-    }
-
-    public void StopTransformSequence(string name) {
-        lock (TransformSequences) {
-            for (int i = 0; i < TransformSequences.Count; i++) {
-                ITransformSequence? sequence = TransformSequences[i];
-                if (sequence == null || sequence.Name != name) continue;
-
-                TransformSequences.RemoveAt(i);
-                i--;
             }
         }
     }

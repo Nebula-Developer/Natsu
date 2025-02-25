@@ -1,4 +1,6 @@
 using Natsu.Graphics;
+using Natsu.Graphics.Shaders;
+using Natsu.Mathematics;
 
 namespace Natsu.Core.Elements;
 
@@ -16,6 +18,21 @@ public class PaintableElement : Element, IPaint {
     ///     The element's paint.
     /// </summary>
     public Paint Paint { get; } = new();
+
+    /// <summary>
+    ///     Whether to update the resolution uniform of the shader.
+    /// </summary>
+    public bool UpdateShaderResolution { get; set; } = true;
+
+    /// <summary>
+    ///     Whether to update the position uniform of the shader.
+    /// </summary>
+    public bool UpdateShaderPosition { get; set; } = true;
+
+    /// <summary>
+    ///     Whether to update the time uniform of the shader.
+    /// </summary>
+    public bool UpdateShaderTime { get; set; } = true;
 
     public Color Color {
         get => Paint.Color;
@@ -60,6 +77,29 @@ public class PaintableElement : Element, IPaint {
     public StrokeJoin StrokeJoin {
         get => Paint.StrokeJoin;
         set => Paint.StrokeJoin = value;
+    }
+
+    public IShader? Shader {
+        get => Paint.Shader;
+        set => Paint.Shader = value;
+    }
+
+    protected override void OnDrawSizeChange(Vector2 size) {
+        base.OnDrawSizeChange(size);
+        if (UpdateShaderResolution && Shader != null) Shader.SetUniform("resolution", size);
+    }
+
+    protected override void OnUpdate() {
+        base.OnUpdate();
+        if (UpdateShaderTime && Shader != null) {
+            Shader.SetUniform("time", (float)App.Time.Time);
+            Shader.UpdateTransformSequences(App.Time.DeltaTime);
+        }
+    }
+
+    protected override void OnWorldPositionChange(Vector2 position) {
+        base.OnWorldPositionChange(position);
+        if (UpdateShaderPosition && Shader != null) Shader.SetUniform("pos", position);
     }
 
     public event Action? DoPaintValueChange;

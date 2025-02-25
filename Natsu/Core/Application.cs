@@ -3,6 +3,7 @@
 using Natsu.Audio;
 using Natsu.Core.Elements;
 using Natsu.Graphics;
+using Natsu.Graphics.Shaders;
 using Natsu.Mathematics;
 using Natsu.Native;
 using Natsu.Utils.Logging;
@@ -39,6 +40,11 @@ public partial class Application : IDisposable {
     ///     The <see cref="Native.ResourceLoader" /> that handles loading resources.
     /// </summary>
     public ResourceLoader ResourceLoader;
+
+    /// <summary>
+    ///     The <see cref="IShaderManager" /> that handles shader operations.
+    /// </summary>
+    public IShaderManager ShaderManager;
 
     public Application() => Root = new(this);
 
