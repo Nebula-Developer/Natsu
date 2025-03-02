@@ -25,6 +25,8 @@ public partial class Application {
     private readonly Dictionary<InputElement, MouseEnterCacheState> _mouseEnterCache = new();
     private readonly Dictionary<int, HashSet<InputElement>> _touchDownCache = new();
 
+    protected CursorStyle _cursor = CursorStyle.Default;
+
     private InputElement _rawFocusedElement;
     public FallbackDictionary<Key, bool> Keys = new(false);
 
@@ -292,9 +294,13 @@ public partial class Application {
         List<InputElement> interacting = InteractingElements;
         if (interacting.Count > 0) {
             InputElement top = interacting[0];
-            if (top.HoverCursor) HandleCursorChange(top.Cursor);
-        } else {
+            if (top.HoverCursor && _cursor != top.Cursor) {
+                HandleCursorChange(top.Cursor);
+                _cursor = top.Cursor;
+            }
+        } else if (_cursor != CursorStyle.Default) {
             HandleCursorChange(CursorStyle.Default);
+            _cursor = CursorStyle.Default;
         }
     }
 
