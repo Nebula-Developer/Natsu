@@ -7,12 +7,11 @@ using SkiaSharp;
 
 namespace Natsu.Platforms.Skia.Shaders;
 
-public class SkiaShader : IShader {
+public class SkiaShader : TransformSequenceManager, IShader {
     private readonly DirtyValue<SKShader> _dirtyShader = new();
     private readonly SKRuntimeEffect _effect;
     private readonly SKRuntimeEffectUniforms _effectUniforms;
 
-    private readonly List<ITransformSequence> _transformSequences = new();
     private readonly Dictionary<string, object> _uniforms = new();
 
     public SkiaShader(SKRuntimeEffect effect) {
@@ -36,36 +35,6 @@ public class SkiaShader : IShader {
             return _dirtyShader.Value!;
         }
         set => _dirtyShader.Validate(value);
-    }
-
-    public void AddTransformSequence(ITransformSequence sequence) {
-        lock (_transformSequences) {
-            _transformSequences.Add(sequence);
-        }
-    }
-
-    public void StopTransformSequences(params string[] names) {
-        lock (_transformSequences) {
-            _transformSequences.RemoveAll(s => names.Contains(s.Name));
-        }
-    }
-
-    public void StopTransformSequences() {
-        lock (_transformSequences) {
-            _transformSequences.Clear();
-        }
-    }
-
-    public void StopTransformSequence(ITransformSequence sequence) {
-        lock (_transformSequences) {
-            _transformSequences.Remove(sequence);
-        }
-    }
-
-    public void UpdateTransformSequences(double time) {
-        lock (_transformSequences) {
-            foreach (ITransformSequence? sequence in _transformSequences) sequence.Update((float)time);
-        }
     }
 
     public void SetUniform<T>(string name, T value) where T : notnull {

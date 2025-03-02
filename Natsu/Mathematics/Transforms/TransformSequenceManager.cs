@@ -21,6 +21,12 @@ public class TransformSequenceManager : ITransformable {
         }
     }
 
+    public void StopTransformSequence(string name) {
+        lock (Sequences) {
+            Sequences.RemoveAll(sequence => sequence.Name == name);
+        }
+    }
+
     public void StopTransformSequence(ITransformSequence sequence) {
         lock (Sequences) {
             Sequences.Remove(sequence);
@@ -29,7 +35,18 @@ public class TransformSequenceManager : ITransformable {
 
     public void UpdateTransformSequences(double time) {
         lock (Sequences) {
-            Sequences.ForEach(sequence => sequence.Update((float)time));
+            for (int i = 0; i < Sequences.Count; i++) {
+                ITransformSequence? sequence = Sequences[i];
+                if (sequence == null) continue;
+
+                if (sequence.IsCompleted) {
+                    Sequences.RemoveAt(i);
+                    i--;
+                    continue;
+                }
+
+                sequence.Update((float)time);
+            }
         }
     }
 }

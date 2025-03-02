@@ -6,7 +6,10 @@ namespace Natsu.Extensions;
 
 public static class ShaderTransformExtensions {
     public static ITransformSequence<T> UniformTo<T, V>(this T shader, string uniform, V to, double duration, Easing easing = Easing.Linear) where T : IShader where V : notnull {
-        TransformSequence<T> sequence = new(shader);
+        TransformSequence<T> sequence = new(shader) {
+            Name = uniform
+        };
+
         shader.AddTransformSequence(sequence);
 
         V? from;

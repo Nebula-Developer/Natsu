@@ -8,11 +8,18 @@ namespace Natsu.Core.Elements;
 ///     An element that has inherits <see cref="Paint" /> properties.
 /// </summary>
 public class PaintableElement : Element, IPaint {
-    public PaintableElement() =>
+    public PaintableElement() {
         Paint.DoChange += () => {
             DoPaintValueChange?.Invoke();
             OnPaintValueChange();
         };
+
+        Paint.DoShaderChange += () => {
+            if (UpdateShaderResolution) Shader?.SetUniform("resolution", DrawSize);
+            if (UpdateShaderPosition) Shader?.SetUniform("pos", WorldPosition);
+            if (UpdateShaderTime && App?.Time != null) Shader?.SetUniform("time", (float)App.Time.Time);
+        };
+    }
 
     /// <summary>
     ///     The element's paint.

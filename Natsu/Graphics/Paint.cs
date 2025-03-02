@@ -110,8 +110,9 @@ public class Paint : IPaint, IEquatable<Paint> {
         set {
             _shader = value;
             DoChange?.Invoke();
+            DoShaderChange?.Invoke();
         }
     }
 
-    public event Action? DoChange;
+    public event Action? DoChange, DoShaderChange;
 }

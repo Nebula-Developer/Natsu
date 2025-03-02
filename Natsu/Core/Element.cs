@@ -11,7 +11,7 @@ namespace Natsu.Core;
 ///     Elements are the building blocks of a Natsu application, and are used to represent
 ///     any visual or non-visual object in the interface.
 /// </summary>
-public partial class Element : IDisposable, ITransformable {
+public partial class Element : TransformSequenceManager, IDisposable, ITransformable {
     private Application? _app;
     private int _index;
     private string? _name;

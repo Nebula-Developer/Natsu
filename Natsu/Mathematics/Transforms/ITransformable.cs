@@ -18,8 +18,14 @@ public interface ITransformable {
     /// <summary>
     ///     Stops transform sequences by their name.
     /// </summary>
-    /// <param name="name">The name of the sequence(s) to stop</param>
+    /// <param name="name">The name of the sequences to stop</param>
     public void StopTransformSequences(params string[] name);
+
+    /// <summary>
+    ///     Stops a transform sequence by its name.
+    /// </summary>
+    /// <param name="name">The name of the sequence to stop</param>
+    public void StopTransformSequence(string name);
 
     /// <summary>
     ///     Stops a transform sequence.
