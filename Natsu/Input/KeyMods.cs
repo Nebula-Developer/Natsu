@@ -8,5 +8,6 @@ public enum KeyMods {
     Alt = 1 << 2,
     Super = 1 << 3,
     CapsLock = 1 << 4,
-    NumLock = 1 << 5
+    NumLock = 1 << 5,
+    Repeat = 1 << 6
 }

@@ -110,23 +110,25 @@ public class DesktopWindow {
 
     internal void Dispose() => App.Dispose();
 
-    internal KeyMods TranslateKeyMods(KeyModifiers mods) {
+    internal KeyMods TranslateKeyMods(KeyboardKeyEventArgs e) {
         KeyMods keyMods = KeyMods.None;
 
-        if ((mods & KeyModifiers.Shift) != 0) keyMods |= KeyMods.Shift;
+        if ((e.Modifiers & KeyModifiers.Shift) != 0) keyMods |= KeyMods.Shift;
 
-        if ((mods & KeyModifiers.Control) != 0) keyMods |= KeyMods.Control;
+        if ((e.Modifiers & KeyModifiers.Control) != 0) keyMods |= KeyMods.Control;
 
-        if ((mods & KeyModifiers.Alt) != 0) keyMods |= KeyMods.Alt;
+        if ((e.Modifiers & KeyModifiers.Alt) != 0) keyMods |= KeyMods.Alt;
 
-        if ((mods & KeyModifiers.Super) != 0) keyMods |= KeyMods.Super;
+        if ((e.Modifiers & KeyModifiers.Super) != 0) keyMods |= KeyMods.Super;
+
+        if (e.IsRepeat) keyMods |= KeyMods.Repeat;
 
         return keyMods;
     }
 
-    internal void KeyDown(KeyboardKeyEventArgs e) => App.KeyDown((Key)e.Key, TranslateKeyMods(e.Modifiers));
+    internal void KeyDown(KeyboardKeyEventArgs e) => App.KeyDown((Key)e.Key, TranslateKeyMods(e));
 
-    internal void KeyUp(KeyboardKeyEventArgs e) => App.KeyUp((Key)e.Key, TranslateKeyMods(e.Modifiers));
+    internal void KeyUp(KeyboardKeyEventArgs e) => App.KeyUp((Key)e.Key, TranslateKeyMods(e));
 
     internal void TextInput(string change, int location, int replaced) => App.TextInput(change, location, replaced);
 
