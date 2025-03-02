@@ -437,7 +437,7 @@ public partial class Element {
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.Y))
             newY = distPos.Y * orig.X;
-        else if (accessParent && RelativeSizeAxes.HasFlag(Axes.Y) && Parent != null) newY = Parent.DrawSize.Y * orig.X;
+        else if (accessParent && RelativeSizeAxes.HasFlag(Axes.Y) && Parent != null) newY = Parent.DrawSize.Y * orig.Y;
 
         return new(newX, newY);
     }
