@@ -36,7 +36,7 @@ public class TextElement : PaintableElement {
     /// <summary>
     ///     The font to use when drawing the text.
     ///     <br />
-    ///     If null, the <see cref="ResourceLoader.DefaultFont" /> will be used.
+    ///     If null, the <see cref="Native.ResourceLoader.DefaultFont" /> will be used.
     /// </summary>
     public IFont? Font {
         get {

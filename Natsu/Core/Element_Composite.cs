@@ -23,7 +23,7 @@ public partial class Element {
 
     /// <summary>
     ///     The content container used for appending content, rather than direct children.
-    ///     </br>
+    ///     <br />
     ///     This is useful for elements that don't directly want children, and instead
     ///     want to pass them to a different element.
     /// </summary>

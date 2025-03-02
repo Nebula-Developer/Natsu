@@ -21,6 +21,7 @@ public static class TransformableExtensions {
     /// </summary>
     /// <param name="transformable">The <see cref="ITransformable" /> to start the sequence on</param>
     /// <param name="delay">The delay before the sequence starts</param>
+    /// <param name="name">An optional name for the sequence</param>
     /// <returns>The newly created <see cref="TransformSequence{T}" /></returns>
     public static TransformSequence<T> After<T>(this T transformable, float delay = 0, string name = "") where T : ITransformable => new TransformSequence<T>(transformable) { Name = name }.Then(delay).AppendToTransformable(transformable);
 }

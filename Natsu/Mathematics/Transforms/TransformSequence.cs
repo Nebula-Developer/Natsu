@@ -14,7 +14,7 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     public Dictionary<string, object> FutureData { get; } = new();
 
     /// <summary>
-    ///     The collective time of all the <see cref="This" /> delays.
+    ///     The collective time of all the <see cref="Then" /> delays.
     ///     <br />
     ///     Used for calculating the <see cref="BaseTime" /> when there are no actual transforms.
     /// </summary>
@@ -186,6 +186,7 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     ///     Sets a loop point at the current time.
     /// </summary>
     /// <param name="point">The loop point to set</param>
+    /// <param name="withStartTime">Whether to set the start time of the loop point to the current time</param>
     /// <returns>The sequence itself, for chaining</returns>
     public TransformSequence<T> SetLoopPoint(int point, bool withStartTime = true) {
         LoopPoints[point] = new(BaseTime, withStartTime ? Transforms.Count + 1 : 0);

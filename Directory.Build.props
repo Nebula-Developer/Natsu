@@ -20,6 +20,10 @@
         <RepositoryType>git</RepositoryType>
 
         <NativeLibsVer>0.4.1-beta</NativeLibsVer>
+
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>CS1591, NU5104</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

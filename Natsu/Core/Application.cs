@@ -76,7 +76,7 @@ public partial class Application : IDisposable {
 
     /// <summary>
     ///     The integer size of the application.
-    ///     </br>
+    ///     <br />
     ///     In a screen context, this is normally the window's framebuffer size.
     /// </summary>
     public Vector2i Size {

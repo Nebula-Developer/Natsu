@@ -10,7 +10,7 @@ public class BoxElement : PaintableElement {
     /// <summary>
     ///     The rounded corners of the box.
     ///     <br />
-    ///     Execute the <see cref="Canvas.DrawRoundRect" /> method if not equal to zero.
+    ///     Execute the <see cref="ICanvas.DrawRoundRect" /> method if not equal to zero.
     /// </summary>
     public Vector2 RoundedCorners { get; set; }
 
