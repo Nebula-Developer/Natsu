@@ -191,4 +191,19 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
         LoopPoints[point] = new(BaseTime, withStartTime ? Transforms.Count + 1 : 0);
         return this;
     }
+
+    /// <summary>
+    ///     Performs an action in the sequence.
+    /// </summary>
+    /// <param name="action">The action to perform</param>
+    /// <param name="name">The name of the action for identification</param>
+    /// <returns>The sequence itself, for chaining</returns>
+    public TransformSequence<T> Do(Action action, string? name = null) {
+        Transform transform = new(t => action()) {
+            Name = name ?? "Action",
+            Duration = 0
+        };
+
+        return Append(transform);
+    }
 }

@@ -60,7 +60,7 @@ public partial class Application {
         if (cur.Children.Count > 0)
             lock (cur.Children) {
                 for (int i = cur.Children.Count - 1; i >= 0; i--) {
-                    if (!cur.Children[i].Active || cur.Children[i].BlockPositionalInput) continue;
+                    if (cur.Children[i].BlockPositionalInput) continue;
 
                     elements.AddRange(ConditionalElementTree(cur.Children[i], condition));
                 }
@@ -98,6 +98,8 @@ public partial class Application {
 
     protected virtual void OnTextInput(string text) { }
 
+    protected virtual void OnFocusedElementChange(InputElement elm) { }
+
     public event Action<MouseButton, Vector2> DoMouseDown;
     public event Action<MouseButton, Vector2> DoMouseUp;
     public event Action<Vector2> DoMouseMove;
@@ -105,6 +107,13 @@ public partial class Application {
     public event Action<Key, KeyMods> DoKeyDown;
     public event Action<Key, KeyMods> DoKeyUp;
     public event Action<string> DoTextInput;
+    public event Action<InputElement> DoFocusedElementChange;
+
+    private void _setFocusedElement(InputElement elm) {
+        _focusedElement = elm;
+        OnFocusedElementChange(elm);
+        DoFocusedElementChange?.Invoke(elm);
+    }
 
     public bool MouseDown(MouseButton button, Vector2 position) {
         MouseMove(position);
@@ -119,21 +128,23 @@ public partial class Application {
         _globalPressedInputs[button].Clear();
 
         foreach (GlobalInputElement elm in NonPositionalInputList) {
+            if (!elm.AcceptInput || !elm.Active) continue;
             _globalPressedInputs[button].Add(elm);
             if (elm.MouseDown(button, position)) return true;
         }
 
         foreach (InputElement elm in elms) {
+            if (!elm.AcceptInput || !elm.Active) continue;
             _mouseDownCache[button].Add(elm);
 
             if (elm.MouseDown(button, position)) {
-                if (button == MouseButton.Left) _focusedElement = elm;
+                if (button == MouseButton.Left) _setFocusedElement(elm);
 
                 return true;
             }
         }
 
-        if (button == MouseButton.Left) _focusedElement = null;
+        if (button == MouseButton.Left) _setFocusedElement(null);
 
         return false;
     }
@@ -147,7 +158,9 @@ public partial class Application {
 
         if (!_mouseDownCache.ContainsKey(button)) return;
 
-        foreach (GlobalInputElement elm in _globalPressedInputs[button]) elm.MouseUp(button, position);
+        foreach (GlobalInputElement elm in _globalPressedInputs[button])
+            if (elm.AcceptInput && elm.Active)
+                elm.MouseUp(button, position);
 
         foreach (InputElement elm in _mouseDownCache[button]) {
             elm.MouseUp(button, position);
@@ -167,6 +180,7 @@ public partial class Application {
         List<InputElement> elms = GetInputCandidates(position);
 
         foreach (GlobalInputElement elm in NonPositionalInputList) {
+            if (!elm.AcceptInput || !elm.Active) continue;
             _globalPressedTouchInputs[id].Add(elm);
             if (elm.TouchDown(id, position)) return true;
         }
@@ -174,14 +188,15 @@ public partial class Application {
         if (!_touchDownCache.ContainsKey(id)) _touchDownCache.Add(id, new());
 
         foreach (InputElement elm in elms) {
+            if (!elm.AcceptInput || !elm.Active) continue;
             _touchDownCache[id].Add(elm);
             if (elm.TouchDown(id, position)) {
-                _focusedElement = elm;
+                _setFocusedElement(elm);
                 return true;
             }
         }
 
-        _focusedElement = null;
+        _setFocusedElement(null);
 
         return false;
     }
@@ -190,9 +205,13 @@ public partial class Application {
         TouchState[id] = false;
         TouchPositions[id] = position;
 
-        foreach (GlobalInputElement elm in _globalPressedTouchInputs[id]) elm.TouchUp(id, position);
+        foreach (GlobalInputElement elm in _globalPressedTouchInputs[id])
+            if (elm.AcceptInput && elm.Active)
+                elm.TouchUp(id, position);
 
         foreach (InputElement elm in _touchDownCache[id]) {
+            if (!elm.AcceptInput || !elm.Active) continue;
+
             elm.TouchUp(id, position);
             if (elm.PointInside(position))
                 elm.TouchPress(id, position);
@@ -206,10 +225,14 @@ public partial class Application {
     public void TouchMove(int id, Vector2 position) {
         TouchPositions[id] = position;
 
-        foreach (GlobalInputElement elm in _globalPressedTouchInputs[id]) elm.TouchMove(id, position);
+        foreach (GlobalInputElement elm in _globalPressedTouchInputs[id])
+            if (elm.AcceptInput && elm.Active)
+                elm.TouchMove(id, position);
 
         if (!_touchDownCache.TryGetValue(id, out HashSet<InputElement> cache)) return;
-        foreach (InputElement elm in cache) elm.TouchMove(id, position);
+        foreach (InputElement elm in cache)
+            if (elm.AcceptInput && elm.Active)
+                elm.TouchMove(id, position);
     }
 
     public virtual void HandleCursorChange(CursorStyle style) => Platform.Cursor = style;
@@ -222,20 +245,26 @@ public partial class Application {
         if (!noMoveEvent) {
             DoMouseMove?.Invoke(position);
             OnMouseMove(position);
-            foreach (GlobalInputElement elm in NonPositionalInputList) elm.MouseMove(position);
+            foreach (GlobalInputElement elm in NonPositionalInputList)
+                if (elm.AcceptInput && elm.Active)
+                    elm.MouseMove(position);
         }
 
         List<InputElement> elms = GetInputCandidates(position);
 
-        foreach (InputElement elm in _mouseEnterCache.Keys.ToList())
+        foreach (InputElement elm in _mouseEnterCache.Keys.ToList()) {
+            if (!elm.AcceptInput || !elm.Active) continue;
             if (!elms.Contains(elm)) {
                 if (_mouseEnterCache[elm].HasFlag(MouseEnterCacheState.Over)) elm.MouseLeave(position);
 
                 _mouseEnterCache.Remove(elm);
             }
+        }
 
         bool blocked = false;
         foreach (InputElement elm in elms) {
+            if (!elm.AcceptInput || !elm.Active) continue;
+
             if (blocked) {
                 if (_mouseEnterCache.ContainsKey(elm) && _mouseEnterCache[elm].HasFlag(MouseEnterCacheState.Over)) elm.MouseLeave(position);
 
@@ -273,7 +302,9 @@ public partial class Application {
         DoMouseWheel?.Invoke(delta);
         OnMouseWheel(delta);
 
-        foreach (InputElement elm in AllInteractingElements) elm.MouseWheel(delta);
+        foreach (InputElement elm in AllInteractingElements)
+            if (elm.AcceptInput && elm.Active)
+                elm.MouseWheel(delta);
     }
 
     public void KeyDown(Key key, KeyMods mods) {
@@ -282,7 +313,9 @@ public partial class Application {
         DoKeyDown?.Invoke(key, mods);
         OnKeyDown(key, mods);
 
-        foreach (GlobalInputElement elm in NonPositionalInputList) elm.KeyDown(key, mods);
+        foreach (GlobalInputElement elm in NonPositionalInputList)
+            if (elm.AcceptInput && elm.Active)
+                elm.KeyDown(key, mods);
 
         _focusedElement?.KeyDown(key, mods);
     }
@@ -293,7 +326,9 @@ public partial class Application {
         DoKeyUp?.Invoke(key, mods);
         OnKeyUp(key, mods);
 
-        foreach (GlobalInputElement elm in NonPositionalInputList) elm.KeyUp(key, mods);
+        foreach (GlobalInputElement elm in NonPositionalInputList)
+            if (elm.AcceptInput && elm.Active)
+                elm.KeyUp(key, mods);
 
         _focusedElement?.KeyUp(key, mods);
     }
@@ -302,13 +337,17 @@ public partial class Application {
         DoTextInput?.Invoke(text);
         OnTextInput(text);
 
-        foreach (GlobalInputElement elm in NonPositionalInputList) elm.TextInput(text, location, replaced);
+        foreach (GlobalInputElement elm in NonPositionalInputList)
+            if (elm.AcceptInput && elm.Active)
+                elm.TextInput(text, location, replaced);
 
         _focusedElement?.TextInput(text, location, replaced);
     }
 
     public void CaretMove(int start, int end) {
-        foreach (GlobalInputElement elm in NonPositionalInputList) elm.TextCaretMove(start, end);
+        foreach (GlobalInputElement elm in NonPositionalInputList)
+            if (elm.AcceptInput && elm.Active)
+                elm.TextCaretMove(start, end);
 
         _focusedElement?.TextCaretMove(start, end);
     }
