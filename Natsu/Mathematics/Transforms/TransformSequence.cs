@@ -24,7 +24,7 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
 
     public bool IsCompleted => Transforms.All(t => t.IsCompleted);
 
-    public float BaseTime { get; set; }
+    public virtual float BaseTime { get; set; }
 
     public T Target { get; } = target;
 
@@ -74,10 +74,15 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
                 } else {
                     transform.Reset(false);
                 }
+
+                transform.DoReset?.Invoke();
+                Console.WriteLine("Resetting " + transform.Name);
             } else if (transform.StartTime < toTime && transform.StartTime + transform.Duration >= toTime) {
                 float progress = (toTime - transform.StartTime) / transform.Duration;
                 transform.Reset(false);
                 transform.Seek(progress);
+
+                transform.DoReset?.Invoke();
             }
         }
     }
@@ -197,12 +202,14 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     ///     Performs an action in the sequence.
     /// </summary>
     /// <param name="action">The action to perform</param>
+    /// <param name="reset">The action to perform when resetting the sequence</param>
     /// <param name="name">The name of the action for identification</param>
     /// <returns>The sequence itself, for chaining</returns>
-    public TransformSequence<T> Do(Action action, string? name = null) {
+    public TransformSequence<T> Do(Action action, Action? reset = null, string? name = null) {
         Transform transform = new(t => action()) {
             Name = name ?? "Action",
-            Duration = 0
+            Duration = 0,
+            DoReset = reset
         };
 
         return Append(transform);

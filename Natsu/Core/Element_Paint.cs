@@ -1,30 +1,32 @@
 using Natsu.Graphics;
 using Natsu.Graphics.Shaders;
-using Natsu.Mathematics;
 
-namespace Natsu.Core.Elements;
+namespace Natsu.Core;
 
-/// <summary>
-///     An element that has inherits <see cref="Paint" /> properties.
-/// </summary>
-public class PaintableElement : Element, IPaint {
-    public PaintableElement() {
-        Paint.DoChange += () => {
-            DoPaintValueChange?.Invoke();
-            OnPaintValueChange();
-        };
+public partial class Element : IPaint {
+    private float _opacity = 1;
+    private Paint? _paint;
+    private float _worldOpacity = 1;
 
-        Paint.DoShaderChange += () => {
-            if (UpdateShaderResolution) Shader?.SetUniform("resolution", DrawSize);
-            if (UpdateShaderPosition) Shader?.SetUniform("pos", WorldPosition);
-            if (UpdateShaderTime && App?.Time != null) Shader?.SetUniform("time", (float)App.Time.Time);
-        };
+    public Paint Paint {
+        get {
+            if (_paint == null) {
+                _paint = new ElementPaint(this);
+                _paint.DoChange += () => {
+                    DoPaintValueChange?.Invoke();
+                    OnPaintValueChange();
+                };
+
+                Paint.DoShaderChange += () => {
+                    if (UpdateShaderResolution) Shader?.SetUniform("resolution", DrawSize);
+                    if (UpdateShaderPosition) Shader?.SetUniform("pos", WorldPosition);
+                    if (UpdateShaderTime && App?.Time != null) Shader?.SetUniform("time", (float)App.Time.Time);
+                };
+            }
+
+            return _paint;
+        }
     }
-
-    /// <summary>
-    ///     The element's paint.
-    /// </summary>
-    public Paint Paint { get; } = new();
 
     /// <summary>
     ///     Whether to update the resolution uniform of the shader.
@@ -41,14 +43,30 @@ public class PaintableElement : Element, IPaint {
     /// </summary>
     public bool UpdateShaderTime { get; set; } = true;
 
+    public float WorldOpacity {
+        get {
+            if (Invalidated.HasFlag(Invalidation.Opacity)) {
+                _worldOpacity = Parent?.WorldOpacity * Opacity ?? Opacity;
+                Validate(Invalidation.Opacity);
+            }
+
+            return _worldOpacity;
+        }
+        set => Opacity = value / (Parent?.WorldOpacity ?? 1);
+    }
+
     public Color Color {
         get => Paint.Color;
         set => Paint.Color = value;
     }
 
     public float Opacity {
-        get => Paint.Opacity;
-        set => Paint.Opacity = value;
+        get => _opacity;
+        set {
+            _opacity = value;
+            Invalidate(Invalidation.Opacity, InvalidationPropagation.Children);
+            DoPaintValueChange?.Invoke();
+        }
     }
 
     public float StrokeWidth {
@@ -87,29 +105,17 @@ public class PaintableElement : Element, IPaint {
     }
 
     public IShader? Shader {
-        get => Paint.Shader;
+        get => Paint != null ? Paint.Shader : null;
         set => Paint.Shader = value;
     }
 
-    protected override void OnDrawSizeChange(Vector2 size) {
-        base.OnDrawSizeChange(size);
-        if (UpdateShaderResolution && Shader != null) Shader.SetUniform("resolution", size);
-    }
-
-    protected override void OnUpdate() {
-        base.OnUpdate();
+    protected void UpdateShader() {
         if (UpdateShaderTime && Shader != null) {
             Shader.SetUniform("time", (float)App.Time.Time);
             Shader.UpdateTransformSequences(App.Time.DeltaTime);
         }
     }
 
-    protected override void OnWorldPositionChange(Vector2 position) {
-        base.OnWorldPositionChange(position);
-        if (UpdateShaderPosition && Shader != null) Shader.SetUniform("pos", position);
-    }
-
-    public event Action? DoPaintValueChange;
-
     protected virtual void OnPaintValueChange() { }
+    public event Action? DoPaintValueChange;
 }

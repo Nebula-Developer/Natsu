@@ -1,12 +1,12 @@
-using Natsu.Core.Elements;
+using Natsu.Core;
 using Natsu.Graphics;
 
 namespace Natsu.Tests.Core;
 
-public class PaintableElementTests {
+public class Element_PaintTests {
     [Fact]
     public void TestColorProperty() {
-        PaintableElement? element = new();
+        Element? element = new();
         Color? color = new() { R = 255, G = 0, B = 255, A = 0 };
 
         element.Color = color;
@@ -24,7 +24,7 @@ public class PaintableElementTests {
 
     [Fact]
     public void TestDoPaintValueChangeEvent() {
-        PaintableElement? element = new();
+        Element? element = new();
         bool eventTriggered = false;
 
         element.DoPaintValueChange += () => eventTriggered = true;
@@ -35,7 +35,7 @@ public class PaintableElementTests {
 
     [Fact]
     public void TestOpacityValueChangeEvent() {
-        PaintableElement? element = new();
+        Element? element = new();
         bool eventTriggered = false;
 
         element.DoPaintValueChange += () => eventTriggered = true;

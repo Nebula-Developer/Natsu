@@ -96,6 +96,23 @@ public class Color {
 
     public static implicit operator Color(SKColor color) => FromSKColor(color);
 
+    public static Color FromHSV(float h, float s, float v) {
+        int hi = (int)(h / 60) % 6;
+        float f = h / 60 - hi;
+        float p = v * (1 - s);
+        float q = v * (1 - f * s);
+        float t = v * (1 - (1 - f) * s);
+
+        return hi switch {
+            0 => new((byte)(v * 255), (byte)(t * 255), (byte)(p * 255)),
+            1 => new((byte)(q * 255), (byte)(v * 255), (byte)(p * 255)),
+            2 => new((byte)(p * 255), (byte)(v * 255), (byte)(t * 255)),
+            3 => new((byte)(p * 255), (byte)(q * 255), (byte)(v * 255)),
+            4 => new((byte)(t * 255), (byte)(p * 255), (byte)(v * 255)),
+            _ => new((byte)(v * 255), (byte)(p * 255), (byte)(q * 255))
+        };
+    }
+
     public Color Become(Color b) {
         R = b.R;
         G = b.G;

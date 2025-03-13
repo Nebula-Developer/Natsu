@@ -26,6 +26,8 @@ public class LoopTransform : ITransform {
     /// </summary>
     public LoopPoint LoopPoint { get; set; }
 
+    public Action? DoReset { get; set; }
+
     public int Index { get; set; }
 
     public string Name => "Loop";

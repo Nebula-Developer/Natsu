@@ -6,7 +6,7 @@ namespace Natsu.Core.Elements;
 /// <summary>
 ///     An element that will draw an <see cref="IOffscreenSurface" /> to the screen.
 /// </summary>
-public class OffscreenSurfaceElement : PaintableElement {
+public class OffscreenSurfaceElement : Element {
     private IImage? _snapshot;
 
     private IOffscreenSurface? _surface;

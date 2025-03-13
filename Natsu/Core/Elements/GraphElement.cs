@@ -6,7 +6,7 @@ namespace Natsu.Core.Elements;
 /// <summary>
 ///     A graph element that will draw a <see cref="VectorPath" /> to the screen.
 /// </summary>
-public class GraphElement : PaintableElement {
+public class GraphElement : Element {
     /// <summary>
     ///     The path to draw.
     /// </summary>

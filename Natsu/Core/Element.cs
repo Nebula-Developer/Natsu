@@ -186,6 +186,7 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
         if (!Active) return;
 
         UpdateTransformSequences(App.Time.DeltaTime);
+        UpdateShader();
 
         OnUpdate();
         DoUpdate?.Invoke();

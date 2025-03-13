@@ -9,7 +9,8 @@ public enum Invalidation {
     Size = 1 << 2,
     DrawSize = Size | Geometry,
     Layout = 1 << 3,
-    All = DrawSize | Layout
+    Opacity = 1 << 4,
+    All = DrawSize | Layout | Opacity
 }
 
 [Flags]

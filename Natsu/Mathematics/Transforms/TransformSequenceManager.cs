@@ -2,6 +2,7 @@ namespace Natsu.Mathematics.Transforms;
 
 public class TransformSequenceManager : ITransformable {
     public List<ITransformSequence> Sequences { get; } = new();
+    public bool RemoveCompletedTransforms { get; set; } = true;
 
     public void AddTransformSequence(ITransformSequence sequence) {
         lock (Sequences) {
@@ -40,6 +41,7 @@ public class TransformSequenceManager : ITransformable {
                 if (sequence == null) continue;
 
                 if (sequence.IsCompleted) {
+                    if (!RemoveCompletedTransforms) continue;
                     Sequences.RemoveAt(i);
                     i--;
                     continue;

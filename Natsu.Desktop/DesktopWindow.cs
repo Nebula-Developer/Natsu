@@ -86,6 +86,10 @@ public class DesktopWindow {
     }
 
     internal void Load() {
+        Window.Cursor = CursorStyle.Default;
+        Window.CursorMode = CursorMode.Default;
+        Window.KeyboardVisible = false;
+
         App.Platform = Window;
         App.ResourceLoader = new SkiaResourceLoader();
         App.AudioManager = new BassAudioManager();

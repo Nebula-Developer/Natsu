@@ -281,6 +281,7 @@ public partial class Element {
 
             _scale = Vector2.Max(value, new(float.MinValue));
             Invalidate(Invalidation.DrawSize);
+            Parent?.Invalidate(Invalidation.Layout);
         }
     }
 
@@ -364,8 +365,11 @@ public partial class Element {
         Vector2 nWorldPosition = matrix.MapPoint(Vector2.Zero);
         if (_worldPosition != nWorldPosition) {
             _worldPosition = nWorldPosition;
+
             DoWorldPositionChange?.Invoke(_worldPosition);
             OnWorldPositionChange(_worldPosition);
+
+            if (UpdateShaderPosition && Shader != null) Shader.SetUniform("pos", _worldPosition);
         }
 
         _matrix = matrix;
@@ -479,6 +483,8 @@ public partial class Element {
 
         DoDrawSizeChange?.Invoke(drawSize);
         OnDrawSizeChange(drawSize);
+
+        if (UpdateShaderResolution && Shader != null) Shader.SetUniform("resolution", drawSize);
     }
 
     private void PropagateParentSizeDependencies() {

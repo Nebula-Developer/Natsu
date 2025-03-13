@@ -6,7 +6,7 @@ namespace Natsu.Core.Elements;
 /// <summary>
 ///     An element that will draw an <see cref="IImage" /> to the screen.
 /// </summary>
-public class ImageElement : PaintableElement {
+public class ImageElement : Element {
     public ImageElement(IImage image) {
         Image = image;
         Size = (Vector2)image.Size;

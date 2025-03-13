@@ -7,6 +7,8 @@ public class Transform : ITransform {
     public Transform(Action<float> setter) => Setter = setter;
 
     public Action<float> Setter { get; }
+    public Action? DoReset { get; set; }
+
     public ITransformSequence Sequence { get; set; } = null!;
 
     public required string Name { get; set; }

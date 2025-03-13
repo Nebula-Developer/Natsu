@@ -6,7 +6,7 @@ namespace Natsu.Core.Elements;
 /// <summary>
 ///     A text element that will draw text to the screen.
 /// </summary>
-public class TextElement : PaintableElement {
+public class TextElement : Element {
     private bool _autoSize = true;
 
     private IFont? _font;

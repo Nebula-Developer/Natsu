@@ -1,3 +1,4 @@
+using Natsu.Core;
 using Natsu.Graphics.Shaders;
 
 namespace Natsu.Graphics;
@@ -9,21 +10,12 @@ public class Paint : IPaint, IEquatable<Paint> {
     private bool _isAntialias;
     private bool _isStroke;
 
-    private float _opacity = 1;
     private IShader? _shader;
     private StrokeCap _strokeCap = StrokeCap.Butt;
     private StrokeJoin _strokeJoin = StrokeJoin.Miter;
     private float _strokeWidth = 1;
 
     public Paint() => Color.DoChange += () => DoChange?.Invoke();
-
-    public byte ColorOpacity {
-        get => (byte)(Color.A * Opacity);
-        set {
-            Color.A = (byte)(Opacity == 0 ? 0 : (byte)(value / Opacity));
-            DoChange?.Invoke();
-        }
-    }
 
     public bool Equals(Paint? other) {
         if (ReferenceEquals(null, other)) return false;
@@ -96,11 +88,10 @@ public class Paint : IPaint, IEquatable<Paint> {
         }
     }
 
-    public float Opacity {
-        get => _opacity;
+    public virtual float Opacity {
+        get => Color.A / 255f;
         set {
-            value = Math.Clamp(value, 0, 1);
-            _opacity = value;
+            Color.A = (byte)(value * 255);
             DoChange?.Invoke();
         }
     }
@@ -115,4 +106,13 @@ public class Paint : IPaint, IEquatable<Paint> {
     }
 
     public event Action? DoChange, DoShaderChange;
+}
+
+public class ElementPaint(Element elm) : Paint {
+    protected Element Element = elm;
+
+    public override float Opacity {
+        get => Element.WorldOpacity * base.Opacity;
+        set => Element.WorldOpacity = value / base.Opacity;
+    }
 }

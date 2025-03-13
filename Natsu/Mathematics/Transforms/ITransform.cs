@@ -42,6 +42,11 @@ public interface ITransform {
     public bool IsCompleted { get; set; }
 
     /// <summary>
+    ///     Called when the transform has been reset.
+    /// </summary>
+    public Action? DoReset { get; set; }
+
+    /// <summary>
     ///     Seeks the transform to a specific time.
     /// </summary>
     /// <param name="time">The time to seek to</param>

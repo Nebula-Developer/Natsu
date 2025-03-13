@@ -6,7 +6,7 @@ namespace Natsu.Core.Elements;
 /// <summary>
 ///     A simple box that is drawn to the screen.
 /// </summary>
-public class BoxElement : PaintableElement {
+public class BoxElement : Element {
     /// <summary>
     ///     The rounded corners of the box.
     ///     <br />

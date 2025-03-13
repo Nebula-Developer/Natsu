@@ -150,6 +150,8 @@ public class TransformSequenceTests {
         public ITransformSequence Sequence { get; set; } = null!;
         public EaseFunction Easing { get; set; } = EasingHelper.Linear;
 
+        public Action? DoReset { get; set; }
+
         bool ITransform.IsCompleted {
             get => IsCompleted;
             set => IsCompleted = value;
