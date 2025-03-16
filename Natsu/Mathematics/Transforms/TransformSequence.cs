@@ -1,8 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Natsu.Mathematics.Transforms;
 
-public class TransformSequence<T>(T target) : ITransformSequence<T> {
+public class TransformSequence<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(T target) : ITransformSequence<T> {
     /// <summary>
     ///     Returns the end time of the sequence.
     /// </summary>
@@ -76,7 +77,6 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
                 }
 
                 transform.DoReset?.Invoke();
-                Console.WriteLine("Resetting " + transform.Name);
             } else if (transform.StartTime < toTime && transform.StartTime + transform.Duration >= toTime) {
                 float progress = (toTime - transform.StartTime) / transform.Duration;
                 transform.Reset(false);
@@ -118,8 +118,8 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     /// <param name="name">The name of the transform for identification</param>
     /// <param name="interpolation">The interpolation function to use</param>
     /// <returns>The created sequence</returns>
-    public TransformSequence<T> Create<X>(string property, X to, float duration, Easing easing, string? name, Func<X, X, float, X> interpolation) {
-        PropertyInfo? propertyInfo = typeof(T).GetProperty(property);
+    public TransformSequence<T> Create<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] X>(string property, X to, float duration, Easing easing, string? name, Func<X, X, float, X> interpolation) {
+        PropertyInfo? propertyInfo = typeof(T).GetProperty(property, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
         if (propertyInfo == null) throw new InvalidOperationException($"Property {property} does not exist in {typeof(T).Name}");
 
         X a = FutureData.TryGetValue(property, out object? value) ? (X)value : (X)propertyInfo.GetValue(Target)!;
@@ -148,7 +148,7 @@ public class TransformSequence<T>(T target) : ITransformSequence<T> {
     /// <param name="easing">The easing to apply to the time</param>
     /// <param name="name">The name of the transform for identification</param>
     /// <returns>The created sequence</returns>
-    public TransformSequence<T> Create<X>(string property, X to, float duration, Easing easing = Easing.Linear, string? name = null) => Create(property, to, duration, easing, name, EasingHelper.GetInterpolation<X>());
+    public TransformSequence<T> Create<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] X>(string property, X to, float duration, Easing easing = Easing.Linear, string? name = null) => Create(property, to, duration, easing, name, EasingHelper.GetInterpolation<X>());
 
     /// <summary>
     ///     Moves the <see cref="BaseTime" /> of the sequence to the end of the longest transform.

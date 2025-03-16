@@ -23,7 +23,14 @@
 
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
         <NoWarn>CS1591, NU5104</NoWarn>
+
+        <!--
+            This supresses where generic arguments don't satisfy other attributes.
+            Occurs when publishing an app with <PublishTrimmed>true</PublishTrimmed>.
+        -->
+        <NoWarn>$(NoWarn);IL2091</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
