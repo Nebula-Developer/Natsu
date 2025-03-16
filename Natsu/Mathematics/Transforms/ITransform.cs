@@ -65,5 +65,5 @@ public interface ITransform {
     ///     Called when the transform has been completed.
     /// </summary>
     /// <param name="overtime">The amount of time the transform has been completed overtime</param>
-    public void Complete(float overtime) => IsCompleted = true;
+    public void Complete(float overtime = 0) => IsCompleted = true;
 }
