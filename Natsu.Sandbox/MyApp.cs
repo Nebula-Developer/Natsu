@@ -1,6 +1,7 @@
 using Natsu.Core;
 using Natsu.Core.Elements;
 using Natsu.Extensions;
+using Natsu.Graphics;
 using Natsu.Input;
 using Natsu.Mathematics;
 
@@ -9,10 +10,13 @@ public class MyApp : Application {
 
     protected override void OnLoad() {
         BoxElement box = new() {
-            RelativeSizeAxes = Axes.Both,
-            Pivot = new(0.5f),
-            Margin = new(10, 20, 30, 40)
+            Size = (100, 100),
+            Color = Colors.Red,
+            Pivot = new(0.5f)
         };
+
+        box.RotateTo(360, 5f).Loop();
+
         Add(box);
     }
 

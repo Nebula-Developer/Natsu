@@ -4,9 +4,9 @@ namespace Natsu.Utils.Logging;
 
 public struct ConsoleLoggerTheme {
     public Color Debug { get; set; } = Colors.DarkGray;
-    public Color Info { get; set; } = Colors.Gray;
+    public Color Info { get; set; } = Colors.LightGray;
     public Color Warning { get; set; } = Colors.Yellow;
-    public Color Error { get; set; } = Colors.Red;
+    public Color Error { get; set; } = Colors.LightRed;
     public Color Fatal { get; set; } = Colors.Red;
 
     public Color DebugBackground { get; set; } = Colors.Transparent;
