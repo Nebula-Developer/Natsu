@@ -41,6 +41,11 @@ public interface IPaint {
     FilterQuality FilterQuality { get; set; }
 
     /// <summary>
+    ///     The blend mode of the paint.
+    /// </summary>
+    BlendMode BlendMode { get; set; }
+
+    /// <summary>
     ///     The size of the text.
     /// </summary>
     float TextSize { get; set; }

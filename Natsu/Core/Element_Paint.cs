@@ -89,6 +89,11 @@ public partial class Element : IPaint {
         set => Paint.FilterQuality = value;
     }
 
+    public BlendMode BlendMode {
+        get => Paint.BlendMode;
+        set => Paint.BlendMode = value;
+    }
+
     public float TextSize {
         get => Paint.TextSize;
         set => Paint.TextSize = value;

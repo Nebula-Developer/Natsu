@@ -88,6 +88,8 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
             _ => SKSamplingOptions.Default
         };
 
+        Paint.BlendMode = (SKBlendMode)paint.BlendMode;
+
         Paint.StrokeJoin = paint.StrokeJoin switch {
             StrokeJoin.Miter => SKStrokeJoin.Miter,
             StrokeJoin.Round => SKStrokeJoin.Round,

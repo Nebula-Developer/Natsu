@@ -4,6 +4,7 @@ using Natsu.Graphics.Shaders;
 namespace Natsu.Graphics;
 
 public class Paint : IPaint, IEquatable<Paint> {
+    private BlendMode _blendMode = BlendMode.SrcOver;
     private Color _color = Colors.White;
     private FilterQuality _filterQuality = FilterQuality.None;
     private float _fontSize = 12;
@@ -60,6 +61,14 @@ public class Paint : IPaint, IEquatable<Paint> {
         get => _filterQuality;
         set {
             _filterQuality = value;
+            DoChange?.Invoke();
+        }
+    }
+
+    public BlendMode BlendMode {
+        get => _blendMode;
+        set {
+            _blendMode = value;
             DoChange?.Invoke();
         }
     }
