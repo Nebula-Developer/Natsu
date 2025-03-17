@@ -4,7 +4,19 @@ namespace Natsu.Core;
 
 public partial class Element {
     private readonly List<Element> _children = new();
-    private Element? _parent;
+    private Element? _parentField;
+
+    private Element? _parent {
+        get => _parentField;
+        set {
+            if (_parentField == value) return;
+
+            OnParentChange(_parentField);
+            DoParentChange?.Invoke(_parentField);
+
+            _parentField = value;
+        }
+    }
 
     /// <summary>
     ///     Sets the parent of this element to be the <see cref="ContentContainer" /> of the specified element.
@@ -177,7 +189,11 @@ public partial class Element {
 
     protected virtual void OnChildrenChange() { }
 
+    protected virtual void OnParentChange(Element? oldParent) { }
+
     public event Action? DoChildrenChange;
+
+    public event Action<Element?>? DoParentChange;
 
     /// <summary>
     ///     Called when the children of this element change.

@@ -34,6 +34,17 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     public bool Visible { get; set; } = true;
 
     /// <summary>
+    ///     Controls both the <see cref="Active" /> and <see cref="Visible" /> properties.
+    /// </summary>
+    public bool Enabled {
+        get => Active && Visible;
+        set {
+            Active = value;
+            Visible = value;
+        }
+    }
+
+    /// <summary>
     ///     Whether to prevent this element (and its children) from handling positional input.
     ///     <br />
     ///     Make sure to rebuild the input lists after changing this property.
