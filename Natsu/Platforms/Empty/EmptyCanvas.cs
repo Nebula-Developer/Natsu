@@ -26,6 +26,8 @@ public class EmptyCanvas : ICanvas {
 
     public void DrawPath(VectorPath path, Paint paint) { }
 
+    public void DrawVertices(VertexMode mode, Vector2[] vertices, Color[] colors, Paint paint) { }
+
     public void DrawOffscreenSurface(IOffscreenSurface surface, Vector2 position) { }
 
     public void ResetMatrix() { }

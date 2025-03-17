@@ -36,6 +36,17 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
 
     public void DrawPath(VectorPath path, Paint paint) => Canvas.DrawPath(path.SkiaPath, UsePaint(paint));
 
+    public void DrawVertices(VertexMode mode, Vector2[] vertices, Color[] colors, Paint paint) {
+        SKColor[] skColors = colors.Select(c => (SKColor)c).ToArray();
+
+        Canvas.DrawVertices(mode switch {
+            VertexMode.Triangles => SKVertexMode.Triangles,
+            VertexMode.TriangleStrip => SKVertexMode.TriangleStrip,
+            VertexMode.TriangleFan => SKVertexMode.TriangleFan,
+            _ => SKVertexMode.Triangles
+        }, vertices.Select(v => (SKPoint)v).ToArray(), skColors, UsePaint(paint));
+    }
+
     public void DrawOffscreenSurface(IOffscreenSurface surface, Vector2 position) {
         if (surface is SkiaOffscreenSurface skiaSurface) {
             if (skiaSurface.UseSnapshot) {

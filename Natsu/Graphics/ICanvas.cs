@@ -14,6 +14,7 @@ public interface ICanvas {
     void DrawLine(Vector2 start, Vector2 end, Paint paint);
     void DrawText(string text, Vector2 position, IFont font, Paint paint);
     void DrawPath(VectorPath path, Paint paint);
+    void DrawVertices(VertexMode mode, Vector2[] vertices, Color[] colors, Paint paint);
 
     void DrawImage(IImage image, Vector2 position, Paint paint);
     void DrawImage(IImage image, Rect rect, Paint paint);
