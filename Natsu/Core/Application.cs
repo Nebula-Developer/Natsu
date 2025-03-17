@@ -221,4 +221,18 @@ public partial class Application : IDisposable {
     public ScheduledTask Schedule(double time, Action task) => Scheduler.Schedule(time, task);
 
     public static implicit operator Element(Application app) => app.Root;
+
+    internal List<Tuple<int, Element>> AssignElementIndexes(Element root, ref int index) {
+        List<Tuple<int, Element>> elements = new();
+
+        root ??= Root;
+
+        foreach (Element element in root.Children) {
+            index++;
+            elements.Add(new(index, element));
+            elements.AddRange(AssignElementIndexes(element, ref index));
+        }
+
+        return elements;
+    }
 }

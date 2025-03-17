@@ -8,7 +8,7 @@ public partial class Element {
     private Axes _childRelativeSizeAxes = Axes.None;
 
     private Vector2 _drawSize;
-    private Vector2 _margin;
+    private Margin _margin;
 
     private Matrix _matrix = new();
     private Vector2 _offsetPosition;
@@ -152,7 +152,7 @@ public partial class Element {
     /// <summary>
     ///     The margin of the element.
     /// </summary>
-    public Vector2 Margin {
+    public Margin Margin {
         get => _margin;
         set {
             if (_margin == value) return;
@@ -314,7 +314,7 @@ public partial class Element {
     /// <summary>
     ///     Computation to determine whether a change in <see cref="DrawSize" /> affects the matrix.
     /// </summary>
-    public bool SizeAffectsMatrix => OffsetPosition != Vector2.Zero || AnchorPosition != Vector2.Zero || RelativeSizeAxes != Axes.None || ChildRelativeSizeAxes != Axes.None || Margin != Vector2.Zero || Rotation != 0 || Scale != Vector2.One;
+    public bool SizeAffectsMatrix => OffsetPosition != Vector2.Zero || AnchorPosition != Vector2.Zero || RelativeSizeAxes != Axes.None || ChildRelativeSizeAxes != Axes.None || Margin != 0 || Rotation != 0 || Scale != Vector2.One;
 
     /// <summary>
     ///     Handles geometric invalidation if <see cref="SizeAffectsMatrix" /> is true.
@@ -343,6 +343,17 @@ public partial class Element {
     /// <returns>The point in screen space</returns>
     public Vector2 ToScreenSpace(Vector2 localSpace) => Matrix.MapPoint(localSpace);
 
+    protected virtual void ProcessMatrix(ref Matrix matrix) {
+        Vector2 offset = RelativeSize * OffsetPosition;
+        Vector2 translate = -offset + Position;
+
+        translate += ComputeAnchorPosition + Margin.TopLeft;
+
+        matrix.PreTranslate(translate.X, translate.Y);
+        matrix.PreRotate(Rotation, offset.X - Margin.Left, offset.Y - Margin.Top);
+        matrix.PreScale(Scale.X, Scale.Y, offset.X, offset.Y);
+    }
+
     /// <summary>
     ///     Updates the matrix of the element.
     /// </summary>
@@ -350,15 +361,8 @@ public partial class Element {
         if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
 
         Matrix matrix = Parent?.ChildAccessMatrix.Copy() ?? new Matrix();
-        Vector2 offset = RelativeSize * OffsetPosition;
 
-        Vector2 translate = -offset + Position;
-
-        translate += ComputeAnchorPosition + Margin;
-
-        matrix.PreTranslate(translate.X, translate.Y);
-        matrix.PreRotate(Rotation, offset.X - Margin.X, offset.Y - Margin.Y);
-        matrix.PreScale(Scale.X, Scale.Y, offset.X, offset.Y);
+        ProcessMatrix(ref matrix);
 
         _worldScale = matrix.MapPoint(Vector2.One) - matrix.MapPoint(Vector2.Zero);
 
@@ -446,7 +450,7 @@ public partial class Element {
         return new(newX, newY);
     }
 
-    private Vector2 ApplySizeEffects(Vector2 size) => (size - Margin * 2) / (ScaleAffectsDrawSize ? Vector2.One : Scale);
+    private Vector2 ApplySizeEffects(Vector2 size) => (size - Margin.Size) / (ScaleAffectsDrawSize ? Vector2.One : Scale);
 
     private Vector2 ParentAccessDrawSize() {
         Vector2 nSize = Size;

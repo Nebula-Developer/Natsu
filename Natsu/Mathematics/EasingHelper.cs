@@ -11,10 +11,12 @@ public static class EasingHelper {
         { typeof(Vector2), Vector2.Lerp },
         { typeof(Vector3), Vector3.Lerp },
         { typeof(Vector4), Vector4.Lerp },
-        { typeof(Color), Color.Lerp }
+        { typeof(Color), Color.Lerp },
+        { typeof(Margin), Margin.Lerp }
     };
 
     public static double Lerp(double a, double b, double t) => a + (b - a) * t;
+    public static float LerpF(float a, float b, float t) => a + (b - a) * t;
 
     // Linear easing
     public static double Linear(double t) => t;
