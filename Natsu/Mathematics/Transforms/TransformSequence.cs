@@ -21,6 +21,13 @@ public class TransformSequence<[DynamicallyAccessedMembers(DynamicallyAccessedMe
     /// </summary>
     public float BaseDelayTime { get; set; }
 
+    /// <summary>
+    ///     Represents the last transform in the sequence.
+    ///     <br />
+    ///     Useful for manipulating chained transforms.
+    /// </summary>
+    public ITransform Last => Transforms.Last();
+
     public List<ITransform> Transforms { get; } = new();
 
     public bool IsCompleted => Transforms.All(t => t.IsCompleted);
@@ -214,4 +221,11 @@ public class TransformSequence<[DynamicallyAccessedMembers(DynamicallyAccessedMe
 
         return Append(transform);
     }
+
+    /// <summary>
+    ///     Gets a transform by its name.
+    /// </summary>
+    /// <param name="name">The name of the transform</param>
+    /// <returns>The first transform with the provided name, or null if none are found</returns>
+    public ITransform? Get(string name) => Transforms.FirstOrDefault(t => t.Name == name);
 }
