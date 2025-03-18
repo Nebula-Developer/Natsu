@@ -102,7 +102,7 @@ public partial class Application : IDisposable {
 
     protected virtual void OnDispose() { }
 
-    protected virtual void OnUpdate() { }
+    protected virtual void OnUpdate(double deltaTime) { }
 
     protected virtual void OnRender() { }
 
@@ -114,7 +114,7 @@ public partial class Application : IDisposable {
 
     public event Action DoLoad;
     public event Action DoDispose;
-    public event Action DoUpdate;
+    public event Action<double> DoUpdate;
     public event Action DoRender;
     public event Action<Vector2i> DoResize;
     public event Action DoFocus;
@@ -150,9 +150,9 @@ public partial class Application : IDisposable {
         Scheduler.Update(time);
         AudioManager.Update(time);
 
-        Root.Update();
-        OnUpdate();
-        DoUpdate?.Invoke();
+        Root.Update(time);
+        OnUpdate(time);
+        DoUpdate?.Invoke(time);
 
         MouseMove(null, true);
     }

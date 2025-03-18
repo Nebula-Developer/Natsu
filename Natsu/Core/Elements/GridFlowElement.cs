@@ -16,7 +16,7 @@ public enum GridOverflowDirection {
 public abstract class LayoutElement : Element {
     public virtual void ComputeLayout() { }
 
-    protected override void OnUpdate() {
+    protected override void OnUpdate(double _) {
         if (Invalidated.HasFlag(Invalidation.Layout)) ComputeLayout();
     }
 

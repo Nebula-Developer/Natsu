@@ -193,24 +193,24 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <summary>
     ///     Updates this element and its children.
     /// </summary>
-    public void Update() {
+    public void Update(double deltaTime) {
         if (!Active) return;
 
-        UpdateTransformSequences(App.Time.DeltaTime);
+        UpdateTransformSequences(deltaTime);
         UpdateShader();
 
-        OnUpdate();
-        DoUpdate?.Invoke();
-        OnUpdateChildren();
+        OnUpdate(deltaTime);
+        DoUpdate?.Invoke(deltaTime);
+        OnUpdateChildren(deltaTime);
     }
 
     protected virtual void OnLoad() { }
 
     protected virtual void OnDispose() { }
 
-    protected virtual void OnUpdate() { }
+    protected virtual void OnUpdate(double deltaTime) { }
 
-    protected virtual void OnUpdateChildren() => ForChildren(child => child.Update());
+    protected virtual void OnUpdateChildren(double deltaTime) => ForChildren(child => child.Update(deltaTime));
 
     protected virtual void OnRender(ICanvas canvas) { }
 
@@ -221,7 +221,7 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     public event Action? DoLoad;
     public event Action? DoDispose;
 
-    public event Action? DoUpdate;
+    public event Action<double>? DoUpdate;
     public event Action? DoRender;
 
     public event Action<Application>? DoAppChange;
