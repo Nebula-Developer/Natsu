@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Title>Natsu.Desktop</Title>
         <RootNamespace>Natsu</RootNamespace>
@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="opentk" Version="4.9.3" />
+        <PackageReference Include="opentk" Version="4.9.4" />
         <PackageReference Include="TextCopy" Version="6.2.1" />
     </ItemGroup>
 
