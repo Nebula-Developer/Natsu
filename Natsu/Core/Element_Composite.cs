@@ -10,11 +10,10 @@ public partial class Element {
         get => _parentField;
         set {
             if (_parentField == value) return;
+            _parentField = value;
 
             OnParentChange(_parentField);
             DoParentChange?.Invoke(_parentField);
-
-            _parentField = value;
         }
     }
 
