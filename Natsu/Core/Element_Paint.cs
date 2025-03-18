@@ -114,6 +114,11 @@ public partial class Element : IPaint {
         set => Paint.Shader = value;
     }
 
+    public IImageFilter? ImageFilter {
+        get => Paint.ImageFilter;
+        set => Paint.ImageFilter = value;
+    }
+
     protected void UpdateShader() {
         if (UpdateShaderTime && Shader != null) {
             Shader.SetUniform("time", (float)App.Time.Time);

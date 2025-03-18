@@ -22,6 +22,7 @@ public interface ICanvas {
     void DrawOffscreenSurface(IOffscreenSurface surface, Vector2 position);
 
     int Save();
+    int CreateBackdropFilter(IImageFilter filter);
     void Restore(int saveCount);
 
     void ClipRect(Rect rect, bool difference = false, bool antialias = false);
