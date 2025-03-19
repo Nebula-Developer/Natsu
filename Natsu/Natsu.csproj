@@ -20,7 +20,7 @@
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
         <PackageReference Include="SkiaSharp" Version="3.119.0-preview.0.20" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.116.1" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.0-preview.0.20" />
     </ItemGroup>
 
 </Project>
