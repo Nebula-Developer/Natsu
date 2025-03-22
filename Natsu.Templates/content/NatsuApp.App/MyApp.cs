@@ -38,7 +38,6 @@ public class MyApp : Application {
         TextSize = 20
     };
 
-
     protected override void OnLoad() {
         Add(Box, Text, CoverBox);
         Box.Add(BoxInputArea);
