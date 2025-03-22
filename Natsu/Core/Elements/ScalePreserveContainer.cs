@@ -1,3 +1,4 @@
+using Natsu.Core.InvalidationTemp;
 using Natsu.Mathematics;
 
 namespace Natsu.Core.Elements;
@@ -21,7 +22,7 @@ public class ScalePreserveContainer : Element {
         RelativeSizeAxes = Axes.Both;
         Add(ContentWrapper);
 
-        ContentWrapper.DoDrawSizeChange += _ => ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.Geometry);
+        ContentWrapper.DoDrawSizeChange += _ => ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.Geometry);
     }
 
     /// <summary>
@@ -42,7 +43,7 @@ public class ScalePreserveContainer : Element {
         get => _ratioPreserveMode;
         set {
             _ratioPreserveMode = value;
-            ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.Geometry);
+            ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.Geometry);
         }
     }
 
@@ -65,12 +66,12 @@ public class ScalePreserveContainer : Element {
                 break;
         }
 
-        ContentWrapper.Validate(Invalidation.Layout);
+        ContentWrapper.Validate(ElementInvalidation.Layout);
     }
 
     protected override void OnDrawSizeChange(Vector2 size) {
         base.OnDrawSizeChange(size);
-        ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.Geometry);
+        ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.Geometry);
     }
 }
 
@@ -83,7 +84,7 @@ public class ScalePreserveContainerContent(ScalePreserveContainer container) : E
 
     public override Vector2 Scale {
         get {
-            if (Invalidated.HasFlag(Invalidation.Layout)) container.UpdateScale();
+            if (Invalidated.HasFlag(ElementInvalidation.Layout)) container.UpdateScale();
             return base.Scale;
         }
         set => base.Scale = value;

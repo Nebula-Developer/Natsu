@@ -1,3 +1,4 @@
+using Natsu.Core.InvalidationTemp;
 using Natsu.Mathematics;
 
 namespace Natsu.Core;
@@ -75,7 +76,7 @@ public partial class Element {
 
         if (Parent?._app != null && Parent._app != App) App = Parent.App;
 
-        Invalidate(Invalidation.All);
+        Invalidate(ElementInvalidation.All);
     }
 
     /// <summary>
@@ -198,7 +199,7 @@ public partial class Element {
     ///     Called when the children of this element change.
     /// </summary>
     public void ChildrenChanged() {
-        if (ChildRelativeSizeAxes != Axes.None) Invalidate(Invalidation.Geometry);
+        if (ChildRelativeSizeAxes != Axes.None) Invalidate(ElementInvalidation.Geometry);
 
         OnChildrenChange();
         DoChildrenChange?.Invoke();

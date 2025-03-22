@@ -1,3 +1,4 @@
+using Natsu.Core.InvalidationTemp;
 using Natsu.Graphics;
 using Natsu.Mathematics;
 using Natsu.Mathematics.Transforms;
@@ -230,12 +231,17 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <summary>
     ///     The invalidation state handler of this element.
     /// </summary>
-    public InvalidationState InvalidationState { get; } = new();
+    public ElementInvalidator InvalidationState { get; } = new();
 
     /// <summary>
     ///     The invalidation state of this element.
     /// </summary>
-    public Invalidation Invalidated => InvalidationState.State;
+    public ElementInvalidation Invalidated => InvalidationState.Element;
+
+    /// <summary>
+    ///     The custom invalidation state of this element.
+    /// </summary>
+    public CustomInvalidation CustomInvalidated => InvalidationState.Custom;
 
     /// <summary>
     ///     Virtual method used to handle any custom invalidation logic.
@@ -243,8 +249,8 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <param name="invalidation">The invalidation flags</param>
     /// <param name="propagation">The directions to propagate the invalidation</param>
     /// <returns>Whether to block the default invalidation propagation</returns>
-    public virtual bool OnInvalidate(Invalidation invalidation, InvalidationPropagation propagation) {
-        if (invalidation.HasFlag(Invalidation.DrawSize) && Parent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(Invalidation.DrawSize);
+    public virtual bool OnInvalidate(ElementInvalidation invalidation, InvalidationPropagation propagation) {
+        if (invalidation.HasFlag(ElementInvalidation.DrawSize) && Parent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(ElementInvalidation.DrawSize);
 
         return false;
     }
@@ -255,7 +261,7 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <param name="invalidation">The invalidation flags</param>
     /// <param name="propagation">The directions to propagate the invalidation</param>
     /// <returns>Whether to block the default invalidation propagation</returns>
-    public virtual bool OnValidate(Invalidation invalidation, InvalidationPropagation propagation) => false;
+    public virtual bool OnValidate(ElementInvalidation invalidation, InvalidationPropagation propagation) => false;
 
     /// <summary>
     ///     Invalidates this element and propagates the invalidation to its parent and/or children.
@@ -263,8 +269,8 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <param name="invalidation">The invalidation flags</param>
     /// <param name="propagation">The directions to propagate the invalidation</param>
     /// <returns>Whether the invalidation was successful</returns>
-    public bool Invalidate(Invalidation invalidation, InvalidationPropagation propagation = InvalidationPropagation.None) {
-        if (invalidation == Invalidation.None) return false;
+    public bool Invalidate(ElementInvalidation invalidation, InvalidationPropagation propagation = InvalidationPropagation.None) {
+        if (invalidation == ElementInvalidation.None) return false;
 
         if (OnInvalidate(invalidation, propagation)) return true;
 
@@ -283,8 +289,8 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <param name="invalidation">The invalidation flags</param>
     /// <param name="propagation">The directions to propagate the invalidation</param>
     /// <returns>Whether the validation was successful</returns>
-    public bool Validate(Invalidation invalidation, InvalidationPropagation propagation = InvalidationPropagation.None) {
-        if (invalidation == Invalidation.None) return false;
+    public bool Validate(ElementInvalidation invalidation, InvalidationPropagation propagation = InvalidationPropagation.None) {
+        if (invalidation == ElementInvalidation.None) return false;
 
         if (OnValidate(invalidation, propagation)) return true;
 
@@ -303,7 +309,7 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <param name="invalidation">The invalidation flags</param>
     /// <param name="propagate">Whether to propagate the invalidation up the hierarchy</param>
     /// <returns>Whether the invalidation was successful</returns>
-    public bool InvalidateParent(Invalidation invalidation, bool propagate = false) => Parent?.Invalidate(invalidation, propagate ? InvalidationPropagation.Parent : InvalidationPropagation.None) ?? false;
+    public bool InvalidateParent(ElementInvalidation invalidation, bool propagate = false) => Parent?.Invalidate(invalidation, propagate ? InvalidationPropagation.Parent : InvalidationPropagation.None) ?? false;
 
     /// <summary>
     ///     Validates the parent of this element.
@@ -311,7 +317,7 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <param name="invalidation">The invalidation flags</param>
     /// <param name="propagate">Whether to propagate the invalidation up the hierarchy</param>
     /// <returns>Whether the validation was successful</returns>
-    public bool ValidateParent(Invalidation invalidation, bool propagate = false) => Parent?.Validate(invalidation, propagate ? InvalidationPropagation.Parent : InvalidationPropagation.None) ?? false;
+    public bool ValidateParent(ElementInvalidation invalidation, bool propagate = false) => Parent?.Validate(invalidation, propagate ? InvalidationPropagation.Parent : InvalidationPropagation.None) ?? false;
 
     /// <summary>
     ///     Invalidates the children of this element.
@@ -319,7 +325,7 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <param name="invalidation">The invalidation flags</param>
     /// <param name="propagate">Whether to propagate the invalidation down the hierarchy</param>
     /// <returns>Whether the invalidation was successful</returns>
-    public bool InvalidateChildren(Invalidation invalidation, bool propagate = false) {
+    public bool InvalidateChildren(ElementInvalidation invalidation, bool propagate = false) {
         bool result = false;
         ForChildren(child => result |= child.Invalidate(invalidation, propagate ? InvalidationPropagation.Children : InvalidationPropagation.None));
         return result;
@@ -331,7 +337,7 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <param name="invalidation">The invalidation flags</param>
     /// <param name="propagate">Whether to propagate the invalidation down the hierarchy</param>
     /// <returns>Whether the validation was successful</returns>
-    public bool ValidateChildren(Invalidation invalidation, bool propagate = false) {
+    public bool ValidateChildren(ElementInvalidation invalidation, bool propagate = false) {
         bool result = false;
         ForChildren(child => result |= child.Validate(invalidation, propagate ? InvalidationPropagation.Children : InvalidationPropagation.None));
         return result;

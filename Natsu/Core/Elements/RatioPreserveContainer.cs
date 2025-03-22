@@ -1,3 +1,4 @@
+using Natsu.Core.InvalidationTemp;
 using Natsu.Mathematics;
 
 namespace Natsu.Core.Elements;
@@ -21,7 +22,7 @@ public class RatioPreserveContainer : Element {
         _ratio = ratio;
         _mode = mode;
 
-        ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.DrawSize);
+        ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
     }
 
     public override Element ContentContainer => ContentWrapper;
@@ -33,7 +34,7 @@ public class RatioPreserveContainer : Element {
         get => _ratio;
         set {
             _ratio = value;
-            ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.DrawSize);
+            ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
         }
     }
 
@@ -44,7 +45,7 @@ public class RatioPreserveContainer : Element {
         get => _mode;
         set {
             _mode = value;
-            ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.DrawSize);
+            ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
         }
     }
 
@@ -73,12 +74,12 @@ public class RatioPreserveContainer : Element {
                 break;
         }
 
-        ContentWrapper.Validate(Invalidation.Layout);
+        ContentWrapper.Validate(ElementInvalidation.Layout);
     }
 
-    protected override void OnLoad() => ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.DrawSize);
+    protected override void OnLoad() => ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
 
-    protected override void OnDrawSizeChange(Vector2 size) => ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.DrawSize);
+    protected override void OnDrawSizeChange(Vector2 size) => ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
 }
 
 /// <summary>
@@ -90,7 +91,7 @@ public class RatioPreserveContainerContent(RatioPreserveContainer container) : E
 
     public override Vector2 Size {
         get {
-            if (Invalidated.HasFlag(Invalidation.Layout)) container.UpdateSize();
+            if (Invalidated.HasFlag(ElementInvalidation.Layout)) container.UpdateSize();
             return base.Size;
         }
         set => base.Size = value;

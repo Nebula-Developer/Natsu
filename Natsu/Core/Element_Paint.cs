@@ -1,3 +1,4 @@
+using Natsu.Core.InvalidationTemp;
 using Natsu.Graphics;
 using Natsu.Graphics.Shaders;
 
@@ -45,9 +46,9 @@ public partial class Element : IPaint {
 
     public float WorldOpacity {
         get {
-            if (Invalidated.HasFlag(Invalidation.Opacity)) {
+            if (Invalidated.HasFlag(ElementInvalidation.Opacity)) {
                 _worldOpacity = Parent?.WorldOpacity * Opacity ?? Opacity;
-                Validate(Invalidation.Opacity);
+                Validate(ElementInvalidation.Opacity);
             }
 
             return _worldOpacity;
@@ -64,7 +65,7 @@ public partial class Element : IPaint {
         get => _opacity;
         set {
             _opacity = value;
-            Invalidate(Invalidation.Opacity, InvalidationPropagation.Children);
+            Invalidate(ElementInvalidation.Opacity, InvalidationPropagation.Children);
             DoPaintValueChange?.Invoke();
         }
     }

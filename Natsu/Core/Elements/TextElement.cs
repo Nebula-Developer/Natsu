@@ -1,3 +1,4 @@
+using Natsu.Core.InvalidationTemp;
 using Natsu.Graphics;
 using Natsu.Mathematics;
 
@@ -29,7 +30,7 @@ public class TextElement : Element {
         get => _text;
         set {
             _text = value;
-            Invalidate(Invalidation.DrawSize | Invalidation.Layout);
+            Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
         }
     }
 
@@ -46,7 +47,7 @@ public class TextElement : Element {
         }
         set {
             _font = value;
-            Invalidate(Invalidation.DrawSize | Invalidation.Layout);
+            Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
         }
     }
 
@@ -54,7 +55,7 @@ public class TextElement : Element {
         get {
             if (!AutoSize) return base.Size;
 
-            if (Invalidated.HasFlag(Invalidation.Layout)) CalculateSize();
+            if (Invalidated.HasFlag(ElementInvalidation.Layout)) CalculateSize();
 
             return _textSize;
         }
@@ -68,7 +69,7 @@ public class TextElement : Element {
         get => _autoSize;
         set {
             _autoSize = value;
-            Invalidate(Invalidation.DrawSize | Invalidation.Layout);
+            Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
         }
     }
 
@@ -80,15 +81,15 @@ public class TextElement : Element {
 
         _textSize = Font.MeasureText(Text, Paint.TextSize);
 
-        Validate(Invalidation.Layout);
-        Invalidate(Invalidation.DrawSize);
+        Validate(ElementInvalidation.Layout);
+        Invalidate(ElementInvalidation.DrawSize);
 
         HandleParentSizeChange();
     }
 
-    protected override void OnPaintValueChange() => Invalidate(Invalidation.DrawSize | Invalidation.Layout);
+    protected override void OnPaintValueChange() => Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
 
-    protected override void OnLoad() => Invalidate(Invalidation.DrawSize | Invalidation.Layout);
+    protected override void OnLoad() => Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
 
     protected override void OnRender(ICanvas canvas) {
         if (Font == null) return;

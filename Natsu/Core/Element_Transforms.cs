@@ -1,3 +1,4 @@
+using Natsu.Core.InvalidationTemp;
 using Natsu.Mathematics;
 
 namespace Natsu.Core;
@@ -27,7 +28,7 @@ public partial class Element {
     /// </summary>
     public virtual Matrix Matrix {
         get {
-            if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
+            if (Invalidated.HasFlag(ElementInvalidation.Geometry)) UpdateMatrix();
 
             return _matrix;
         }
@@ -43,7 +44,7 @@ public partial class Element {
     /// </summary>
     public virtual Vector2 WorldPosition {
         get {
-            if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
+            if (Invalidated.HasFlag(ElementInvalidation.Geometry)) UpdateMatrix();
 
             return _worldPosition;
         }
@@ -59,7 +60,7 @@ public partial class Element {
     /// </summary>
     public virtual Bounds Bounds {
         get {
-            if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
+            if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
             return _bounds;
         }
@@ -80,7 +81,7 @@ public partial class Element {
             if (_rotation == value) return;
 
             _rotation = value % 360;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(ElementInvalidation.Geometry);
 
             // Rotation currently does not affect ChildRelativeSizeAxes
             // if (Parent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(Invalidation.DrawSize);
@@ -114,7 +115,7 @@ public partial class Element {
             if (_relativeSizeAxes == value) return;
 
             _relativeSizeAxes = value;
-            Invalidate(Invalidation.Size);
+            Invalidate(ElementInvalidation.Size);
         }
     }
 
@@ -145,7 +146,7 @@ public partial class Element {
             if (_childRelativeSizeAxes == value) return;
 
             _childRelativeSizeAxes = value;
-            Invalidate(Invalidation.Size);
+            Invalidate(ElementInvalidation.Size);
         }
     }
 
@@ -158,7 +159,7 @@ public partial class Element {
             if (_margin == value) return;
 
             _margin = value;
-            Invalidate(Invalidation.DrawSize);
+            Invalidate(ElementInvalidation.DrawSize);
         }
     }
 
@@ -169,7 +170,7 @@ public partial class Element {
     /// </summary>
     public virtual Vector2 DrawSize {
         get {
-            if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
+            if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
             return _drawSize;
         }
@@ -188,7 +189,7 @@ public partial class Element {
 
             _size = Vector2.Max(value, Vector2.Zero);
 
-            Invalidate(Invalidation.Size);
+            Invalidate(ElementInvalidation.Size);
             HandleSizeAffectsMatrix();
             HandleParentSizeChange();
             PropagateChildrenSizeChange();
@@ -202,7 +203,7 @@ public partial class Element {
         get {
             if (RelativeSizeAxes == Axes.None && ChildRelativeSizeAxes == Axes.None) return Size;
 
-            if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
+            if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
             return _relativeSize;
         }
@@ -221,7 +222,7 @@ public partial class Element {
             if (_offsetPosition == value) return;
 
             _offsetPosition = value;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(ElementInvalidation.Geometry);
         }
     }
 
@@ -239,7 +240,7 @@ public partial class Element {
             if (_anchorPosition == value) return;
 
             _anchorPosition = value;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(ElementInvalidation.Geometry);
         }
     }
 
@@ -265,7 +266,7 @@ public partial class Element {
             if (_position == value) return;
 
             _position = value;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(ElementInvalidation.Geometry);
 
             HandleParentSizeChange();
         }
@@ -280,8 +281,8 @@ public partial class Element {
             if (_scale == value) return;
 
             _scale = Vector2.Max(value, new(float.MinValue));
-            Invalidate(Invalidation.DrawSize);
-            Parent?.Invalidate(Invalidation.Layout);
+            Invalidate(ElementInvalidation.DrawSize);
+            Parent?.Invalidate(ElementInvalidation.Layout);
         }
     }
 
@@ -290,7 +291,7 @@ public partial class Element {
     /// </summary>
     public virtual Vector2 WorldScale {
         get {
-            if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
+            if (Invalidated.HasFlag(ElementInvalidation.Geometry)) UpdateMatrix();
 
             return _worldScale;
         }
@@ -307,7 +308,7 @@ public partial class Element {
             if (_scaleAffectsDrawSize == value) return;
 
             _scaleAffectsDrawSize = value;
-            Invalidate(Invalidation.DrawSize);
+            Invalidate(ElementInvalidation.DrawSize);
         }
     }
 
@@ -322,7 +323,7 @@ public partial class Element {
     /// <returns>Whether the invalidation was handled</returns>
     public bool HandleSizeAffectsMatrix() {
         if (SizeAffectsMatrix) {
-            Invalidate(Invalidation.Geometry);
+            Invalidate(ElementInvalidation.Geometry);
             return true;
         }
 
@@ -358,7 +359,7 @@ public partial class Element {
     ///     Updates the matrix of the element.
     /// </summary>
     public void UpdateMatrix() {
-        if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
+        if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
         Matrix matrix = Parent?.ChildAccessMatrix.Copy() ?? new Matrix();
 
@@ -377,11 +378,11 @@ public partial class Element {
         }
 
         _matrix = matrix;
-        Validate(Invalidation.Geometry);
+        Validate(ElementInvalidation.Geometry);
 
         CalculateBounds();
 
-        InvalidateChildren(Invalidation.Geometry);
+        InvalidateChildren(ElementInvalidation.Geometry);
     }
 
     public event Action<Vector2>? DoDrawSizeChange;
@@ -405,7 +406,7 @@ public partial class Element {
             Vector2 childDrawSize;
 
             if (child.RelativeSizeAxes != Axes.None)
-                childDrawSize = child.Invalidated.HasFlag(Invalidation.Size) ? child.ParentAccessDrawSize() : child.DrawSize;
+                childDrawSize = child.Invalidated.HasFlag(ElementInvalidation.Size) ? child.ParentAccessDrawSize() : child.DrawSize;
             else
                 childDrawSize = child.DrawSize;
 
@@ -424,11 +425,11 @@ public partial class Element {
 
     private void PropagateChildrenSizeChange() =>
         ForChildren(child => {
-            Invalidation inv = Invalidation.None;
+            ElementInvalidation inv = ElementInvalidation.None;
 
-            if (child.RelativeSizeAxes != Axes.None) inv |= Invalidation.DrawSize;
+            if (child.RelativeSizeAxes != Axes.None) inv |= ElementInvalidation.DrawSize;
 
-            if (child.AnchorPosition != Vector2.Zero) inv |= Invalidation.Geometry;
+            if (child.AnchorPosition != Vector2.Zero) inv |= ElementInvalidation.Geometry;
 
             child.Invalidate(inv);
         });
@@ -474,7 +475,7 @@ public partial class Element {
         Vector2 oldValue = _drawSize;
         _drawSize = drawSize;
 
-        Validate(Invalidation.Size);
+        Validate(ElementInvalidation.Size);
 
         if (drawSize == oldValue) return;
 
@@ -493,13 +494,13 @@ public partial class Element {
 
     private void PropagateParentSizeDependencies() {
         if (Parent?.ChildRelativeSizeAxes != Axes.None) {
-            InvalidateParent(Invalidation.DrawSize);
+            InvalidateParent(ElementInvalidation.DrawSize);
             Parent?.HandleParentSizeChange();
         }
     }
 
     protected void HandleParentSizeChange() {
-        InvalidateParent(Invalidation.Layout);
+        InvalidateParent(ElementInvalidation.Layout);
         PropagateParentSizeDependencies();
     }
 
