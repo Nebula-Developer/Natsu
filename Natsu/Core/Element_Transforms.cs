@@ -410,7 +410,7 @@ public partial class Element {
                 childDrawSize = child.DrawSize;
 
             Vector2 size = childDrawSize * child.Scale;
-            Vector2 offset = child.AnchorPosition * _drawSize + child.OffsetPosition * size + child.Position;
+            Vector2 offset = -(child.OffsetPosition * size) + child.Position;
 
             float realX = child.RelativeSizeAxes.HasFlag(Axes.X) ? 0 : offset.X + size.X;
             float realY = child.RelativeSizeAxes.HasFlag(Axes.Y) ? 0 : offset.Y + size.Y;
@@ -444,7 +444,7 @@ public partial class Element {
         else if (accessParent && RelativeSizeAxes.HasFlag(Axes.X) && Parent != null) newX = Parent.DrawSize.X * orig.X;
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.Y))
-            newY = distPos.Y * orig.X;
+            newY = distPos.Y * orig.Y;
         else if (accessParent && RelativeSizeAxes.HasFlag(Axes.Y) && Parent != null) newY = Parent.DrawSize.Y * orig.Y;
 
         return new(newX, newY);
