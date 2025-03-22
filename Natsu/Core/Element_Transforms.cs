@@ -25,7 +25,7 @@ public partial class Element {
     /// <summary>
     ///     The matrix that transforms the element into screen space.
     /// </summary>
-    public Matrix Matrix {
+    public virtual Matrix Matrix {
         get {
             if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
 
@@ -41,7 +41,7 @@ public partial class Element {
     /// <summary>
     ///     The position of the element in screen space.
     /// </summary>
-    public Vector2 WorldPosition {
+    public virtual Vector2 WorldPosition {
         get {
             if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
 
@@ -57,7 +57,7 @@ public partial class Element {
     /// <summary>
     ///     The bounds of the element in screen space.
     /// </summary>
-    public Bounds Bounds {
+    public virtual Bounds Bounds {
         get {
             if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
 
@@ -74,7 +74,7 @@ public partial class Element {
     /// <summary>
     ///     The rotation of the element in degrees.
     /// </summary>
-    public float Rotation {
+    public virtual float Rotation {
         get => _rotation;
         set {
             if (_rotation == value) return;
@@ -152,7 +152,7 @@ public partial class Element {
     /// <summary>
     ///     The margin of the element.
     /// </summary>
-    public Margin Margin {
+    public virtual Margin Margin {
         get => _margin;
         set {
             if (_margin == value) return;
@@ -167,7 +167,7 @@ public partial class Element {
     ///     <br />
     ///     This value should almost <i>always</i> be used over <see cref="Size" /> for rendering purposes.
     /// </summary>
-    public Vector2 DrawSize {
+    public virtual Vector2 DrawSize {
         get {
             if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
 
@@ -198,7 +198,7 @@ public partial class Element {
     /// <summary>
     ///     The size from <see cref="RelativeSizeAxes" /> and <see cref="ChildRelativeSizeAxes" /> computation.
     /// </summary>
-    public Vector2 RelativeSize {
+    public virtual Vector2 RelativeSize {
         get {
             if (RelativeSizeAxes == Axes.None && ChildRelativeSizeAxes == Axes.None) return Size;
 
@@ -215,7 +215,7 @@ public partial class Element {
     ///     <br />
     ///     For instance, if the offset position is set to <c>(0.5, 0.5)</c>, the element will move back by half of its size.
     /// </summary>
-    public Vector2 OffsetPosition {
+    public virtual Vector2 OffsetPosition {
         get => _offsetPosition;
         set {
             if (_offsetPosition == value) return;
@@ -233,7 +233,7 @@ public partial class Element {
     ///     For instance, if the anchor position is set to <c>(0.5, 0.5)</c>, the element will move forward by half of its
     ///     parent's size.
     /// </summary>
-    public Vector2 AnchorPosition {
+    public virtual Vector2 AnchorPosition {
         get => _anchorPosition;
         set {
             if (_anchorPosition == value) return;
@@ -259,7 +259,7 @@ public partial class Element {
     ///     <br />
     ///     Used as an offset for all position-related transformations.
     /// </summary>
-    public Vector2 Position {
+    public virtual Vector2 Position {
         get => _position;
         set {
             if (_position == value) return;
@@ -274,7 +274,7 @@ public partial class Element {
     /// <summary>
     ///     The scale of the element.
     /// </summary>
-    public Vector2 Scale {
+    public virtual Vector2 Scale {
         get => _scale;
         set {
             if (_scale == value) return;
@@ -288,7 +288,7 @@ public partial class Element {
     /// <summary>
     ///     The scale of the element in world space.
     /// </summary>
-    public Vector2 WorldScale {
+    public virtual Vector2 WorldScale {
         get {
             if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
 

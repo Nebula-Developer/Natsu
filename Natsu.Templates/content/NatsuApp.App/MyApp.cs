@@ -25,8 +25,7 @@ public class MyApp : Application {
         RelativeSizeAxes = Axes.Both,
         Margin = 30,
         Color = new(100, 150, 200, 100),
-        OffsetPosition = new(0.5f),
-        AnchorPosition = new(0.5f),
+        Pivot = new(0.5f),
         RoundedCorners = new(20),
         IsAntialias = true
     };

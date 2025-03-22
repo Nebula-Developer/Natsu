@@ -3,64 +3,37 @@ using Natsu.Mathematics;
 namespace Natsu.Core.Elements;
 
 /// <summary>
-///     The mode to preserve the ratio of the container.
-/// </summary>
-public enum RatioPreserveMode {
-    /// <summary>
-    ///     The content is fit to the width of the container.
-    /// </summary>
-    Width,
-
-    /// <summary>
-    ///     The content is fit to the height of the container.
-    /// </summary>
-    Height,
-
-    /// <summary>
-    ///     The content will fit inside the container.
-    /// </summary>
-    Fit,
-
-    /// <summary>
-    ///     The content will cover the container.
-    /// </summary>
-    Cover
-}
-
-/// <summary>
 ///     A container that will preserve the ratio of its content.
 /// </summary>
 public class RatioPreserveContainer : Element {
-    public readonly Element ContentWrapper = new() {
-        AnchorPosition = new(0.5f),
-        OffsetPosition = new(0.5f),
-        Clip = true
-    };
+    public readonly RatioPreserveContainerContent ContentWrapper;
 
     private RatioPreserveMode _mode = RatioPreserveMode.Fit;
     private float _ratio = 16f / 9f;
 
     public RatioPreserveContainer(float ratio, RatioPreserveMode mode = RatioPreserveMode.Fit) {
+        ContentWrapper = new(this) {
+            Pivot = 0.5f,
+            Clip = true
+        };
         Add(ContentWrapper);
 
         _ratio = ratio;
         _mode = mode;
 
-        Fit();
-    }
-
-    public new bool Clip {
-        get => ContentWrapper.Clip;
-        set => ContentWrapper.Clip = value;
+        ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.DrawSize);
     }
 
     public override Element ContentContainer => ContentWrapper;
 
+    /// <summary>
+    ///     The ratio for the container to preserve.
+    /// </summary>
     public float Ratio {
         get => _ratio;
         set {
             _ratio = value;
-            Fit();
+            ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.DrawSize);
         }
     }
 
@@ -71,11 +44,11 @@ public class RatioPreserveContainer : Element {
         get => _mode;
         set {
             _mode = value;
-            Fit();
+            ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.DrawSize);
         }
     }
 
-    public void Fit() {
+    public void UpdateSize() {
         Vector2 size = DrawSize;
         float ratio = size.X / size.Y;
 
@@ -91,19 +64,35 @@ public class RatioPreserveContainer : Element {
                     ContentWrapper.Size = new(size.Y * Ratio, size.Y);
                 else
                     ContentWrapper.Size = new(size.X, size.X / Ratio);
-
                 break;
             case RatioPreserveMode.Cover:
                 if (ratio > Ratio)
                     ContentWrapper.Size = new(size.X, size.X / Ratio);
                 else
                     ContentWrapper.Size = new(size.Y * Ratio, size.Y);
-
                 break;
         }
+
+        ContentWrapper.Validate(Invalidation.Layout);
     }
 
-    protected override void OnLoad() => Fit();
+    protected override void OnLoad() => ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.DrawSize);
 
-    protected override void OnDrawSizeChange(Vector2 size) => Fit();
+    protected override void OnDrawSizeChange(Vector2 size) => ContentWrapper.Invalidate(Invalidation.Layout | Invalidation.DrawSize);
+}
+
+/// <summary>
+///     The content of a <see cref="RatioPreserveContainer" />.
+/// </summary>
+/// <param name="container">The ratio preserve container this content belongs to</param>
+public class RatioPreserveContainerContent(RatioPreserveContainer container) : Element {
+    public RatioPreserveContainer Container => container;
+
+    public override Vector2 Size {
+        get {
+            if (Invalidated.HasFlag(Invalidation.Layout)) container.UpdateSize();
+            return base.Size;
+        }
+        set => base.Size = value;
+    }
 }
