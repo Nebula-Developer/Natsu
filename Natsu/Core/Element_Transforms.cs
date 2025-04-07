@@ -13,6 +13,7 @@ public partial class Element {
 
     private Matrix _matrix = new();
     private Vector2 _offsetPosition;
+    private Margin _padding;
     private Vector2 _position;
     private Vector2 _relativeSize;
     private Axes _relativeSizeAxes = Axes.None;
@@ -164,6 +165,19 @@ public partial class Element {
     }
 
     /// <summary>
+    ///     The padding of the element.
+    /// </summary>
+    public virtual Margin Padding {
+        get => _padding;
+        set {
+            if (_padding == value) return;
+
+            _padding = value;
+            Invalidate(ElementInvalidation.DrawSize);
+        }
+    }
+
+    /// <summary>
     ///     The size of the element in screen space, after applying all size-related transformations.
     ///     <br />
     ///     This value should almost <i>always</i> be used over <see cref="Size" /> for rendering purposes.
@@ -193,6 +207,30 @@ public partial class Element {
             HandleSizeAffectsMatrix();
             HandleParentSizeChange();
             PropagateChildrenSizeChange();
+        }
+    }
+
+    /// <summary>
+    ///     Controls the width of the element.
+    /// </summary>
+    public float Width {
+        get => Size.X;
+        set {
+            if (Size.X == value) return;
+
+            Size = new(value, Size.Y);
+        }
+    }
+
+    /// <summary>
+    ///     Controls the height of the element.
+    /// </summary>
+    public float Height {
+        get => Size.Y;
+        set {
+            if (Size.Y == value) return;
+
+            Size = new(Size.X, value);
         }
     }
 
@@ -348,7 +386,7 @@ public partial class Element {
         Vector2 offset = RelativeSize * OffsetPosition;
         Vector2 translate = -offset + Position;
 
-        translate += ComputeAnchorPosition + Margin.TopLeft;
+        translate += ComputeAnchorPosition + Margin.TopLeft - Padding.TopLeft;
 
         matrix.PreTranslate(translate.X, translate.Y);
         matrix.PreRotate(Rotation, offset.X - Margin.Left, offset.Y - Margin.Top);
@@ -451,7 +489,7 @@ public partial class Element {
         return new(newX, newY);
     }
 
-    private Vector2 ApplySizeEffects(Vector2 size) => (size - Margin.Size) / (ScaleAffectsDrawSize ? Vector2.One : Scale);
+    private Vector2 ApplySizeEffects(Vector2 size) => (size - Margin.Size + Padding.Size) / (ScaleAffectsDrawSize ? Vector2.One : Scale);
 
     private Vector2 ParentAccessDrawSize() {
         Vector2 nSize = Size;
