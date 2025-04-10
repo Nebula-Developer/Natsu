@@ -1,6 +1,8 @@
 using Natsu.Core.InvalidationTemp;
+using Natsu.Extensions;
 using Natsu.Graphics;
 using Natsu.Mathematics;
+using Natsu.Utils;
 
 namespace Natsu.Core.Elements;
 
@@ -11,27 +13,31 @@ public class TextElement : Element {
     private bool _autoSize = true;
 
     private IFont? _font;
-    private string _text = string.Empty;
     private Vector2 _textSize;
 
-    public TextElement() { }
+    public TextElement() => TextBindable = string.Empty.Bindable(_ => { Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout); });
 
-    public TextElement(string text) => Text = text;
+    public TextElement(string text) : this() => Text = text;
+    public TextElement(IBindable<string> textBindable) : this() => TextBindable.BindTo(textBindable);
 
-    public TextElement(string text, IFont font) {
+    public TextElement(string text, IFont font) : this() {
         Text = text;
         Font = font;
     }
 
     /// <summary>
+    ///     The bindable of the text.
+    ///     <br />
+    ///     Useful for binding to updating/shared values.
+    /// </summary>
+    public IBindable<string> TextBindable { get; }
+
+    /// <summary>
     ///     The text to draw.
     /// </summary>
     public string Text {
-        get => _text;
-        set {
-            _text = value;
-            Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
-        }
+        get => TextBindable.Value;
+        set => TextBindable.Value = value;
     }
 
     /// <summary>
