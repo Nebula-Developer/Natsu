@@ -4,83 +4,138 @@ using Natsu.Extensions;
 using Natsu.Graphics;
 using Natsu.Input;
 using Natsu.Mathematics;
+using Natsu.Utils;
+
+public class SliderElement : InputElement {
+    private float _min, _max = 1f, _step;
+
+    public Element Grabber = null!;
+
+    public SliderElement() {
+        Add(Grabber = MakeGrabber().With(g => { }));
+
+        ValueBindable = new(0f, UpdateValue);
+    }
+
+    public Bindable<float> ValueBindable { get; }
+
+    public float Value {
+        get => ValueBindable.Value;
+        set {
+            if (ValueBindable.Settable) return;
+            ValueBindable.Value = value;
+        }
+    }
+
+    public float Min {
+        get => _min;
+        set {
+            _min = value;
+            UpdateValue(Value);
+        }
+    }
+
+    public float Max {
+        get => _max;
+        set {
+            _max = value;
+            UpdateValue(Value);
+        }
+    }
+
+    public float Step {
+        get => _step;
+        set {
+            _step = value;
+            UpdateValue(Value);
+        }
+    }
+
+    public virtual void OnValueChanged(float value) { }
+    public event Action<float>? DoValueChanged;
+
+    public void UpdateValue(float value) {
+        if (value < _min) value = _min;
+        if (value > _max) value = _max;
+
+        if (_step > 0) {
+            float stepCount = MathF.Round((value - _min) / _step);
+            value = _min + stepCount * _step;
+        }
+
+        if (value == Value) return;
+
+        Value = value;
+        float percent = (Value - _min) / (_max - _min);
+        percent = Math.Clamp(percent, 0f, 1f);
+
+        Grabber.StopTransformSequence(nameof(Grabber.Pivot));
+        Grabber.PivotTo(new(percent, 0.5f), 0.2f, Easing.ExpoOut);
+
+        OnValueChanged(Value);
+        DoValueChanged?.Invoke(Value);
+    }
+
+    protected Element MakeGrabber() {
+        BoxElement grabber = new() {
+            Color = Colors.White,
+            RoundedCorners = 5,
+            IsAntialias = true
+        };
+
+        DoDrawSizeChange += size => { grabber.Size = size.Y; };
+
+        return grabber;
+    }
+
+    protected override bool OnMouseDown(MouseButton button, Vector2 position) => button == MouseButton.Left;
+
+    protected override void OnPressDown(int index, Vector2 position) {
+        if (index != 0) return;
+        UpdateValue(position.X / DrawSize.X * (_max - _min) + _min);
+    }
+
+    protected override void OnPressMove(int index, Vector2 position) => UpdateValue(position.X / DrawSize.X * (_max - _min) + _min);
+
+    protected override void OnPressUp(int index, Vector2 position) {
+        if (index != 0) return;
+        UpdateValue(position.X / DrawSize.X * (_max - _min) + _min);
+    }
+}
 
 public class MyApp : Application {
-    private BoxElement? _box;
     private Vector2 _targetScale = Vector2.One;
 
     protected override void OnLoad() {
-        new BoxElement {
-            RelativeSizeAxes = Axes.Both,
-            Color = Colors.Gray,
-            Parent = this
+        SliderElement slider = new() {
+            RelativeSizeAxes = Axes.X,
+            Margin = new(5),
+            Size = new(1, 60f),
+            Parent = this,
+
+            Step = 0.0001f
         };
 
-        BoxElement box = new() {
-            Size = (170, 170),
-            Color = Colors.Black,
-            ImageFilter = Renderer.CreateBlur(10, 10),
-            IsStroke = true,
-            StrokeWidth = 10
-        };
-
-        BoxElement box2 = new() {
-            Size = (170, 170),
+        TextElement test = new(slider.ValueBindable.Cast<float, string>()) {
+            Size = new(100, 50),
             Color = Colors.White,
-            Pivot = new(1),
-            ImageFilter = Renderer.CreateBlur(10, 10),
-            IsStroke = true,
-            StrokeWidth = 10
+            Font = ResourceLoader.DefaultFont,
+            Parent = this,
+            ImageFilter = Renderer.CreateBlur(3, 3),
+            TextSize = 40
         };
 
-        box.DoRender += () => { };
-
-        TextElement text = new("FPS: 0") {
-            TextSize = 32,
-            Pivot = 1f,
-            Position = -20f,
-            Parent = this
-        };
-
-        text.DoUpdate += time => { text.Text = $"FPS: {Time.TPS:F2}"; };
-
-        BoxElement boxP = new() {
-            Size = new(100),
-            Pivot = new(0.5f),
-            Clip = true,
-            ClipAntiAlias = true,
-            RoundedCorners = 10f,
-            Color = Colors.Red
-        };
-
-        BoxElement boxShadow = new() {
-            Size = new(100),
-            Pivot = new(0.5f),
-            RoundedCorners = 10f,
-            ImageFilter = Renderer.CreateDropShadow(0, 30, 30, 30, Colors.Black),
-            Parent = this
-        };
-
-        box.Parent = boxP;
-        box2.Parent = boxP;
-        boxP.Parent = boxShadow;
-
-        BlurredBackgroundElement blur = new() {
+        BlurredBackgroundElement elm = new() {
+            Size = 100,
+            Index = 999,
+            Parent = this,
             Children = [
-                _box = new() {
-                    Size = 30f,
-                    OffsetPosition = new(0.5f),
-                    RoundedCorners = 30f
+                new BoxElement {
+                    RelativeSizeAxes = Axes.Both,
+                    Color = Colors.White
                 }
-            ],
-            Parent = this
+            ]
         };
-    }
-
-    protected override void OnMouseMove(Vector2 position) {
-        if (_box == null) return;
-        _box.StopTransformSequence(nameof(_box.Position));
-        _box.MoveTo(position / _box.WorldScale, 0.3f, Easing.ExpoOut);
     }
 
     protected override void OnKeyDown(Key key, KeyMods mods) {

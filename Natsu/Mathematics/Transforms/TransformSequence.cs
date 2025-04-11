@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Natsu.Mathematics.Transforms;
 
-public class TransformSequence<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>(T target) : ITransformSequence<T> {
+public class TransformSequence<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties | DynamicallyAccessedMemberTypes.NonPublicProperties)] T>(T target) : ITransformSequence<T> {
     /// <summary>
     ///     Returns the end time of the sequence.
     /// </summary>

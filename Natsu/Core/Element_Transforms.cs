@@ -1,3 +1,4 @@
+using Natsu.Core.InvalidationTemp;
 using Natsu.Mathematics;
 
 namespace Natsu.Core;
@@ -12,6 +13,7 @@ public partial class Element {
 
     private Matrix _matrix = new();
     private Vector2 _offsetPosition;
+    private Margin _padding;
     private Vector2 _position;
     private Vector2 _relativeSize;
     private Axes _relativeSizeAxes = Axes.None;
@@ -25,9 +27,9 @@ public partial class Element {
     /// <summary>
     ///     The matrix that transforms the element into screen space.
     /// </summary>
-    public Matrix Matrix {
+    public virtual Matrix Matrix {
         get {
-            if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
+            if (Invalidated.HasFlag(ElementInvalidation.Geometry)) UpdateMatrix();
 
             return _matrix;
         }
@@ -41,9 +43,9 @@ public partial class Element {
     /// <summary>
     ///     The position of the element in screen space.
     /// </summary>
-    public Vector2 WorldPosition {
+    public virtual Vector2 WorldPosition {
         get {
-            if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
+            if (Invalidated.HasFlag(ElementInvalidation.Geometry)) UpdateMatrix();
 
             return _worldPosition;
         }
@@ -57,9 +59,9 @@ public partial class Element {
     /// <summary>
     ///     The bounds of the element in screen space.
     /// </summary>
-    public Bounds Bounds {
+    public virtual Bounds Bounds {
         get {
-            if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
+            if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
             return _bounds;
         }
@@ -74,13 +76,13 @@ public partial class Element {
     /// <summary>
     ///     The rotation of the element in degrees.
     /// </summary>
-    public float Rotation {
+    public virtual float Rotation {
         get => _rotation;
         set {
             if (_rotation == value) return;
 
             _rotation = value % 360;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(ElementInvalidation.Geometry);
 
             // Rotation currently does not affect ChildRelativeSizeAxes
             // if (Parent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(Invalidation.DrawSize);
@@ -114,7 +116,7 @@ public partial class Element {
             if (_relativeSizeAxes == value) return;
 
             _relativeSizeAxes = value;
-            Invalidate(Invalidation.Size);
+            Invalidate(ElementInvalidation.Size);
         }
     }
 
@@ -145,20 +147,33 @@ public partial class Element {
             if (_childRelativeSizeAxes == value) return;
 
             _childRelativeSizeAxes = value;
-            Invalidate(Invalidation.Size);
+            Invalidate(ElementInvalidation.Size);
         }
     }
 
     /// <summary>
     ///     The margin of the element.
     /// </summary>
-    public Margin Margin {
+    public virtual Margin Margin {
         get => _margin;
         set {
             if (_margin == value) return;
 
             _margin = value;
-            Invalidate(Invalidation.DrawSize);
+            Invalidate(ElementInvalidation.DrawSize);
+        }
+    }
+
+    /// <summary>
+    ///     The padding of the element.
+    /// </summary>
+    public virtual Margin Padding {
+        get => _padding;
+        set {
+            if (_padding == value) return;
+
+            _padding = value;
+            Invalidate(ElementInvalidation.DrawSize);
         }
     }
 
@@ -167,9 +182,9 @@ public partial class Element {
     ///     <br />
     ///     This value should almost <i>always</i> be used over <see cref="Size" /> for rendering purposes.
     /// </summary>
-    public Vector2 DrawSize {
+    public virtual Vector2 DrawSize {
         get {
-            if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
+            if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
             return _drawSize;
         }
@@ -188,7 +203,7 @@ public partial class Element {
 
             _size = Vector2.Max(value, Vector2.Zero);
 
-            Invalidate(Invalidation.Size);
+            Invalidate(ElementInvalidation.Size);
             HandleSizeAffectsMatrix();
             HandleParentSizeChange();
             PropagateChildrenSizeChange();
@@ -196,13 +211,37 @@ public partial class Element {
     }
 
     /// <summary>
+    ///     Controls the width of the element.
+    /// </summary>
+    public float Width {
+        get => Size.X;
+        set {
+            if (Size.X == value) return;
+
+            Size = new(value, Size.Y);
+        }
+    }
+
+    /// <summary>
+    ///     Controls the height of the element.
+    /// </summary>
+    public float Height {
+        get => Size.Y;
+        set {
+            if (Size.Y == value) return;
+
+            Size = new(Size.X, value);
+        }
+    }
+
+    /// <summary>
     ///     The size from <see cref="RelativeSizeAxes" /> and <see cref="ChildRelativeSizeAxes" /> computation.
     /// </summary>
-    public Vector2 RelativeSize {
+    public virtual Vector2 RelativeSize {
         get {
             if (RelativeSizeAxes == Axes.None && ChildRelativeSizeAxes == Axes.None) return Size;
 
-            if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
+            if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
             return _relativeSize;
         }
@@ -215,13 +254,13 @@ public partial class Element {
     ///     <br />
     ///     For instance, if the offset position is set to <c>(0.5, 0.5)</c>, the element will move back by half of its size.
     /// </summary>
-    public Vector2 OffsetPosition {
+    public virtual Vector2 OffsetPosition {
         get => _offsetPosition;
         set {
             if (_offsetPosition == value) return;
 
             _offsetPosition = value;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(ElementInvalidation.Geometry);
         }
     }
 
@@ -233,13 +272,13 @@ public partial class Element {
     ///     For instance, if the anchor position is set to <c>(0.5, 0.5)</c>, the element will move forward by half of its
     ///     parent's size.
     /// </summary>
-    public Vector2 AnchorPosition {
+    public virtual Vector2 AnchorPosition {
         get => _anchorPosition;
         set {
             if (_anchorPosition == value) return;
 
             _anchorPosition = value;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(ElementInvalidation.Geometry);
         }
     }
 
@@ -259,13 +298,13 @@ public partial class Element {
     ///     <br />
     ///     Used as an offset for all position-related transformations.
     /// </summary>
-    public Vector2 Position {
+    public virtual Vector2 Position {
         get => _position;
         set {
             if (_position == value) return;
 
             _position = value;
-            Invalidate(Invalidation.Geometry);
+            Invalidate(ElementInvalidation.Geometry);
 
             HandleParentSizeChange();
         }
@@ -274,23 +313,23 @@ public partial class Element {
     /// <summary>
     ///     The scale of the element.
     /// </summary>
-    public Vector2 Scale {
+    public virtual Vector2 Scale {
         get => _scale;
         set {
             if (_scale == value) return;
 
             _scale = Vector2.Max(value, new(float.MinValue));
-            Invalidate(Invalidation.DrawSize);
-            Parent?.Invalidate(Invalidation.Layout);
+            Invalidate(ElementInvalidation.DrawSize);
+            Parent?.Invalidate(ElementInvalidation.Layout);
         }
     }
 
     /// <summary>
     ///     The scale of the element in world space.
     /// </summary>
-    public Vector2 WorldScale {
+    public virtual Vector2 WorldScale {
         get {
-            if (Invalidated.HasFlag(Invalidation.Geometry)) UpdateMatrix();
+            if (Invalidated.HasFlag(ElementInvalidation.Geometry)) UpdateMatrix();
 
             return _worldScale;
         }
@@ -307,7 +346,7 @@ public partial class Element {
             if (_scaleAffectsDrawSize == value) return;
 
             _scaleAffectsDrawSize = value;
-            Invalidate(Invalidation.DrawSize);
+            Invalidate(ElementInvalidation.DrawSize);
         }
     }
 
@@ -322,7 +361,7 @@ public partial class Element {
     /// <returns>Whether the invalidation was handled</returns>
     public bool HandleSizeAffectsMatrix() {
         if (SizeAffectsMatrix) {
-            Invalidate(Invalidation.Geometry);
+            Invalidate(ElementInvalidation.Geometry);
             return true;
         }
 
@@ -347,7 +386,7 @@ public partial class Element {
         Vector2 offset = RelativeSize * OffsetPosition;
         Vector2 translate = -offset + Position;
 
-        translate += ComputeAnchorPosition + Margin.TopLeft;
+        translate += ComputeAnchorPosition + Margin.TopLeft - Padding.TopLeft;
 
         matrix.PreTranslate(translate.X, translate.Y);
         matrix.PreRotate(Rotation, offset.X - Margin.Left, offset.Y - Margin.Top);
@@ -358,7 +397,7 @@ public partial class Element {
     ///     Updates the matrix of the element.
     /// </summary>
     public void UpdateMatrix() {
-        if (Invalidated.HasFlag(Invalidation.Size)) UpdateDrawSize();
+        if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
         Matrix matrix = Parent?.ChildAccessMatrix.Copy() ?? new Matrix();
 
@@ -377,11 +416,11 @@ public partial class Element {
         }
 
         _matrix = matrix;
-        Validate(Invalidation.Geometry);
+        Validate(ElementInvalidation.Geometry);
 
         CalculateBounds();
 
-        InvalidateChildren(Invalidation.Geometry);
+        InvalidateChildren(ElementInvalidation.Geometry);
     }
 
     public event Action<Vector2>? DoDrawSizeChange;
@@ -405,12 +444,12 @@ public partial class Element {
             Vector2 childDrawSize;
 
             if (child.RelativeSizeAxes != Axes.None)
-                childDrawSize = child.Invalidated.HasFlag(Invalidation.Size) ? child.ParentAccessDrawSize() : child.DrawSize;
+                childDrawSize = child.Invalidated.HasFlag(ElementInvalidation.Size) ? child.ParentAccessDrawSize() : child.DrawSize;
             else
                 childDrawSize = child.DrawSize;
 
             Vector2 size = childDrawSize * child.Scale;
-            Vector2 offset = child.AnchorPosition * _drawSize + child.OffsetPosition * size + child.Position;
+            Vector2 offset = -(child.OffsetPosition * size) + child.Position;
 
             float realX = child.RelativeSizeAxes.HasFlag(Axes.X) ? 0 : offset.X + size.X;
             float realY = child.RelativeSizeAxes.HasFlag(Axes.Y) ? 0 : offset.Y + size.Y;
@@ -424,11 +463,11 @@ public partial class Element {
 
     private void PropagateChildrenSizeChange() =>
         ForChildren(child => {
-            Invalidation inv = Invalidation.None;
+            ElementInvalidation inv = ElementInvalidation.None;
 
-            if (child.RelativeSizeAxes != Axes.None) inv |= Invalidation.DrawSize;
+            if (child.RelativeSizeAxes != Axes.None) inv |= ElementInvalidation.DrawSize;
 
-            if (child.AnchorPosition != Vector2.Zero) inv |= Invalidation.Geometry;
+            if (child.AnchorPosition != Vector2.Zero) inv |= ElementInvalidation.Geometry;
 
             child.Invalidate(inv);
         });
@@ -444,13 +483,13 @@ public partial class Element {
         else if (accessParent && RelativeSizeAxes.HasFlag(Axes.X) && Parent != null) newX = Parent.DrawSize.X * orig.X;
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.Y))
-            newY = distPos.Y * orig.X;
+            newY = distPos.Y * orig.Y;
         else if (accessParent && RelativeSizeAxes.HasFlag(Axes.Y) && Parent != null) newY = Parent.DrawSize.Y * orig.Y;
 
         return new(newX, newY);
     }
 
-    private Vector2 ApplySizeEffects(Vector2 size) => (size - Margin.Size) / (ScaleAffectsDrawSize ? Vector2.One : Scale);
+    private Vector2 ApplySizeEffects(Vector2 size) => (size - Margin.Size + Padding.Size) / (ScaleAffectsDrawSize ? Vector2.One : Scale);
 
     private Vector2 ParentAccessDrawSize() {
         Vector2 nSize = Size;
@@ -474,7 +513,7 @@ public partial class Element {
         Vector2 oldValue = _drawSize;
         _drawSize = drawSize;
 
-        Validate(Invalidation.Size);
+        Validate(ElementInvalidation.Size);
 
         if (drawSize == oldValue) return;
 
@@ -493,13 +532,13 @@ public partial class Element {
 
     private void PropagateParentSizeDependencies() {
         if (Parent?.ChildRelativeSizeAxes != Axes.None) {
-            InvalidateParent(Invalidation.DrawSize);
+            InvalidateParent(ElementInvalidation.DrawSize);
             Parent?.HandleParentSizeChange();
         }
     }
 
     protected void HandleParentSizeChange() {
-        InvalidateParent(Invalidation.Layout);
+        InvalidateParent(ElementInvalidation.Layout);
         PropagateParentSizeDependencies();
     }
 

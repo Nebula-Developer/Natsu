@@ -1,5 +1,8 @@
+using Natsu.Core.InvalidationTemp;
+using Natsu.Extensions;
 using Natsu.Graphics;
 using Natsu.Mathematics;
+using Natsu.Utils;
 
 namespace Natsu.Core.Elements;
 
@@ -10,27 +13,31 @@ public class TextElement : Element {
     private bool _autoSize = true;
 
     private IFont? _font;
-    private string _text = string.Empty;
     private Vector2 _textSize;
 
-    public TextElement() { }
+    public TextElement() => TextBindable = string.Empty.Bindable(_ => { Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout); });
 
-    public TextElement(string text) => Text = text;
+    public TextElement(string text) : this() => Text = text;
+    public TextElement(IBindable<string> textBindable) : this() => TextBindable.BindTo(textBindable);
 
-    public TextElement(string text, IFont font) {
+    public TextElement(string text, IFont font) : this() {
         Text = text;
         Font = font;
     }
 
     /// <summary>
+    ///     The bindable of the text.
+    ///     <br />
+    ///     Useful for binding to updating/shared values.
+    /// </summary>
+    public IBindable<string> TextBindable { get; }
+
+    /// <summary>
     ///     The text to draw.
     /// </summary>
     public string Text {
-        get => _text;
-        set {
-            _text = value;
-            Invalidate(Invalidation.DrawSize | Invalidation.Layout);
-        }
+        get => TextBindable.Value;
+        set => TextBindable.Value = value;
     }
 
     /// <summary>
@@ -46,7 +53,7 @@ public class TextElement : Element {
         }
         set {
             _font = value;
-            Invalidate(Invalidation.DrawSize | Invalidation.Layout);
+            Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
         }
     }
 
@@ -54,7 +61,7 @@ public class TextElement : Element {
         get {
             if (!AutoSize) return base.Size;
 
-            if (Invalidated.HasFlag(Invalidation.Layout)) CalculateSize();
+            if (Invalidated.HasFlag(ElementInvalidation.Layout)) CalculateSize();
 
             return _textSize;
         }
@@ -68,7 +75,7 @@ public class TextElement : Element {
         get => _autoSize;
         set {
             _autoSize = value;
-            Invalidate(Invalidation.DrawSize | Invalidation.Layout);
+            Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
         }
     }
 
@@ -80,15 +87,15 @@ public class TextElement : Element {
 
         _textSize = Font.MeasureText(Text, Paint.TextSize);
 
-        Validate(Invalidation.Layout);
-        Invalidate(Invalidation.DrawSize);
+        Validate(ElementInvalidation.Layout);
+        Invalidate(ElementInvalidation.DrawSize);
 
         HandleParentSizeChange();
     }
 
-    protected override void OnPaintValueChange() => Invalidate(Invalidation.DrawSize | Invalidation.Layout);
+    protected override void OnPaintValueChange() => Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
 
-    protected override void OnLoad() => Invalidate(Invalidation.DrawSize | Invalidation.Layout);
+    protected override void OnLoad() => Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
 
     protected override void OnRender(ICanvas canvas) {
         if (Font == null) return;

@@ -6,8 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Natsu" Version="_NATSU_VERSION_" />
-    </ItemGroup>
-
 </Project>
