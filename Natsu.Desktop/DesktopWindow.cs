@@ -5,7 +5,7 @@ using Natsu.Native;
 using Natsu.Platforms.Audio.ManagedBassAudio;
 using Natsu.Platforms.Skia;
 using Natsu.Platforms.Skia.Shaders;
-using OpenTK.Graphics.OpenGL4;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using SkiaSharp;

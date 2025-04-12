@@ -19,9 +19,5 @@
         <ProjectReference Include="..\Natsu.Desktop\Natsu.Desktop.csproj" />
         <EmbeddedResource Include="Resources\**\*.*" />
     </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="opentk" Version="4.9.4" />
-    </ItemGroup>
-
+    
 </Project>
