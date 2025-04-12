@@ -217,8 +217,9 @@ public partial class Application : IDisposable {
     /// </summary>
     /// <param name="time">The time to wait before executing the task</param>
     /// <param name="task">The task to execute</param>
+    /// <param name="loop">Whether to loop the task</param>
     /// <returns>The scheduled task</returns>
-    public ScheduledTask Schedule(double time, Action task) => Scheduler.Schedule(time, task);
+    public ScheduledTask Schedule(double time, Action task, bool loop = false) => Scheduler.Schedule(time, task, loop);
 
     public static implicit operator Element(Application app) => app.Root;
 

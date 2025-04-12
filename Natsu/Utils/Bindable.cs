@@ -3,8 +3,15 @@ namespace Natsu.Utils;
 public static class BindableExtensions {
     public static IBindable<X> Cast<T, X>(this IBindable<T> bindable) {
         if (bindable is CastBindable<T, X> castBindable) return castBindable;
-
         return new CastBindable<T, X>(bindable);
+    }
+
+    public static IBindable<string> Stringify<T>(this IBindable<T> bindable) => bindable.Stringify(v => v?.ToString() ?? string.Empty);
+    public static IBindable<string> Stringify<T>(this IBindable<T> bindable, Func<T, string> process) => Process(bindable, process);
+
+    public static IBindable<X> Process<T, X>(this IBindable<T> bindable, Func<T, X> process) {
+        if (bindable is ProcessBindable<T, X> processBindable) return processBindable;
+        return new ProcessBindable<T, X>(bindable, process);
     }
 }
 
@@ -18,9 +25,36 @@ public interface IBindable<T> {
 
     void BindTo(IBindable<T> other);
     void Unbind();
+}
 
-    IBindable<X> Cast<X>(IBindable<T> bindable) => bindable.Cast<T, X>();
-    CastBindable<T, string> Stringify() => new(this);
+public class ProcessBindable<T, X> : Bindable<X> {
+    private readonly IBindable<T>? _binded;
+    private readonly Func<T, X> _process;
+    private X _value = default!;
+
+    public ProcessBindable(IBindable<T> other, Func<T, X> process) {
+        _binded = other;
+        _process = process;
+
+        other.DoValueChanged += v => {
+            _value = process(v);
+            RaiseChangeEvent(_value);
+        };
+
+        _value = process(other.Value);
+    }
+
+    public override X Value {
+        get => _value;
+        set { }
+    }
+
+    public override bool Settable => false;
+    public override bool IsBound => true;
+    public override bool IsBoundTo => _binded != null && _binded.IsBound;
+
+    public override void BindTo(IBindable<X> other) => throw new NotImplementedException("Cannot bind a ProcessBindable");
+    public override void Unbind() => throw new NotImplementedException("Cannot unbind a ProcessBindable");
 }
 
 public class CastBindable<T, X> : Bindable<X> {
@@ -62,6 +96,7 @@ public class Bindable<T> : IBindable<T> {
     private Action<T>? _boundHandler;
     private IBindable<T>? _boundTo;
     private T _value = default!;
+    public Func<T, T>? SetterProcess { get; set; }
 
     public event Action<T>? DoValueChanged;
 
@@ -75,7 +110,7 @@ public class Bindable<T> : IBindable<T> {
         set {
             if (Settable || EqualityComparer<T>.Default.Equals(_value, value)) return;
 
-            _value = value;
+            _value = SetterProcess != null ? SetterProcess(value) : value;
             DoValueChanged?.Invoke(_value);
 
             if (_boundTo != null && !_boundTo.Settable) _boundTo.Value = value;
@@ -104,6 +139,10 @@ public class Bindable<T> : IBindable<T> {
 
     internal void RaiseChangeEvent(T value) => DoValueChanged?.Invoke(value);
 
+    public static implicit operator T(Bindable<T> bindable) => bindable.Value;
+
+    public static implicit operator Bindable<T>(T value) => new(value);
+
     #region Constructors
     public Bindable() { }
 
@@ -114,46 +153,5 @@ public class Bindable<T> : IBindable<T> {
     public Bindable(T value, Action<T>? onValueChanged, bool disabled) : this(value, onValueChanged) => Settable = disabled;
 
     public Bindable(Bindable<T> bindTo) => BindTo(bindTo);
-    #endregion
-
-    #region Operators
-    public static implicit operator T(Bindable<T> bindable) => bindable.Value;
-
-    public static implicit operator Bindable<T>(T value) => new(value);
-
-    public static Bindable<T> operator +(Bindable<T> bindable, T value) {
-        bindable.Value = (dynamic)bindable.Value! + value;
-        return bindable;
-    }
-
-    public static Bindable<T> operator -(Bindable<T> bindable, T value) {
-        bindable.Value = (dynamic)bindable.Value! - value;
-        return bindable;
-    }
-
-    public static Bindable<T> operator *(Bindable<T> bindable, T value) {
-        bindable.Value = (dynamic)bindable.Value! * value;
-        return bindable;
-    }
-
-    public static Bindable<T> operator /(Bindable<T> bindable, T value) {
-        bindable.Value = (dynamic)bindable.Value! / value;
-        return bindable;
-    }
-
-    public static Bindable<T> operator %(Bindable<T> bindable, T value) {
-        bindable.Value = (dynamic)bindable.Value! % value;
-        return bindable;
-    }
-
-    public static Bindable<T> operator ++(Bindable<T> bindable) {
-        bindable.Value = (dynamic)bindable.Value! + 1;
-        return bindable;
-    }
-
-    public static Bindable<T> operator --(Bindable<T> bindable) {
-        bindable.Value = (dynamic)bindable.Value! - 1;
-        return bindable;
-    }
     #endregion
 }
