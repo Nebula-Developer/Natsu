@@ -26,6 +26,10 @@ public static class ElementTransformExtensions {
 
     public static TransformSequence<T> MarginTo<T>(this TransformSequence<T> sequence, Margin margin, double duration = 0, Easing ease = Easing.Linear) where T : Element => sequence.Create(nameof(sequence.Target.Margin), margin, (float)duration, ease);
 
+    public static TransformSequence<T> PaddingTo<T>(this T element, Margin padding, double duration = 0, Easing ease = Easing.Linear) where T : Element => new TransformSequence<T>(element).Create(nameof(element.Padding), padding, (float)duration, ease).AppendToTransformable(element);
+
+    public static TransformSequence<T> PaddingTo<T>(this TransformSequence<T> sequence, Margin padding, double duration = 0, Easing ease = Easing.Linear) where T : Element => sequence.Create(nameof(sequence.Target.Padding), padding, (float)duration, ease);
+
     public static TransformSequence<T> AnchorTo<T>(this T element, Vector2 anchor, double duration = 0, Easing ease = Easing.Linear) where T : Element => new TransformSequence<T>(element).Create(nameof(element.AnchorPosition), anchor, (float)duration, ease).AppendToTransformable(element);
 
     public static TransformSequence<T> AnchorTo<T>(this TransformSequence<T> sequence, Vector2 anchor, double duration = 0, Easing ease = Easing.Linear) where T : Element => sequence.Create(nameof(sequence.Target.AnchorPosition), anchor, (float)duration, ease);

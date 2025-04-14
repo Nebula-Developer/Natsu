@@ -6,6 +6,7 @@ namespace Natsu.Core;
 public partial class Element {
     private Vector2 _anchorPosition;
     private Bounds _bounds = Bounds.Empty;
+    private Matrix _childAccessMatrix = new();
     private Axes _childRelativeSizeAxes = Axes.None;
 
     private Vector2 _drawSize;
@@ -38,7 +39,13 @@ public partial class Element {
     /// <summary>
     ///     A virtual matrix that is used by children to transform into this element's space.
     /// </summary>
-    public virtual Matrix ChildAccessMatrix => Matrix;
+    public virtual Matrix ChildAccessMatrix {
+        get {
+            if (Invalidated.HasFlag(ElementInvalidation.Geometry)) UpdateMatrix();
+
+            return _childAccessMatrix;
+        }
+    }
 
     /// <summary>
     ///     The position of the element in screen space.
@@ -386,11 +393,14 @@ public partial class Element {
         Vector2 offset = RelativeSize * OffsetPosition;
         Vector2 translate = -offset + Position;
 
-        translate += ComputeAnchorPosition + Margin.TopLeft - Padding.TopLeft;
+        translate += ComputeAnchorPosition;
 
         matrix.PreTranslate(translate.X, translate.Y);
-        matrix.PreRotate(Rotation, offset.X - Margin.Left, offset.Y - Margin.Top);
+        matrix.PreRotate(Rotation, offset.X, offset.Y);
         matrix.PreScale(Scale.X, Scale.Y, offset.X, offset.Y);
+
+        Vector2 affect = (-Padding.Size + Margin.Size) * AnchorPosition;
+        matrix.PreTranslate(affect.X, affect.Y);
     }
 
     /// <summary>
@@ -400,6 +410,11 @@ public partial class Element {
         if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
         Matrix matrix = Parent?.ChildAccessMatrix.Copy() ?? new Matrix();
+
+        if (Parent != null) {
+            Vector2 paddingOffset = (1 - AnchorPosition) * Parent.Padding.Size;
+            matrix.PreTranslate(paddingOffset.X, paddingOffset.Y);
+        }
 
         ProcessMatrix(ref matrix);
 
@@ -416,6 +431,8 @@ public partial class Element {
         }
 
         _matrix = matrix;
+        _childAccessMatrix = matrix.Copy();
+        _childAccessMatrix.PreTranslate(-Padding.TopLeft.X, -Padding.TopLeft.Y);
         Validate(ElementInvalidation.Geometry);
 
         CalculateBounds();
@@ -449,7 +466,10 @@ public partial class Element {
                 childDrawSize = child.DrawSize;
 
             Vector2 size = childDrawSize * child.Scale;
-            Vector2 offset = -(child.OffsetPosition * size) + child.Position;
+
+            // The offset affecting childspan causes issues from what I've tested, despite originally being
+            // there a solution for another problem.
+            Vector2 offset = /* -(child.OffsetPosition * size) + */ child.Position;
 
             float realX = child.RelativeSizeAxes.HasFlag(Axes.X) ? 0 : offset.X + size.X;
             float realY = child.RelativeSizeAxes.HasFlag(Axes.Y) ? 0 : offset.Y + size.Y;
