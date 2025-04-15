@@ -4,7 +4,6 @@ using Natsu.Mathematics;
 namespace Natsu.Core;
 
 public partial class Element {
-    private readonly bool _scaleAffectsDrawSize = true;
     private Vector2 _anchorPosition;
     private Bounds _bounds = Bounds.Empty;
     private Vector2 _childAccessDrawSize;
@@ -22,6 +21,7 @@ public partial class Element {
     private Axes _relativeSizeAxes = Axes.None;
     private float _rotation;
     private Vector2 _scale = new(1, 1);
+    private bool _scaleAffectsDrawSize = true;
     private Vector2 _size;
     private Vector2 _sizeOffset;
     private Vector2 _worldPosition;
@@ -356,7 +356,7 @@ public partial class Element {
     /// </summary>
     public bool ScaleAffectsDrawSize {
         get => _scaleAffectsDrawSize;
-        set => SetAndInvalidate(ref _scale, Scale, ElementInvalidation.DrawSize);
+        set => SetAndInvalidate(ref _scaleAffectsDrawSize, value, ElementInvalidation.DrawSize);
     }
 
     /// <summary>
