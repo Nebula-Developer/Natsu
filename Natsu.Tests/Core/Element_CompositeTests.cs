@@ -129,4 +129,13 @@ public class Element_CompositeTests {
         parent.Add(new Element());
         Assert.True(eventTriggered);
     }
+
+    [Fact]
+    public void ThrowsCircularParent() {
+        Element parent = new();
+        Element child = new();
+        child.Parent = parent;
+        parent.Parent = child;
+        Assert.Throws<InvalidOperationException>(() => child.Parent = parent);
+    }
 }

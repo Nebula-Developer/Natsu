@@ -67,8 +67,26 @@ public partial class Element {
         }
     }
 
+    private bool findCircle(Element? element, HashSet<Element>? visited = null) {
+        visited ??= new();
+
+        if (element == null || visited.Contains(element)) return false;
+
+        visited.Add(element);
+
+        if (element == this) return true;
+
+        foreach (Element? child in element.Children)
+            if (findCircle(child, visited))
+                return true;
+
+        return false;
+    }
+
     private void updateParent(Element? value, bool parentCheck = true) {
         if (_parent != value && Parent?.HasChild(this) == true) Parent.Remove(this);
+
+        if (parentCheck && findCircle(value)) throw new InvalidOperationException("Circular parent detected");
 
         if (parentCheck && value?.HasChild(this) == false) value.Add(this);
 

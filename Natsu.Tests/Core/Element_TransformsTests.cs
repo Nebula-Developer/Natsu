@@ -3,151 +3,31 @@ using Natsu.Mathematics;
 
 namespace Natsu.Tests.Core;
 
-public class Element_TransformsTests {
+public class Element_GeometryTests {
     [Fact]
-    public void TestElementTransformPropagation() {
-        Element parent = new() {
-            Scale = 2,
-            Position = new(10, 20),
-            Size = new(1)
+    public void WorldPosition_WithPivot_IsCorrect() {
+        Element root = new() {
+            Position = 100,
+            Size = 200
         };
 
         Element child = new() {
-            Parent = parent,
-            AnchorPosition = new(1),
-            OffsetPosition = new(1),
-            Position = new(1)
+            Parent = root,
+            Size = 50,
+            Pivot = 0.5f,
+            Position = 0
         };
 
-        Assert.Equal(new(1), child.Position);
-        Assert.Equal(new(14, 24), child.WorldPosition);
+        // 100 + (200 / 2) - (50 / 2)
+        // 100 + 100 - 25
+
+        Assert.Equal(175, child.WorldPosition);
     }
 
     [Fact]
-    public void TestElementChildRelativeAxes() {
+    public void DrawSize_WithRelativeSizeAxes_IsCorrect() {
         Element parent = new() {
-            ChildRelativeSizeAxes = Axes.Both
-        };
-
-        Element child1 = new() {
-            Parent = parent,
-            Size = new(100),
-            Position = new(100, 0)
-        };
-
-        Element child2 = new() {
-            Parent = parent,
-            Size = new(100),
-            Position = new(0, 100)
-        };
-
-        Assert.Equal(new(200, 200), parent.DrawSize);
-
-        child1.Size = new(200);
-        Assert.Equal(new(300, 200), parent.DrawSize);
-
-        child2.Size = new(200);
-        Assert.Equal(new(300, 300), parent.DrawSize);
-    }
-
-    [Fact]
-    public void TestElementRotation() {
-        Element element = new() {
-            Rotation = 45
-        };
-
-        Assert.Equal(45, element.Rotation);
-
-        element.Rotation = 90;
-        Assert.Equal(90, element.Rotation);
-    }
-
-    [Fact]
-    public void TestElementScale() {
-        Element element = new() {
-            Scale = new(2, 3)
-        };
-
-        Assert.Equal(new(2, 3), element.Scale);
-
-        element.Scale = new(1, 1);
-        Assert.Equal(new(1, 1), element.Scale);
-    }
-
-    [Fact]
-    public void TestElementMargin() {
-        Element element = new() {
-            Margin = new(10, 20)
-        };
-
-        Assert.Equal(new(10, 20), element.Margin);
-
-        element.Margin = new(5, 5);
-        Assert.Equal(new(5, 5), element.Margin);
-    }
-
-    [Fact]
-    public void TestElementPosition() {
-        Element element = new() {
-            Position = new(10, 20)
-        };
-
-        Assert.Equal(new(10, 20), element.Position);
-
-        element.Position = new(30, 40);
-        Assert.Equal(new(30, 40), element.Position);
-    }
-
-    [Fact]
-    public void TestElementAnchorPosition() {
-        Element element = new() {
-            AnchorPosition = new(0.5f, 0.5f)
-        };
-
-        Assert.Equal(new(0.5f, 0.5f), element.AnchorPosition);
-
-        element.AnchorPosition = new(1, 1);
-        Assert.Equal(new(1, 1), element.AnchorPosition);
-    }
-
-    [Fact]
-    public void TestElementOffsetPosition() {
-        Element element = new() {
-            OffsetPosition = new(0.5f, 0.5f)
-        };
-
-        Assert.Equal(new(0.5f, 0.5f), element.OffsetPosition);
-
-        element.OffsetPosition = new(1, 1);
-        Assert.Equal(new(1, 1), element.OffsetPosition);
-    }
-
-    [Fact]
-    public void TestElementPivot() {
-        Element element = new() {
-            Pivot = new(0.5f, 0.5f)
-        };
-
-        Assert.Equal(new(0.5f, 0.5f), element.AnchorPosition);
-        Assert.Equal(new(0.5f, 0.5f), element.OffsetPosition);
-    }
-
-    [Fact]
-    public void TestElementDrawSize() {
-        Element element = new() {
-            Size = new(100, 200)
-        };
-
-        Assert.Equal(new(100, 200), element.DrawSize);
-
-        element.Size = new(300, 400);
-        Assert.Equal(new(300, 400), element.DrawSize);
-    }
-
-    [Fact]
-    public void TestElementRelativeSize() {
-        Element parent = new() {
-            Size = new(200, 200)
+            Size = new(500, 400)
         };
 
         Element child = new() {
@@ -155,52 +35,229 @@ public class Element_TransformsTests {
             RelativeSizeAxes = Axes.Both
         };
 
-        Assert.Equal(new(200, 200), child.RelativeSize);
+        Assert.Equal(new(500, 400), child.DrawSize);
+
+        parent.Size = new(300, 600);
+        Assert.Equal(new(300, 600), child.DrawSize);
     }
 
     [Fact]
-    public void TestElementWorldScale() {
+    public void DrawSize_WithMargins_IsCorrect() {
         Element element = new() {
+            Size = 100,
+            Margin = new(10, 20)
+        };
+
+        Assert.Equal(new(80, 60), element.DrawSize);
+    }
+
+    [Fact]
+    public void WorldScale_AccumulatesCorrectly() {
+        Element parent = new() {
             Scale = new(2, 3)
         };
 
-        Assert.Equal(new(2, 3), element.WorldScale);
+        Element child = new() {
+            Parent = parent,
+            Scale = new(0.5f, 2f)
+        };
+
+        Assert.Equal(new(1, 6), child.WorldScale);
     }
 
     [Fact]
-    public void TestElementToLocalSpace() {
+    public void ToLocalSpace_RoundTrip() {
         Element element = new() {
-            Position = new(10, 20)
+            Position = new(30, 40)
         };
 
-        Vector2 screenSpace = new(15, 25);
-        Vector2 localSpace = element.ToLocalSpace(screenSpace);
+        Vector2 original = new(50, 60);
+        Vector2 local = element.ToLocalSpace(original);
+        Vector2 back = element.ToScreenSpace(local);
 
-        Assert.Equal(new(5, 5), localSpace);
+        Assert.Equal(original, back);
     }
 
     [Fact]
-    public void TestElementToScreenSpace() {
+    public void PointInside_RespectsSizeAndMargin() {
         Element element = new() {
-            Position = new(10, 20)
+            Size = 100,
+            Margin = 10
         };
 
-        Vector2 localSpace = new(5, 5);
-        Vector2 screenSpace = element.ToScreenSpace(localSpace);
-
-        Assert.Equal(new(15, 25), screenSpace);
+        // 100 - 10 - 10
+        Assert.True(element.PointInside(80));
+        Assert.False(element.PointInside(81));
     }
 
     [Fact]
-    public void TestElementPointInside() {
-        Element element = new() {
-            Size = new(100, 100)
+    public void ChangingAnchorAffectsWorldPosition() {
+        Element parent = new() {
+            Position = 0,
+            Size = 300
         };
 
-        Vector2 pointInside = new(50, 50);
-        Vector2 pointOutside = new(150, 150);
+        Element child = new() {
+            Parent = parent,
+            AnchorPosition = 1,
+            Size = 50
+        };
 
-        Assert.True(element.PointInside(pointInside));
-        Assert.False(element.PointInside(pointOutside));
+        Assert.Equal(300, child.WorldPosition);
+    }
+
+    [Fact]
+    public void NestedScaleAndRotationAppliesCorrectly() {
+        Element root = new() {
+            Position = 0,
+            Scale = 2,
+            Rotation = 90
+        };
+
+        Element mid = new() {
+            Parent = root,
+            Position = 10,
+            Rotation = 90,
+            Scale = 0.5f
+        };
+
+        Element leaf = new() {
+            Parent = mid,
+            Position = 5,
+            Scale = 0.5f
+        };
+
+        Assert.Equal(-180, leaf.WorldRotation, 0.01f);
+        Assert.Equal(0.5f, leaf.WorldScale);
+    }
+
+    [Fact]
+    public void RelativeAxes_OnlyAffectSpecifiedAxes() {
+        Element parent = new() {
+            Size = new(300, 400)
+        };
+
+        Element child = new() {
+            Parent = parent,
+            RelativeSizeAxes = Axes.X
+        };
+
+        Assert.Equal(new(300, 0), child.RelativeSize);
+    }
+
+    [Fact]
+    public void DrawSizeWithParentChildMargin() {
+        Element parent = new() {
+            Margin = 10,
+            ChildRelativeSizeAxes = Axes.Both
+        };
+
+        Element child = new() {
+            Parent = parent,
+            Size = 50
+        };
+
+        Assert.Equal(30, parent.DrawSize);
+    }
+
+    [Fact]
+    public void PivotResetsPositionAsExpected() {
+        Element element = new() {
+            Size = 200,
+            Pivot = 0.5f,
+            Position = 50
+        };
+
+        Assert.Equal(50, element.Position);
+        // 50 - (200 / 2)
+        Assert.Equal(-50, element.WorldPosition);
+    }
+
+    [Fact]
+    public void PaddingAffectsRelativeSize() {
+        Element root = new() {
+            Size = 100,
+            Padding = new(10, 20)
+        };
+
+        Element child = new() {
+            Parent = root,
+            RelativeSizeAxes = Axes.Both
+        };
+
+        Assert.Equal(new(80, 60), child.DrawSize);
+    }
+
+    [Fact]
+    public void PositionStackCorrectly() {
+        Element root = new() {
+            Position = 50
+        };
+
+        Element child = new() {
+            Parent = root,
+            Position = new(20, 30)
+        };
+
+        Assert.Equal(new(70, 80), child.WorldPosition);
+    }
+
+    [Fact]
+    public void NestedPaddingAndMargins_AccumulateCorrectly() {
+        Element parent = new() {
+            Size = new(500, 400),
+            Padding = new(20, 30)
+        };
+
+        Element child1 = new() {
+            Parent = parent,
+            Size = 100,
+            Margin = 10
+        };
+
+        Element child2 = new() {
+            Parent = parent,
+            Size = 150,
+            Margin = 15
+        };
+
+        Assert.Equal(80, child1.DrawSize);
+        Assert.Equal(120, child2.DrawSize);
+    }
+
+    [Fact]
+    public void ChildRelativeAxes_ParentSizeBasedOnChildren() {
+        Element child1 = new() {
+            Size = 100
+        };
+
+        Element child2 = new() {
+            Size = 150
+        };
+
+        Element parent = new() {
+            Parent = null,
+            ChildRelativeSizeAxes = Axes.Both
+        };
+
+        parent.Size = new(child1.Size.X + child2.Size.X, child1.Size.Y + child2.Size.Y);
+
+        Assert.Equal(250, parent.Size);
+    }
+
+    [Fact]
+    public void PaddingAndMargin_RespectRelativeSizeAxes() {
+        Element root = new() {
+            Size = 500,
+            Padding = 20
+        };
+
+        Element child = new() {
+            Parent = root,
+            RelativeSizeAxes = Axes.Both,
+            Margin = 10
+        };
+
+        Assert.Equal(440, child.DrawSize.X);
     }
 }

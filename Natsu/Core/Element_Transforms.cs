@@ -4,6 +4,7 @@ using Natsu.Mathematics;
 namespace Natsu.Core;
 
 public partial class Element {
+    private readonly bool _scaleAffectsDrawSize = true;
     private Vector2 _anchorPosition;
     private Bounds _bounds = Bounds.Empty;
     private Vector2 _childAccessDrawSize;
@@ -21,10 +22,10 @@ public partial class Element {
     private Axes _relativeSizeAxes = Axes.None;
     private float _rotation;
     private Vector2 _scale = new(1, 1);
-    private bool _scaleAffectsDrawSize = true;
     private Vector2 _size;
     private Vector2 _sizeOffset;
     private Vector2 _worldPosition;
+    private float _worldRotation;
     private Vector2 _worldScale = Vector2.One;
 
     /// <summary>
@@ -88,13 +89,22 @@ public partial class Element {
     public virtual float Rotation {
         get => _rotation;
         set {
-            if (_rotation == value) return;
-
-            _rotation = value % 360;
-            Invalidate(ElementInvalidation.Geometry);
+            value %= 360;
+            SetAndInvalidate(ref _rotation, value, ElementInvalidation.Geometry);
 
             // Rotation currently does not affect ChildRelativeSizeAxes
             // if (Parent?.ChildRelativeSizeAxes != Axes.None) InvalidateParent(Invalidation.DrawSize);
+        }
+    }
+
+    /// <summary>
+    ///     The rotation of the element in world space.
+    /// </summary>
+    public virtual float WorldRotation {
+        get {
+            if (Invalidated.HasFlag(ElementInvalidation.Geometry)) UpdateMatrix();
+
+            return _worldRotation;
         }
     }
 
@@ -110,23 +120,18 @@ public partial class Element {
         set {
             if (_relativeSizeAxes == value) return;
 
-            _relativeSizeAxes = value; // Avoid recursion here
+            _relativeSizeAxes = value;
             Size = new(RelativeSizeAxes.HasFlag(Axes.X) ? 1 : Size.X, RelativeSizeAxes.HasFlag(Axes.Y) ? 1 : Size.Y);
         }
     }
 
     /// <summary>
-    ///     Specifies the raw axes that are relative to the parent's size,
+    ///     Specifies the axes that are relative to the parent's size,
     ///     without affecting the <see cref="Size" /> property.
     /// </summary>
     public Axes RawRelativeSizeAxes {
         get => _relativeSizeAxes;
-        set {
-            if (_relativeSizeAxes == value) return;
-
-            _relativeSizeAxes = value;
-            Invalidate(ElementInvalidation.Size);
-        }
+        set => SetAndInvalidate(ref _relativeSizeAxes, value, ElementInvalidation.Size);
     }
 
     /// <summary>
@@ -141,23 +146,18 @@ public partial class Element {
         set {
             if (_childRelativeSizeAxes == value) return;
 
-            _childRelativeSizeAxes = value; // Avoid recursion
+            _childRelativeSizeAxes = value;
             Size = new(ChildRelativeSizeAxes.HasFlag(Axes.X) ? 1 : Size.X, ChildRelativeSizeAxes.HasFlag(Axes.Y) ? 1 : Size.Y);
         }
     }
 
     /// <summary>
-    ///     Specifies the raw axes that are relative to the child's size,
+    ///     Specifies the axes that are relative to the child's size,
     ///     without affecting the <see cref="Size" /> property.
     /// </summary>
     public Axes RawChildRelativeSizeAxes {
         get => _childRelativeSizeAxes;
-        set {
-            if (_childRelativeSizeAxes == value) return;
-
-            _childRelativeSizeAxes = value;
-            Invalidate(ElementInvalidation.Size);
-        }
+        set => SetAndInvalidate(ref _childRelativeSizeAxes, value, ElementInvalidation.Size);
     }
 
     /// <summary>
@@ -165,12 +165,7 @@ public partial class Element {
     /// </summary>
     public virtual Margin Margin {
         get => _margin;
-        set {
-            if (_margin == value) return;
-
-            _margin = value;
-            Invalidate(ElementInvalidation.DrawSize);
-        }
+        set => SetAndInvalidate(ref _margin, value, ElementInvalidation.DrawSize);
     }
 
     /// <summary>
@@ -178,12 +173,7 @@ public partial class Element {
     /// </summary>
     public virtual Margin Padding {
         get => _padding;
-        set {
-            if (_padding == value) return;
-
-            _padding = value;
-            Invalidate(ElementInvalidation.DrawSize);
-        }
+        set => SetAndInvalidate(ref _padding, value, ElementInvalidation.DrawSize);
     }
 
     /// <summary>
@@ -293,38 +283,24 @@ public partial class Element {
     }
 
     /// <summary>
-    ///     The offset position of the element.
-    ///     <br />
-    ///     This value subtracts element's position by its own size.
+    ///     Negative positional offset applied relative to the element's size.
     ///     <br />
     ///     For instance, if the offset position is set to <c>(0.5, 0.5)</c>, the element will move back by half of its size.
     /// </summary>
     public virtual Vector2 OffsetPosition {
         get => _offsetPosition;
-        set {
-            if (_offsetPosition == value) return;
-
-            _offsetPosition = value;
-            Invalidate(ElementInvalidation.Geometry);
-        }
+        set => SetAndInvalidate(ref _offsetPosition, value, ElementInvalidation.Geometry);
     }
 
     /// <summary>
-    ///     The anchor position of the element.
-    ///     <br />
-    ///     This value adds element's position by its parent's size.
+    ///     Positive positional offset applied relative to the element's parent's size.
     ///     <br />
     ///     For instance, if the anchor position is set to <c>(0.5, 0.5)</c>, the element will move forward by half of its
     ///     parent's size.
     /// </summary>
     public virtual Vector2 AnchorPosition {
         get => _anchorPosition;
-        set {
-            if (_anchorPosition == value) return;
-
-            _anchorPosition = value;
-            Invalidate(ElementInvalidation.Geometry);
-        }
+        set => SetAndInvalidate(ref _anchorPosition, value, ElementInvalidation.Geometry);
     }
 
     /// <summary>
@@ -346,12 +322,7 @@ public partial class Element {
     public virtual Vector2 Position {
         get => _position;
         set {
-            if (_position == value) return;
-
-            _position = value;
-            Invalidate(ElementInvalidation.Geometry);
-
-            HandleParentSizeChange();
+            if (SetAndInvalidate(ref _position, value, ElementInvalidation.Geometry)) HandleParentSizeChange();
         }
     }
 
@@ -361,11 +332,9 @@ public partial class Element {
     public virtual Vector2 Scale {
         get => _scale;
         set {
-            if (_scale == value) return;
+            value = Vector2.Max(value, Vector2.One * float.Epsilon);
 
-            _scale = Vector2.Max(value, new(float.MinValue));
-            Invalidate(ElementInvalidation.DrawSize);
-            Parent?.Invalidate(ElementInvalidation.Layout);
+            if (SetAndInvalidate(ref _scale, value, ElementInvalidation.DrawSize)) Parent?.Invalidate(ElementInvalidation.Layout);
         }
     }
 
@@ -387,18 +356,20 @@ public partial class Element {
     /// </summary>
     public bool ScaleAffectsDrawSize {
         get => _scaleAffectsDrawSize;
-        set {
-            if (_scaleAffectsDrawSize == value) return;
-
-            _scaleAffectsDrawSize = value;
-            Invalidate(ElementInvalidation.DrawSize);
-        }
+        set => SetAndInvalidate(ref _scale, Scale, ElementInvalidation.DrawSize);
     }
 
     /// <summary>
     ///     Computation to determine whether a change in <see cref="DrawSize" /> affects the matrix.
     /// </summary>
-    public bool SizeAffectsMatrix => OffsetPosition != Vector2.Zero || AnchorPosition != Vector2.Zero || RelativeSizeAxes != Axes.None || ChildRelativeSizeAxes != Axes.None || Margin != 0 || Rotation != 0 || Scale != Vector2.One;
+    public bool SizeHasGeometryInfluence => OffsetPosition != Vector2.Zero || AnchorPosition != Vector2.Zero || RelativeSizeAxes != Axes.None || ChildRelativeSizeAxes != Axes.None || Margin != 0 || Padding != 0 || Rotation != 0 || Scale != Vector2.One;
+
+    protected bool SetAndInvalidate<T>(ref T field, T value, ElementInvalidation type) {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        Invalidate(type);
+        return true;
+    }
 
     private void _sizeChangeEvent() {
         Invalidate(ElementInvalidation.Size);
@@ -408,11 +379,11 @@ public partial class Element {
     }
 
     /// <summary>
-    ///     Handles geometric invalidation if <see cref="SizeAffectsMatrix" /> is true.
+    ///     Handles geometric invalidation if <see cref="SizeHasGeometryInfluence" /> is true.
     /// </summary>
     /// <returns>Whether the invalidation was handled</returns>
     public bool HandleSizeAffectsMatrix() {
-        if (SizeAffectsMatrix) {
+        if (SizeHasGeometryInfluence) {
             Invalidate(ElementInvalidation.Geometry);
             return true;
         }
@@ -448,6 +419,8 @@ public partial class Element {
         matrix.PreTranslate(affect.X, affect.Y);
     }
 
+    protected virtual void ProcessChildMatrix(ref Matrix childMatrix) => childMatrix.PreTranslate(Padding.Size.X / 2, Padding.Size.Y / 2);
+
     /// <summary>
     ///     Updates the matrix of the element.
     /// </summary>
@@ -458,7 +431,9 @@ public partial class Element {
 
         ProcessMatrix(ref matrix);
 
-        _worldScale = matrix.MapPoint(Vector2.One) - matrix.MapPoint(Vector2.Zero);
+        float scaleX = MathF.Sqrt(matrix.Values[0, 0] * matrix.Values[0, 0] + matrix.Values[1, 0] * matrix.Values[1, 0]);
+        float scaleY = MathF.Sqrt(matrix.Values[0, 1] * matrix.Values[0, 1] + matrix.Values[1, 1] * matrix.Values[1, 1]);
+        _worldScale = new(scaleX, scaleY);
 
         Vector2 nWorldPosition = matrix.MapPoint(Vector2.Zero);
         if (_worldPosition != nWorldPosition) {
@@ -470,9 +445,13 @@ public partial class Element {
             if (UpdateShaderPosition && Shader != null) Shader.SetUniform("pos", _worldPosition);
         }
 
+        float rotationRadians = MathF.Atan2(matrix.Values[1, 0], matrix.Values[0, 0]);
+        _worldRotation = rotationRadians * (180f / MathF.PI);
+
         _matrix = matrix;
         _childAccessMatrix = matrix.Copy();
-        _childAccessMatrix.PreTranslate(Padding.Size.X / 2, Padding.Size.Y / 2);
+        ProcessChildMatrix(ref _childAccessMatrix);
+
         Validate(ElementInvalidation.Geometry);
 
         CalculateBounds();
@@ -509,7 +488,8 @@ public partial class Element {
 
             // The offset affecting childspan causes issues from what I've tested, despite originally being
             // there a solution for another problem.
-            Vector2 offset = /* -(child.OffsetPosition * size) + */ child.Position;
+            // eg: (-child.OffsetPosition * size) + child.Position
+            Vector2 offset = child.Position;
 
             float realX = child.RelativeSizeAxes.HasFlag(Axes.X) ? 0 : offset.X + size.X;
             float realY = child.RelativeSizeAxes.HasFlag(Axes.Y) ? 0 : offset.Y + size.Y;

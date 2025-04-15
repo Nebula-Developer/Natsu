@@ -1,5 +1,8 @@
 namespace Natsu.Mathematics;
 
+/// <summary>
+///     A four-sided margin.
+/// </summary>
 public struct Margin {
     public float Top { get; set; }
     public float Bottom { get; set; }
@@ -11,15 +14,36 @@ public struct Margin {
     public Vector2 BottomLeft => new(Left, Bottom);
     public Vector2 BottomRight => new(Right, Bottom);
 
+    /// <summary>
+    ///     The total size of the margin.
+    ///     <br />
+    ///     Equates to (Left + Right, Top + Bottom)
+    /// </summary>
     public Vector2 Size => new(Left + Right, Top + Bottom);
 
+    /// <summary>
+    ///     Constructs a new Margin with all sides set to the same value.
+    /// </summary>
+    /// <param name="m">The value to set all sides to</param>
     public Margin(float m) => Top = Bottom = Left = Right = m;
 
-    public Margin(float tb, float lr) {
+    /// <summary>
+    ///     Constructs a new Margin with the same value for left and right, top and bottom.
+    /// </summary>
+    /// <param name="lr">The value for left and right</param>
+    /// <param name="tb">The value for top and bottom</param>
+    public Margin(float lr, float tb) {
         Top = Bottom = tb;
         Left = Right = lr;
     }
 
+    /// <summary>
+    ///     Constructs a new Margin with the specified values for each side.
+    /// </summary>
+    /// <param name="top">The value for the top side</param>
+    /// <param name="bottom">The value for the bottom side</param>
+    /// <param name="left">The value for the left side</param>
+    /// <param name="right">The value for the right side</param>
     public Margin(float top, float bottom, float left, float right) {
         Top = top;
         Bottom = bottom;
