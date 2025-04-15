@@ -6,6 +6,7 @@ namespace Natsu.Core;
 public partial class Element {
     private Vector2 _anchorPosition;
     private Bounds _bounds = Bounds.Empty;
+    private Vector2 _childAccessDrawSize;
     private Matrix _childAccessMatrix = new();
     private Axes _childRelativeSizeAxes = Axes.None;
 
@@ -22,6 +23,7 @@ public partial class Element {
     private Vector2 _scale = new(1, 1);
     private bool _scaleAffectsDrawSize = true;
     private Vector2 _size;
+    private Vector2 _sizeOffset;
     private Vector2 _worldPosition;
     private Vector2 _worldScale = Vector2.One;
 
@@ -61,7 +63,7 @@ public partial class Element {
     /// <summary>
     ///     A virtual position calculation that is used to compute the anchor position under the parent's space.
     /// </summary>
-    protected virtual Vector2 ComputeAnchorPosition => AnchorPosition * Parent?.DrawSize ?? Vector2.Zero;
+    protected virtual Vector2 ComputeAnchorPosition => AnchorPosition * Parent?.ChildAccessDrawSize ?? Vector2.Zero;
 
     /// <summary>
     ///     The bounds of the element in screen space.
@@ -185,6 +187,19 @@ public partial class Element {
     }
 
     /// <summary>
+    ///     Controls the <see cref="Padding" /> and <see cref="Size" /> to be the same value.
+    ///     <br />
+    ///     Useful for padding the contents of the element, and expanding.
+    /// </summary>
+    public Margin OuterPadding {
+        set {
+            Padding = value;
+            SizeOffset = value.Size;
+        }
+        get => Padding;
+    }
+
+    /// <summary>
     ///     The size of the element in screen space, after applying all size-related transformations.
     ///     <br />
     ///     This value should almost <i>always</i> be used over <see cref="Size" /> for rendering purposes.
@@ -194,6 +209,19 @@ public partial class Element {
             if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
             return _drawSize;
+        }
+    }
+
+    /// <summary>
+    ///     A version of <see cref="DrawSize" /> that is used for child access.
+    ///     <br />
+    ///     Accounts for padding and other child-exclusive properties.
+    /// </summary>
+    public virtual Vector2 ChildAccessDrawSize {
+        get {
+            if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
+
+            return _childAccessDrawSize;
         }
     }
 
@@ -209,11 +237,21 @@ public partial class Element {
             if (_size == value) return;
 
             _size = Vector2.Max(value, Vector2.Zero);
+            _sizeChangeEvent();
+        }
+    }
 
-            Invalidate(ElementInvalidation.Size);
-            HandleSizeAffectsMatrix();
-            HandleParentSizeChange();
-            PropagateChildrenSizeChange();
+    /// <summary>
+    ///     A size that will be added to the <see cref="DrawSize" /> of the element.
+    ///     <br />
+    ///     Can act as an offset for sizing when relative size axes are set.
+    /// </summary>
+    public virtual Vector2 SizeOffset {
+        get => _sizeOffset;
+        set {
+            if (_sizeOffset == value) return;
+            _sizeOffset = Vector2.Max(value, Vector2.Zero);
+            _sizeChangeEvent();
         }
     }
 
@@ -362,6 +400,13 @@ public partial class Element {
     /// </summary>
     public bool SizeAffectsMatrix => OffsetPosition != Vector2.Zero || AnchorPosition != Vector2.Zero || RelativeSizeAxes != Axes.None || ChildRelativeSizeAxes != Axes.None || Margin != 0 || Rotation != 0 || Scale != Vector2.One;
 
+    private void _sizeChangeEvent() {
+        Invalidate(ElementInvalidation.Size);
+        HandleSizeAffectsMatrix();
+        HandleParentSizeChange();
+        PropagateChildrenSizeChange();
+    }
+
     /// <summary>
     ///     Handles geometric invalidation if <see cref="SizeAffectsMatrix" /> is true.
     /// </summary>
@@ -399,7 +444,7 @@ public partial class Element {
         matrix.PreRotate(Rotation, offset.X, offset.Y);
         matrix.PreScale(Scale.X, Scale.Y, offset.X, offset.Y);
 
-        Vector2 affect = (-Padding.Size + Margin.Size) * AnchorPosition;
+        Vector2 affect = (-SizeOffset + Margin.Size) * AnchorPosition;
         matrix.PreTranslate(affect.X, affect.Y);
     }
 
@@ -410,11 +455,6 @@ public partial class Element {
         if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
 
         Matrix matrix = Parent?.ChildAccessMatrix.Copy() ?? new Matrix();
-
-        if (Parent != null) {
-            Vector2 paddingOffset = (1 - AnchorPosition) * Parent.Padding.Size;
-            matrix.PreTranslate(paddingOffset.X, paddingOffset.Y);
-        }
 
         ProcessMatrix(ref matrix);
 
@@ -432,7 +472,7 @@ public partial class Element {
 
         _matrix = matrix;
         _childAccessMatrix = matrix.Copy();
-        _childAccessMatrix.PreTranslate(-Padding.TopLeft.X, -Padding.TopLeft.Y);
+        _childAccessMatrix.PreTranslate(Padding.Size.X / 2, Padding.Size.Y / 2);
         Validate(ElementInvalidation.Geometry);
 
         CalculateBounds();
@@ -497,6 +537,7 @@ public partial class Element {
         float newY = orig.Y;
 
         Vector2 distPos = ChildRelativeSizeAxes != Axes.None ? GetChildSpan() : Vector2.Zero;
+        distPos += Padding.Size;
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.X))
             newX = distPos.X * orig.X;
@@ -509,7 +550,7 @@ public partial class Element {
         return new(newX, newY);
     }
 
-    private Vector2 ApplySizeEffects(Vector2 size) => (size - Margin.Size + Padding.Size) / (ScaleAffectsDrawSize ? Vector2.One : Scale);
+    private Vector2 ApplySizeEffects(Vector2 size) => (size + SizeOffset - Margin.Size) / (ScaleAffectsDrawSize ? Vector2.One : Scale);
 
     private Vector2 ParentAccessDrawSize() {
         Vector2 nSize = Size;
@@ -531,7 +572,9 @@ public partial class Element {
 
         Vector2 drawSize = ApplySizeEffects(nSize);
         Vector2 oldValue = _drawSize;
+
         _drawSize = drawSize;
+        _childAccessDrawSize = drawSize - Padding.Size;
 
         Validate(ElementInvalidation.Size);
 
