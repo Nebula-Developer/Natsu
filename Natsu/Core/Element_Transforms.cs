@@ -500,11 +500,11 @@ public partial class Element {
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.X))
             newX = distPos.X * orig.X;
-        else if (accessParent && RelativeSizeAxes.HasFlag(Axes.X) && Parent != null) newX = Parent.DrawSize.X * orig.X;
+        else if (accessParent && RelativeSizeAxes.HasFlag(Axes.X) && Parent != null) newX = (Parent.DrawSize.X - Parent.Padding.Size.X) * orig.X;
 
         if (ChildRelativeSizeAxes.HasFlag(Axes.Y))
             newY = distPos.Y * orig.Y;
-        else if (accessParent && RelativeSizeAxes.HasFlag(Axes.Y) && Parent != null) newY = Parent.DrawSize.Y * orig.Y;
+        else if (accessParent && RelativeSizeAxes.HasFlag(Axes.Y) && Parent != null) newY = (Parent.DrawSize.Y - Parent.Padding.Size.Y) * orig.Y;
 
         return new(newX, newY);
     }
@@ -551,9 +551,9 @@ public partial class Element {
     }
 
     private void PropagateParentSizeDependencies() {
-        if (Parent?.ChildRelativeSizeAxes != Axes.None) {
+        if (Parent != null && Parent.ChildRelativeSizeAxes != Axes.None) {
             InvalidateParent(ElementInvalidation.DrawSize);
-            Parent?.HandleParentSizeChange();
+            Parent.HandleParentSizeChange();
         }
     }
 
