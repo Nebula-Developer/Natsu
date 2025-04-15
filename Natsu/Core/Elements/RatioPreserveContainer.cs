@@ -6,26 +6,34 @@ namespace Natsu.Core.Elements;
 /// <summary>
 ///     A container that will preserve the ratio of its content.
 /// </summary>
-public class RatioPreserveContainer : Element {
-    public readonly RatioPreserveContainerContent ContentWrapper;
+public class RatioPreserveContainer : LayoutElement {
+    public readonly Element RatioContent;
 
     private RatioPreserveMode _mode = RatioPreserveMode.Fit;
     private float _ratio = 16f / 9f;
 
     public RatioPreserveContainer(float ratio, RatioPreserveMode mode = RatioPreserveMode.Fit) {
-        ContentWrapper = new(this) {
+        RatioContent = new() {
             Pivot = 0.5f,
             Clip = true
         };
-        Add(ContentWrapper);
+        Add(RatioContent);
 
         _ratio = ratio;
         _mode = mode;
 
-        ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
+        RatioContent.Invalidate(ElementInvalidation.Layout);
     }
 
-    public override Element ContentContainer => ContentWrapper;
+    public override Element ContentContainer => RatioContent;
+
+    /// <summary>
+    ///     Controls the pivot of the content.
+    /// </summary>
+    public Vector2 ContentPivot {
+        get => RatioContent.Pivot;
+        set => RatioContent.Pivot = value;
+    }
 
     /// <summary>
     ///     The ratio for the container to preserve.
@@ -34,7 +42,7 @@ public class RatioPreserveContainer : Element {
         get => _ratio;
         set {
             _ratio = value;
-            ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
+            Invalidate(ElementInvalidation.Layout);
         }
     }
 
@@ -45,7 +53,7 @@ public class RatioPreserveContainer : Element {
         get => _mode;
         set {
             _mode = value;
-            ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
+            Invalidate(ElementInvalidation.Layout);
         }
     }
 
@@ -55,45 +63,34 @@ public class RatioPreserveContainer : Element {
 
         switch (Mode) {
             case RatioPreserveMode.Width:
-                ContentWrapper.Size = new(size.X, size.X / Ratio);
+                RatioContent.Size = new(size.X, size.X / Ratio);
                 break;
             case RatioPreserveMode.Height:
-                ContentWrapper.Size = new(size.Y * Ratio, size.Y);
+                RatioContent.Size = new(size.Y * Ratio, size.Y);
                 break;
             case RatioPreserveMode.Fit:
                 if (ratio > Ratio)
-                    ContentWrapper.Size = new(size.Y * Ratio, size.Y);
+                    RatioContent.Size = new(size.Y * Ratio, size.Y);
                 else
-                    ContentWrapper.Size = new(size.X, size.X / Ratio);
+                    RatioContent.Size = new(size.X, size.X / Ratio);
                 break;
             case RatioPreserveMode.Cover:
                 if (ratio > Ratio)
-                    ContentWrapper.Size = new(size.X, size.X / Ratio);
+                    RatioContent.Size = new(size.X, size.X / Ratio);
                 else
-                    ContentWrapper.Size = new(size.Y * Ratio, size.Y);
+                    RatioContent.Size = new(size.Y * Ratio, size.Y);
                 break;
         }
 
-        ContentWrapper.Validate(ElementInvalidation.Layout);
+        Validate(ElementInvalidation.Layout);
     }
 
-    protected override void OnLoad() => ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
+    protected override void OnLoad() => RatioContent.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
 
-    protected override void OnDrawSizeChange(Vector2 size) => ContentWrapper.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
-}
+    protected override void OnDrawSizeChange(Vector2 size) => RatioContent.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
 
-/// <summary>
-///     The content of a <see cref="RatioPreserveContainer" />.
-/// </summary>
-/// <param name="container">The ratio preserve container this content belongs to</param>
-public class RatioPreserveContainerContent(RatioPreserveContainer container) : Element {
-    public RatioPreserveContainer Container => container;
-
-    public override Vector2 Size {
-        get {
-            if (Invalidated.HasFlag(ElementInvalidation.Layout)) container.UpdateSize();
-            return base.Size;
-        }
-        set => base.Size = value;
+    public override void ComputeLayout() {
+        UpdateSize();
+        base.ComputeLayout();
     }
 }
