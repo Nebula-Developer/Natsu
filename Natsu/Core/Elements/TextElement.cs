@@ -13,9 +13,8 @@ public class TextElement : Element {
     private bool _autoSize = true;
 
     private IFont? _font;
-    private Vector2 _textSize;
 
-    public TextElement() => TextBindable = string.Empty.Bindable(_ => { Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout); });
+    public TextElement() => TextBindable = string.Empty.Bindable(_ => Invalidate(ElementInvalidation.Layout));
 
     public TextElement(string text) : this() => Text = text;
     public TextElement(IBindable<string> textBindable) : this() => TextBindable.BindTo(textBindable);
@@ -53,23 +52,12 @@ public class TextElement : Element {
         }
         set {
             _font = value;
-            Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
+            Invalidate(ElementInvalidation.Layout);
         }
-    }
-
-    public override Vector2 Size {
-        get {
-            if (!AutoSize) return base.Size;
-
-            if (Invalidated.HasFlag(ElementInvalidation.Layout)) CalculateSize();
-
-            return _textSize;
-        }
-        set => base.Size = value;
     }
 
     /// <summary>
-    ///     Whether to set this element's <see cref="Size" /> to the size of the text.
+    ///     Whether to set this element's <see cref="Element.Size" /> to the size of the text.
     /// </summary>
     public bool AutoSize {
         get => _autoSize;
@@ -82,20 +70,23 @@ public class TextElement : Element {
     /// <summary>
     ///     Calculate the size of the text.
     /// </summary>
-    public void CalculateSize() {
-        if (Font == null) return;
-
-        _textSize = Font.MeasureText(Text, Paint.TextSize);
-
-        Validate(ElementInvalidation.Layout);
-        Invalidate(ElementInvalidation.DrawSize);
-
-        HandleParentSizeChange();
+    public Vector2 CalculateSize() {
+        if (Font == null) return Vector2.Zero;
+        return Font.MeasureText(Text, Paint.TextSize);
     }
 
     protected override void OnPaintValueChange() => Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
 
     protected override void OnLoad() => Invalidate(ElementInvalidation.DrawSize | ElementInvalidation.Layout);
+
+    protected override void OnUpdate(double deltaTime) {
+        base.OnUpdate(deltaTime);
+
+        if (AutoSize && Invalidated.HasFlag(ElementInvalidation.Layout)) {
+            Size = CalculateSize();
+            Invalidate(ElementInvalidation.Layout);
+        }
+    }
 
     protected override void OnRender(ICanvas canvas) {
         if (Font == null) return;
