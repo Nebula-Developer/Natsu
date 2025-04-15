@@ -1,6 +1,6 @@
 #nullable disable
 
-namespace Natsu.Core.InvalidationTemp;
+namespace Natsu.Core.Invalidation;
 
 public class ElementInvalidator {
     public ElementInvalidator(ElementInvalidation invalidation = ElementInvalidation.All) => Element = invalidation;

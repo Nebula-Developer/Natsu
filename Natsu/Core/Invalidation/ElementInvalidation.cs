@@ -1,6 +1,6 @@
 #nullable disable
 
-namespace Natsu.Core.InvalidationTemp;
+namespace Natsu.Core.Invalidation;
 
 [Flags]
 public enum ElementInvalidation {

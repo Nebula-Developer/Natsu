@@ -1,4 +1,4 @@
-using Natsu.Core.InvalidationTemp;
+using Natsu.Core.Invalidation;
 using Natsu.Extensions;
 using Natsu.Graphics;
 using Natsu.Mathematics;

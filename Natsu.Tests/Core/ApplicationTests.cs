@@ -9,6 +9,7 @@ namespace Natsu.Tests.Core;
 public class ApplicationTests {
     internal Application CreateApp(bool load = true) {
         Application app = new();
+
         app.Renderer = new EmptyRenderer();
         app.Platform = new EmptyPlatform();
         app.ResourceLoader = new EmptyResourceLoader();

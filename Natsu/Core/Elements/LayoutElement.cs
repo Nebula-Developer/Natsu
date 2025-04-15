@@ -1,4 +1,4 @@
-using Natsu.Core.InvalidationTemp;
+using Natsu.Core.Invalidation;
 
 namespace Natsu.Core.Elements;
 

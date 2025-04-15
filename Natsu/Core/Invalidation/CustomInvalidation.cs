@@ -1,6 +1,6 @@
 #nullable disable
 
-namespace Natsu.Core.InvalidationTemp;
+namespace Natsu.Core.Invalidation;
 
 /// <summary>
 ///     A class that holds custom invalidation based on strings rather than enums.
