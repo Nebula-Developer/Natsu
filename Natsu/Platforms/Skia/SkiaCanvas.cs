@@ -56,6 +56,8 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
 
     public int Save() => Canvas.Save();
 
+    public int Save(float opacity) => Canvas.SaveLayer(new() { Color = new(255, 0, 0, (byte)(opacity * 255)) });
+
     public void Restore(int saveCount) => Canvas.RestoreToCount(saveCount);
 
     public void ClipRect(Rect rect, bool difference = false, bool antialias = false) => Canvas.ClipRect(rect, difference ? SKClipOperation.Difference : SKClipOperation.Intersect, antialias);
@@ -74,7 +76,7 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
     }
 
     public SKPaint UsePaint(Paint paint) {
-        Paint.Color = new(paint.Color.R, paint.Color.G, paint.Color.B, (byte)(paint.Opacity * 255));
+        Paint.Color = paint.Color;
 
         Paint.IsStroke = paint.IsStroke;
         Paint.StrokeWidth = paint.StrokeWidth;

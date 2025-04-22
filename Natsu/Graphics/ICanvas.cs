@@ -22,6 +22,7 @@ public interface ICanvas {
     void DrawOffscreenSurface(IOffscreenSurface surface, Vector2 position);
 
     int Save();
+    int Save(float opacity);
     void Restore(int saveCount);
 
     void ClipRect(Rect rect, bool difference = false, bool antialias = false);

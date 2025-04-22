@@ -12,13 +12,6 @@ public interface IPaint {
     Color Color { get; set; }
 
     /// <summary>
-    ///     The opacity of the paint.
-    ///     <br />
-    ///     This value is multiplied with the alpha value of the color.
-    /// </summary>
-    float Opacity { get; set; }
-
-    /// <summary>
     ///     The width of the stroke.
     /// </summary>
     float StrokeWidth { get; set; }

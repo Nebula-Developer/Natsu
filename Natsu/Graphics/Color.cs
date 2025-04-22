@@ -6,6 +6,7 @@ using SkiaSharp;
 namespace Natsu.Graphics;
 
 public class Color {
+    public Action DoChange;
     private byte _a;
 
     private byte _b;
@@ -13,8 +14,6 @@ public class Color {
     private byte _g;
 
     private byte _r;
-
-    public Action DoChange;
 
     public Color(byte r, byte g, byte b, byte a) {
         R = r;

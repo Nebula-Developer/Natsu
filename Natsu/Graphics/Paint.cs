@@ -1,4 +1,3 @@
-using Natsu.Core;
 using Natsu.Graphics.Shaders;
 
 namespace Natsu.Graphics;
@@ -97,14 +96,6 @@ public class Paint : IPaint, IEquatable<Paint> {
         }
     }
 
-    public virtual float Opacity {
-        get => Color.A / 255f;
-        set {
-            Color.A = (byte)(value * 255);
-            DoChange?.Invoke();
-        }
-    }
-
     public IShader? Shader {
         get => _shader;
         set {
@@ -115,13 +106,4 @@ public class Paint : IPaint, IEquatable<Paint> {
     }
 
     public event Action? DoChange, DoShaderChange;
-}
-
-public class ElementPaint(Element elm) : Paint {
-    protected Element Element = elm;
-
-    public override float Opacity {
-        get => Element.WorldOpacity * base.Opacity;
-        set => Element.WorldOpacity = value / base.Opacity;
-    }
 }

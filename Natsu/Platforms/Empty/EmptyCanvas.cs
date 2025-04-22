@@ -34,6 +34,8 @@ public class EmptyCanvas : ICanvas {
 
     public int Save() => -1;
 
+    public int Save(float opacity) => -1;
+
     public void Restore(int saveCount) { }
 
     public void ClipRect(Rect rect, bool difference = false, bool antialias = false) { }

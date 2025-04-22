@@ -24,10 +24,6 @@ public partial class Application {
 
     private readonly Dictionary<InputElement, MouseEnterCacheState> _mouseEnterCache = new();
     private readonly Dictionary<int, HashSet<InputElement>> _touchDownCache = new();
-
-    protected CursorStyle _cursor = CursorStyle.Default;
-
-    private InputElement _rawFocusedElement;
     public FallbackDictionary<Key, bool> Keys = new(false);
 
     public FallbackDictionary<MouseButton, bool> MouseState = new(false);
@@ -37,6 +33,10 @@ public partial class Application {
 
     public FallbackDictionary<int, Vector2> TouchPositions = new(new(0));
     public FallbackDictionary<int, bool> TouchState = new(false);
+
+    protected CursorStyle _cursor = CursorStyle.Default;
+
+    private InputElement _rawFocusedElement;
 
     public Vector2 MousePosition { get; private set; }
 

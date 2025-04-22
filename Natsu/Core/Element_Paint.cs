@@ -1,6 +1,7 @@
 using Natsu.Core.Invalidation;
 using Natsu.Graphics;
 using Natsu.Graphics.Shaders;
+using Natsu.Mathematics;
 
 namespace Natsu.Core;
 
@@ -12,7 +13,7 @@ public partial class Element : IPaint {
     public Paint Paint {
         get {
             if (_paint == null) {
-                _paint = new ElementPaint(this);
+                _paint = new();
                 _paint.DoChange += () => {
                     DoPaintValueChange?.Invoke();
                     OnPaintValueChange();
@@ -56,18 +57,20 @@ public partial class Element : IPaint {
         set => Opacity = value / (Parent?.WorldOpacity ?? 1);
     }
 
-    public Color Color {
-        get => Paint.Color;
-        set => Paint.Color = value;
-    }
-
     public float Opacity {
         get => _opacity;
         set {
+            value = Math.Clamp(value, 0, 1);
+            if (Precision.Approximately(_opacity, value)) return;
             _opacity = value;
             Invalidate(ElementInvalidation.Opacity, InvalidationPropagation.Children);
             DoPaintValueChange?.Invoke();
         }
+    }
+
+    public Color Color {
+        get => Paint.Color;
+        set => Paint.Color = value;
     }
 
     public float StrokeWidth {

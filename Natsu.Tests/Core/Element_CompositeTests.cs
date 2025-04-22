@@ -135,7 +135,46 @@ public class Element_CompositeTests {
         Element parent = new();
         Element child = new();
         child.Parent = parent;
-        parent.Parent = child;
-        Assert.Throws<InvalidOperationException>(() => child.Parent = parent);
+        Assert.Throws<InvalidOperationException>(() => parent.Parent = child);
+    }
+
+    [Fact]
+    public void ThrowsWhenAssigningAncestorAsChild() {
+        Element root = new();
+        Element mid = new();
+        Element leaf = new();
+
+        leaf.Parent = mid;
+        mid.Parent = root;
+
+        Assert.Throws<InvalidOperationException>(() => root.Parent = leaf);
+    }
+
+    [Fact]
+    public void ThrowsWhenReusingElementAsAncestorInMultipleBranches() {
+        Element a = new();
+        Element b = new();
+        Element c = new();
+        Element d = new();
+
+        b.Parent = a;
+        c.Parent = b;
+        d.Parent = c;
+
+        Assert.Throws<InvalidOperationException>(() => a.Parent = d);
+    }
+
+    [Fact]
+    public void ThrowsWhenIndirectCycleCreatedByReparenting() {
+        Element node1 = new();
+        Element node2 = new();
+        Element node3 = new();
+        Element node4 = new();
+
+        node2.Parent = node1;
+        node3.Parent = node2;
+        node4.Parent = node3;
+
+        Assert.Throws<InvalidOperationException>(() => node1.Parent = node4);
     }
 }

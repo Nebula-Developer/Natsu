@@ -11,8 +11,6 @@ using Natsu.Utils.Logging;
 namespace Natsu.Core;
 
 public partial class Application : IDisposable {
-    private Vector2 _size;
-
     public Logger AppLogger = new() {
         Outputs = {
             new FileLoggerOutput(Path.Join(AppContext.BaseDirectory, "log.txt")),
@@ -45,6 +43,8 @@ public partial class Application : IDisposable {
     ///     The <see cref="IShaderManager" /> that handles shader operations.
     /// </summary>
     public IShaderManager ShaderManager;
+
+    private Vector2 _size;
 
     public Application() => Root = new(this);
 

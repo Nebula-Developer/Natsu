@@ -178,7 +178,10 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
         if (!Visible) return;
 
         canvas.SetMatrix(Matrix);
-        int save = canvas.Save();
+        int save = -1;
+
+        if (Opacity != 1) save = canvas.Save(Opacity);
+
         if (Clip) ClipCanvas(canvas);
 
         OnRender(canvas);
@@ -188,7 +191,7 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
         OnRenderChildren(canvas);
         DoRender?.Invoke();
 
-        canvas.Restore(save);
+        if (save != -1) canvas.Restore(save);
     }
 
     /// <summary>
@@ -327,7 +330,7 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
     /// <returns>Whether the invalidation was successful</returns>
     public bool InvalidateChildren(ElementInvalidation invalidation, bool propagate = false) {
         bool result = false;
-        ForChildren(child => result |= child.Invalidate(invalidation, propagate ? InvalidationPropagation.Children : InvalidationPropagation.None));
+        ForChildren(child => result |= child.Invalidate(invalidation, InvalidationPropagation.Children)); //  propagate ? InvalidationPropagation.Children : InvalidationPropagation.None));
         return result;
     }
 

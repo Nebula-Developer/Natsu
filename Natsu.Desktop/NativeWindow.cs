@@ -103,7 +103,7 @@ internal class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge
 
     protected override void OnLoad() => Bridge.Load();
 
-    protected override void OnResize(ResizeEventArgs e) => Bridge.Resize(e.Width, e.Height);
+    protected override void OnFramebufferResize(FramebufferResizeEventArgs e) => Bridge.Resize(e.Width, e.Height);
 
     protected override void OnUpdateFrame(FrameEventArgs e) {
         Bridge.Update(e.Time);

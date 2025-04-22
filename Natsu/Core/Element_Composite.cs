@@ -86,7 +86,10 @@ public partial class Element {
     private void updateParent(Element? value, bool parentCheck = true) {
         if (_parent != value && Parent?.HasChild(this) == true) Parent.Remove(this);
 
-        if (parentCheck && findCircle(value)) throw new InvalidOperationException("Circular parent detected");
+        if (parentCheck && (findCircle(value) || value?.findCircle(this) == true)) {
+            _parent = null;
+            throw new InvalidOperationException("Circular parent detected");
+        }
 
         if (parentCheck && value?.HasChild(this) == false) value.Add(this);
 
@@ -94,7 +97,7 @@ public partial class Element {
 
         if (Parent?._app != null && Parent._app != App) App = Parent.App;
 
-        Invalidate(ElementInvalidation.All);
+        Invalidate(ElementInvalidation.All, InvalidationPropagation.Children);
     }
 
     /// <summary>
