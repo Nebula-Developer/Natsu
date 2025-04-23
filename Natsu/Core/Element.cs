@@ -181,6 +181,7 @@ public partial class Element : TransformSequenceManager, IDisposable, ITransform
         int save = -1;
 
         if (Opacity != 1) save = canvas.Save(Opacity);
+        else if (Clip) save = canvas.Save();
 
         if (Clip) ClipCanvas(canvas);
 
