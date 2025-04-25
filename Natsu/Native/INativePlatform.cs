@@ -65,6 +65,9 @@ public interface INativePlatform {
     /// </summary>
     float UpdateFrequency { get; set; }
 
+    [return: DynamicProperty(DynamicProperties.Accessible)]
+    Type GetPlatformType() => typeof(INativePlatform);
+
     /// <summary>
     ///     Exits the platform, closing the application.
     /// </summary>

@@ -7,10 +7,12 @@ using Natsu.Extensions;
 namespace NatsuApp;
 
 public class MyApp : Application {
+    // A 100x100 rounded box, in the center of the screen.
+    // We add it to the hirearchy in the OnLoad method.
     public readonly BoxElement Box = new() {
         Color = Colors.Orange,
         Size = new(100),
-        Pivot = new(0.5f), // Center the box to the screen.
+        Pivot = new(0.5f),
         RoundedCorners = new(20),
         IsAntialias = true
     };
@@ -18,7 +20,7 @@ public class MyApp : Application {
     // An input element inside the box that we can click.
     // Sometimes you'd want this the other way around, but it's just an example.
     public InputElement BoxInputArea = new() {
-        RelativeSizeAxes = Axes.Both // Makes it the same size as its parent.
+        RelativeSizeAxes = Axes.Both
     };
 
     public BoxElement CoverBox = new() {
@@ -39,26 +41,25 @@ public class MyApp : Application {
     };
 
     protected override void OnLoad() {
+        // Adding the box, text and cover box to the root element.
         Add(Box, Text, CoverBox);
+
+        // Adding the input area to the box.
         Box.Add(BoxInputArea);
 
-        Root.Scale = new(2f); // This makes the whole scene 2x bigger!
+        // This makes everything visible 2x bigger.
+        Root.Scale = new(2f);
+
+        // Below we add some handlers to the input area.
+        // The press argumemnts are (index, pos), where
+        // index is the mouse/finger index.
 
         BoxInputArea.DoPress += (_, _) => {
-            Box.StopTransformSequences(nameof(Box.Color), nameof(Box.Rotation));
             Box.ColorTo(Colors.Green).ColorTo(Colors.Orange, 2f, Easing.ExpoOut);
             Box.RotateTo(0).RotateTo(90, 0.5f, Easing.ExpoOut);
         };
 
-
-        BoxInputArea.DoPressDown += (_, _) => {
-            Box.StopTransformSequences(nameof(Box.Scale));
-            Box.ScaleTo(0.5f, 3f, Easing.ExpoOut);
-        };
-
-        BoxInputArea.DoPressUp += (_, _) => {
-            Box.StopTransformSequences(nameof(Box.Scale));
-            Box.ScaleTo(1f, 0.8f, Easing.ElasticOut);
-        };
+        BoxInputArea.DoPressDown += (_, _) => Box.ScaleTo(0.5f, 3f, Easing.ExpoOut);
+        BoxInputArea.DoPressUp += (_, _) => Box.ScaleTo(1f, 0.8f, Easing.ElasticOut);
     }
 }

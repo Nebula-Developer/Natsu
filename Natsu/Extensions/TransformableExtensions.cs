@@ -3,7 +3,8 @@ using Natsu.Mathematics.Transforms;
 namespace Natsu.Extensions;
 
 public static class TransformableExtensions {
-    public static TransformSequence<T> AppendToTransformable<T>(this TransformSequence<T> sequence, T elm) where T : ITransformable {
+    public static TransformSequence<T> AppendToTransformable<T>(this TransformSequence<T> sequence, T elm, bool stop = true) where T : ITransformable {
+        if (stop) elm.StopTransformSequence(sequence.Name);
         elm.AddTransformSequence(sequence);
         return sequence;
     }

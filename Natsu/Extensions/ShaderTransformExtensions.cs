@@ -5,7 +5,7 @@ using Natsu.Mathematics.Transforms;
 namespace Natsu.Extensions;
 
 public static class ShaderTransformExtensions {
-    public static ITransformSequence<T> UniformTo<T, V>(this T shader, string uniform, V to, double duration, Easing easing = Easing.Linear) where T : IShader where V : notnull {
+    public static ITransformSequence<T> UniformTo<T, [DynamicProperty(DynamicProperties.Accessible)] V>(this T shader, string uniform, V to, double duration, Easing easing = Easing.Linear) where T : IShader where V : notnull {
         TransformSequence<T> sequence = new(shader) {
             Name = uniform
         };

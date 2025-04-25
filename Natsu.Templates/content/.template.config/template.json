@@ -8,7 +8,7 @@
         "Crossplatform"
     ],
     "name": "Natsu Framework App",
-    "description": "A template for creating a new blank Natsu Framework App",
+    "description": "A template for creating a new Natsu Framework App",
     "shortName": "natsu",
     "sourceName": "NatsuApp",
     "identity": "Natsu App",

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Natsu.Input;
 using Natsu.Mathematics;
@@ -10,6 +11,7 @@ using static OpenTK.Windowing.Common.Input.MouseCursor;
 
 namespace Natsu.Platforms.Desktop;
 
+[DynamicallyAccessedMembers(DynamicProperties.Accessible)]
 internal class NativeWindow(DesktopWindowSettings settings, DesktopWindow bridge) : GameWindow(settings.GameWindowSettings, settings.NativeWindowSettings), INativePlatform {
     private RangeI _textCaret;
     public DesktopWindow Bridge { get; } = bridge;

@@ -27,10 +27,11 @@
         <NoWarn>CS1591, NU5104</NoWarn>
 
         <!--
-            This supresses where generic arguments don't satisfy other attributes.
-            Occurs when publishing an app with <PublishTrimmed>true</PublishTrimmed>.
+            This supresses various warnings related to the
+            PublishTrimmed property. If you feel these may
+            be relevant, feel free to comment this line out.
         -->
-        <NoWarn>$(NoWarn);IL2091</NoWarn>
+        <NoWarn>$(NoWarn);IL2091;IL2111;IL2104</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,6 +1,8 @@
 using Natsu.Core;
 using Natsu.Core.Elements;
+using Natsu.Extensions;
 using Natsu.Graphics;
+using Natsu.Input;
 using Natsu.Mathematics;
 
 public class MyApp : Application {
@@ -9,11 +11,42 @@ public class MyApp : Application {
 
         // Root.Pivot = 0.5f;
         // Root.Rotation = 45;
+        Root.MoveTo(10f, 1f).Loop();
 
         BoxElement parent = new() {
             RelativeSizeAxes = Axes.Both,
             Color = Colors.Green,
             Opacity = 1f
+        };
+
+        float opacity = 1f;
+
+        DoKeyDown += (key, mods) => {
+            switch (key) {
+                case Key.Escape:
+                    Platform.Exit();
+                    break;
+
+                case Key.Up:
+                    if (opacity >= 1f) {
+                        opacity = 1f;
+                        break;
+                    }
+
+                    parent.OpacityTo(opacity += 0.25f, 0.25f);
+                    break;
+
+                case Key.Down:
+                    if (opacity <= 0f) {
+                        opacity = 0f;
+                        break;
+                    }
+
+                    parent.OpacityTo(opacity -= 0.25f, 0.25f);
+                    break;
+            }
+
+            Console.WriteLine("Key: " + key + " Mods: " + mods);
         };
 
         BoxElement child = new() {

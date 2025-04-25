@@ -4,7 +4,7 @@ echo "Copying Natsu.Templates/content/ as ./LocalTemplate/"
 rm -rf ./LocalTemplate
 cp -r ./Natsu.Templates/content/ ./LocalTemplate/
 
-cd ./LocalTemplate/NatsuApp.App
+cd ./LocalTemplate/NatsuApp
 dotnet add reference ../../Natsu/Natsu.csproj
 
 cd ../NatsuApp.Desktop

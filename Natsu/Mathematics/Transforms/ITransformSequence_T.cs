@@ -6,7 +6,7 @@ namespace Natsu.Mathematics.Transforms;
 ///     This is a type-specific version of <see cref="ITransformSequence" />.
 /// </summary>
 /// <typeparam name="T">The type of the target object that the transforms are applied to</typeparam>
-public interface ITransformSequence<T> : ITransformSequence {
+public interface ITransformSequence<[DynamicProperty(DynamicProperties.Accessible)] T> : ITransformSequence {
     /// <summary>
     ///     The <typeparamref name="T" /> that the transforms are applied to.
     /// </summary>
