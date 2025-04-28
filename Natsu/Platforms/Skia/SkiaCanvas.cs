@@ -58,6 +58,20 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
 
     public int Save(float opacity) => Canvas.SaveLayer(new() { Color = new(255, 0, 0, (byte)(opacity * 255)) });
 
+    public int CreateBackdropFilter(IImageFilter filter) {
+        SKCanvasSaveLayerRec rec = new() {
+            Backdrop = filter is SkiaImageFilter skiaImageFilter ? skiaImageFilter.Filter : throw new ArgumentException("Non-SkiaImageFilter provided to SkiaCanvas")
+        };
+
+        int orig = Canvas.SaveLayer(in rec);
+
+        Canvas.SaveLayer(SKRect.Empty, new() {
+            BlendMode = SKBlendMode.DstIn
+        });
+
+        return orig;
+    }
+
     public void Restore(int saveCount) => Canvas.RestoreToCount(saveCount);
 
     public void ClipRect(Rect rect, bool difference = false, bool antialias = false) => Canvas.ClipRect(rect, difference ? SKClipOperation.Difference : SKClipOperation.Intersect, antialias);
@@ -107,6 +121,7 @@ public class SkiaCanvas(SKCanvas canvas) : ICanvas {
         };
 
         Paint.Shader = paint.Shader is SkiaShader skiaShader ? skiaShader.Shader : null;
+        Paint.ImageFilter = paint.ImageFilter is SkiaImageFilter skiaImageFilter ? skiaImageFilter.Filter : null;
 
         return Paint;
     }

@@ -59,4 +59,9 @@ public interface IPaint {
     ///     A shader will usually override other properties of the paint.
     /// </summary>
     IShader? Shader { get; set; }
+
+    /// <summary>
+    ///     The image filter of the paint.
+    /// </summary>
+    IImageFilter? ImageFilter { get; set; }
 }

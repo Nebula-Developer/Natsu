@@ -19,4 +19,11 @@ public class SkiaRenderer : IRenderer {
     public IOffscreenSurface CreateOffscreenSurface(int width, int height) => new SkiaOffscreenSurface(width, height);
 
     public void Resize(int width, int height) { }
+
+    public IImageFilter CreateBlur(float sigmaX, float sigmaY) => new SkiaImageFilter(SKImageFilter.CreateBlur(sigmaX, sigmaY));
+
+    public IImageFilter CreateDropShadow(float dx, float dy, float sigmaX, float sigmaY, Color color) {
+        SKColor skColor = new(color.R, color.G, color.B, color.A);
+        return new SkiaImageFilter(SKImageFilter.CreateDropShadow(dx, dy, sigmaX, sigmaY, skColor));
+    }
 }

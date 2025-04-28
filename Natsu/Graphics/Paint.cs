@@ -7,10 +7,12 @@ public class Paint : IPaint, IEquatable<Paint> {
     private Color _color = Colors.White;
     private FilterQuality _filterQuality = FilterQuality.None;
     private float _fontSize = 12;
+    private IImageFilter? _imageFilter;
     private bool _isAntialias;
     private bool _isStroke;
 
     private IShader? _shader;
+
     private StrokeCap _strokeCap = StrokeCap.Butt;
     private StrokeJoin _strokeJoin = StrokeJoin.Miter;
     private float _strokeWidth = 1;
@@ -102,6 +104,14 @@ public class Paint : IPaint, IEquatable<Paint> {
             _shader = value;
             DoChange?.Invoke();
             DoShaderChange?.Invoke();
+        }
+    }
+
+    public IImageFilter? ImageFilter {
+        get => _imageFilter;
+        set {
+            _imageFilter = value;
+            DoChange?.Invoke();
         }
     }
 
