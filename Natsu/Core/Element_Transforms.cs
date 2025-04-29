@@ -17,6 +17,7 @@ public partial class Element {
     private Vector2 _offsetPosition;
     private Margin _padding;
     private Vector2 _position;
+    private Rect _rectBounds;
     private Vector2 _relativeSize;
     private Axes _relativeSizeAxes = Axes.None;
     private float _rotation;
@@ -81,7 +82,13 @@ public partial class Element {
     /// <summary>
     ///     A rectangle that represents the local bounds of the element's draw size as a <see cref="Rect" />.
     /// </summary>
-    public Rect RectBounds => new(0, 0, DrawSize.X, DrawSize.Y);
+    public Rect RectBounds {
+        get {
+            if (Invalidated.HasFlag(ElementInvalidation.Size)) UpdateDrawSize();
+
+            return _rectBounds;
+        }
+    }
 
     /// <summary>
     ///     The rotation of the element in degrees.
@@ -555,6 +562,7 @@ public partial class Element {
 
         _drawSize = drawSize;
         _childAccessDrawSize = drawSize - Padding.Size;
+        _rectBounds = new(0, 0, drawSize.X, drawSize.Y);
 
         Validate(ElementInvalidation.Size);
 

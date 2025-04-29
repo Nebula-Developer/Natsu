@@ -22,7 +22,7 @@ public class RatioPreserveContainer : LayoutElement {
         _ratio = ratio;
         _mode = mode;
 
-        RatioContent.Invalidate(ElementInvalidation.Layout);
+        Invalidate(ElementInvalidation.Layout);
     }
 
     public override Element ContentContainer => RatioContent;
@@ -85,9 +85,9 @@ public class RatioPreserveContainer : LayoutElement {
         Validate(ElementInvalidation.Layout);
     }
 
-    protected override void OnLoad() => RatioContent.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
+    protected override void OnLoad() => Invalidate(ElementInvalidation.Layout);
 
-    protected override void OnDrawSizeChange(Vector2 size) => RatioContent.Invalidate(ElementInvalidation.Layout | ElementInvalidation.DrawSize);
+    protected override void OnDrawSizeChange(Vector2 size) => Invalidate(ElementInvalidation.Layout);
 
     public override void ComputeLayout() {
         UpdateSize();

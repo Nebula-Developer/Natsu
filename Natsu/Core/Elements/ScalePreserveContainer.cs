@@ -21,8 +21,6 @@ public class ScalePreserveContainer : LayoutElement {
 
         RelativeSizeAxes = Axes.Both;
         Add(ScaledContent);
-
-        ScaledContent.DoDrawSizeChange += _ => Invalidate(ElementInvalidation.Layout);
     }
 
     /// <summary>
